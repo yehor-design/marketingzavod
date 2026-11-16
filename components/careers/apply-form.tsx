@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import { RollSubmit } from "@/components/careers/roll-link";
+import { posthogLog } from "@/lib/posthog-logs";
 import styles from "@/components/careers/careers.module.css";
+
+const posthogEnabled = Boolean(
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
+);
 
 const FIELDS = [
   {
@@ -108,6 +114,10 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
         event.preventDefault();
         setErrors({});
         setDone(true);
+        if (posthogEnabled) {
+          posthog.capture("career_application_submitted", { role_slug: slug });
+          posthogLog.info("career_application_submitted", { role_slug: slug });
+        }
       }}
     >
       <div className={styles.fields}>

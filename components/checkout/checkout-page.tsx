@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import styles from "@/components/checkout/checkout.module.css";
+import { posthogLog } from "@/lib/posthog-logs";
 
 /**
  * https://jet.framer.website/checkout is the template purchase card.
@@ -9,6 +11,9 @@ import styles from "@/components/checkout/checkout.module.css";
  * published Whop URL. Nothing on this page charges a card.
  */
 const ACCESS_HREF = "https://whop.com/checkout/plan_gIldr5rd6rTY3";
+const posthogEnabled = Boolean(
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
+);
 const ASK_DESKTOP = "https://dub.link/jet-ask-desktop";
 const ASK_MOBILE = "https://dub.link/jet-ask-mobile";
 const TWEET = "https://x.com/WebsitesByKris/status/1935991610325561365";
@@ -174,13 +179,15 @@ function ActionLink({
   href,
   text,
   className,
+  onClick,
 }: {
   href: string;
   text: string;
   className: string;
+  onClick?: () => void;
 }) {
   return (
-    <a className={className} href={href} target="_blank" rel="noreferrer">
+    <a className={className} href={href} target="_blank" rel="noreferrer" onClick={onClick}>
       {text}
     </a>
   );
@@ -204,7 +211,13 @@ export function CheckoutPage() {
                   type="button"
                   className={selected ? styles.planOn : styles.plan}
                   aria-pressed={selected}
-                  onClick={() => setPlan(item.id)}
+                  onClick={() => {
+                    if (plan !== item.id && posthogEnabled) {
+                      posthog.capture("checkout_plan_selected", { payment_plan: item.id });
+                      posthogLog.info("checkout_plan_selected", { payment_plan: item.id });
+                    }
+                    setPlan(item.id);
+                  }}
                 >
                   <span className={styles.price}>{item.price}</span>
                   <span className={styles.detail}>{item.detail}</span>
@@ -351,7 +364,17 @@ export function CheckoutPage() {
             Bonus applied: <strong>$186 SaaS Launch Kit for FREE</strong>
           </p>
           <div className={styles.actions}>
-            <ActionLink className={styles.access} href={ACCESS_HREF} text={"Get\u00A0access"} />
+            <ActionLink
+              className={styles.access}
+              href={ACCESS_HREF}
+              text={"Get\u00A0access"}
+              onClick={() => {
+                if (posthogEnabled) {
+                  posthog.capture("checkout_access_requested", { payment_plan: plan });
+                  posthogLog.info("checkout_access_requested", { payment_plan: plan });
+                }
+              }}
+            />
             <ActionLink className={styles.askDesktop} href={ASK_DESKTOP} text={"Ask\u00A0a\u00A0question"} />
             <ActionLink className={styles.askMobile} href={ASK_MOBILE} text={"Ask\u00A0a\u00A0question"} />
           </div>

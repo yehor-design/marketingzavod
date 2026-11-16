@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import posthog from "posthog-js";
 import { DitherImage } from "@/components/home/dither-image";
+import { posthogLog } from "@/lib/posthog-logs";
 import { orderedDither, randomDither } from "@/components/motion";
 import styles from "@/components/waitlist/waitlist.module.css";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const posthogEnabled = Boolean(
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
+);
 
 const artBase = {
   ...orderedDither,
@@ -175,6 +180,10 @@ export function WaitlistPage() {
               event.preventDefault();
               setError("");
               setDone(true);
+              if (posthogEnabled) {
+                posthog.capture("waitlist_joined");
+                posthogLog.info("waitlist_form_submitted", { form: "waitlist" });
+              }
             }}
           >
             <div className={styles.row}>

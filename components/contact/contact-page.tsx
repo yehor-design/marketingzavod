@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import styles from "@/components/contact/contact.module.css";
+import { posthogLog } from "@/lib/posthog-logs";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const posthogEnabled = Boolean(
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
+);
 
 const REASONS = [
   { value: "general", label: "General" },
@@ -68,6 +73,10 @@ export function ContactPage() {
               event.preventDefault();
               setErrors({});
               setDone(true);
+              if (posthogEnabled) {
+                posthog.capture("contact_form_submitted", { inquiry_type: reason });
+                posthogLog.info("contact_form_submitted", { inquiry_type: reason });
+              }
             }}
           >
             <div className={styles.heading}>
