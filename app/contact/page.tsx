@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import { ContactPage } from "@/components/contact/contact-page";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Contact – Jet",
   description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  alternates: {
-    canonical: "https://jet.framer.website/contact",
-  },
-};
+    "Get in touch with the Jet team. Ask a question, request support or talk to sales, and we will get back to you as soon as possible.",
+  path: "/contact",
+});
 
 export default function Page() {
   return <ContactPage />;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { UpdateArticle } from "@/components/updates/changelog";
+import { pageMetadata } from "@/lib/seo";
 import { getUpdate, updates } from "@/lib/updates";
 
 type PageProps = {
@@ -20,13 +21,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
-  return {
+  return pageMetadata({
     title: note.title,
     description: note.description,
-    alternates: {
-      canonical: `https://jet.framer.website/updates/${note.slug}`,
-    },
-  };
+    path: `/updates/${note.slug}`,
+    image: note.socialImage,
+    type: "article",
+    publishedTime: note.dateTime,
+  });
 }
 
 export default async function Page({ params }: PageProps) {

@@ -6,6 +6,7 @@ import { useReducedMotion } from "motion/react";
 import { PulseGradient, RollingText } from "@/components/motion";
 import { GrayRing } from "@/components/motion/gray-ring";
 import { SiteCta } from "@/components/site-cta";
+import { TrackView } from "@/components/tracking/track-view";
 import styles from "@/components/pricing/pricing.module.css";
 
 const NBSP = "\u00A0";
@@ -15,6 +16,8 @@ const NBSP = "\u00A0";
  * https://buy.polar.sh/polar_cl_3qRsLy9BO9WTHskviNZBl54gdf3Uxk9oVwUek1zDfJa
  * The local route for that checkout is /checkout. The closing CTA is /waitlist.
  */
+/** Shown when the page opens. Reported with the first view_pricing. */
+const DEFAULT_PERIOD: Period = "yearly";
 const CHECKOUT_HREF = "/checkout";
 
 type Period = "monthly" | "yearly";
@@ -290,6 +293,7 @@ function RollLink({
   className,
   fontSize,
   letterSpacing,
+  location,
 }: {
   href: string;
   text: string;
@@ -297,6 +301,7 @@ function RollLink({
   className?: string;
   fontSize?: number;
   letterSpacing?: number;
+  location: string;
 }) {
   const [rolling, setRolling] = useState(false);
 
@@ -304,6 +309,9 @@ function RollLink({
     <Link
       href={href}
       className={`${tone === "primary" ? styles.primary : `${styles.secondary} gray-pill`} ${className ?? ""}`}
+      data-track="cta_click"
+      data-track-cta-text={text.replace(/\u00a0/g, " ")}
+      data-track-cta-location={location}
       onPointerEnter={() => setRolling(true)}
       onPointerLeave={() => setRolling(false)}
       onFocus={() => setRolling(true)}
@@ -432,12 +440,13 @@ function Tip({ text }: { text: string }) {
 }
 
 export function PricingPage() {
-  const [period, setPeriod] = useState<Period>("yearly");
+  const [period, setPeriod] = useState<Period>(DEFAULT_PERIOD);
   const [planIndex, setPlanIndex] = useState(0);
   const activePlan = plans[planIndex];
 
   return (
     <div className={styles.pricing}>
+      <TrackView event="view_pricing" params={{ billing_period: DEFAULT_PERIOD }} />
       <section className={styles.hero} aria-labelledby="pricing-title">
         <div className={styles.band} aria-hidden="true">
           <div className={styles.bandMask}>
@@ -479,6 +488,9 @@ export function PricingPage() {
             type="button"
             className={period === "monthly" ? styles.toggleOn : styles.toggleOff}
             aria-pressed={period === "monthly"}
+            data-track="view_pricing"
+            data-track-if="unpressed"
+            data-track-billing-period="monthly"
             onClick={() => setPeriod("monthly")}
           >
             Monthly
@@ -487,6 +499,9 @@ export function PricingPage() {
             type="button"
             className={period === "yearly" ? styles.toggleOn : styles.toggleOff}
             aria-pressed={period === "yearly"}
+            data-track="view_pricing"
+            data-track-if="unpressed"
+            data-track-billing-period="yearly"
             onClick={() => setPeriod("yearly")}
           >
             Yearly
@@ -499,7 +514,14 @@ export function PricingPage() {
             const price = period === "yearly" ? plan.yearly : plan.monthly;
             const suffix = period === "yearly" ? "/month, billed annually" : "/month";
             return (
-              <Link key={plan.id} href={CHECKOUT_HREF} className={plan.popular ? styles.cardPopular : styles.card}>
+              <Link
+                key={plan.id}
+                href={CHECKOUT_HREF}
+                className={plan.popular ? styles.cardPopular : styles.card}
+                data-track="cta_click"
+                data-track-cta-text={plan.cta.replace(/\u00a0/g, " ")}
+                data-track-cta-location={`pricing_card_${plan.id}`}
+              >
                 <span className={styles.wash} aria-hidden="true" />
                 <span className={`${styles.corner} ${styles.nw}`} aria-hidden="true" />
                 <span className={`${styles.corner} ${styles.ne}`} aria-hidden="true" />
@@ -565,6 +587,7 @@ export function PricingPage() {
             href={CHECKOUT_HREF}
             text={activePlan.cta}
             tone={activePlan.tone}
+            location={`pricing_compare_${activePlan.id}`}
             className={styles.smallButton}
             fontSize={12}
             letterSpacing={activePlan.id === "starter" ? 0.103 : undefined}
@@ -582,6 +605,7 @@ export function PricingPage() {
                   href={CHECKOUT_HREF}
                   text={plan.cta}
                   tone={plan.tone}
+                  location={`pricing_compare_${plan.id}`}
                   className={styles.compareButton}
                   fontSize={12}
                   letterSpacing={plan.id === "starter" ? 0.103 : undefined}

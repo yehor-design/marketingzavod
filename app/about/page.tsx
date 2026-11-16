@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import { AboutPage } from "@/components/about/about-page";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "About – Jet",
   description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  alternates: {
-    canonical: "https://jet.framer.website/about",
-  },
-};
+    "Meet the team behind Jet and the principles we build by: speed for every website, no code required, and honest performance numbers.",
+  path: "/about",
+});
 
 export default function Page() {
   return <AboutPage />;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LegalPage } from "@/components/legal/legal-page";
 import { getLegal, legalDocuments } from "@/lib/legal";
+import { pageMetadata } from "@/lib/seo";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -20,13 +21,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
-  return {
-    title: document.title,
+  return pageMetadata({
+    title: `${document.heading} – Jet`,
     description: document.description,
-    alternates: {
-      canonical: document.canonical,
-    },
-  };
+    path: `/legal/${document.slug}`,
+  });
 }
 
 export default async function Page({ params }: PageProps) {

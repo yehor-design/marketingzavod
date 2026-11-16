@@ -1,8 +1,5 @@
 import { legalSlugs } from "@/lib/routes";
 
-const DESCRIPTION =
-  "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.";
-
 export type RichText =
   | { text: string }
   | { text: string; href: string };
@@ -10,14 +7,15 @@ export type RichText =
 export type LegalBlock =
   | { kind: "p"; content: RichText[] }
   | { kind: "h2"; text: string }
-  | { kind: "list"; items: string[] };
+  | { kind: "list"; items: string[] }
+  /** The live Cookiebot cookie declaration. Renders nothing until Cookiebot is configured. */
+  | { kind: "cookie-declaration" };
 
 export type LegalDocument = {
   slug: (typeof legalSlugs)[number];
   title: string;
   heading: string;
   description: string;
-  canonical: string;
   version: string;
   date: string;
   blocks: LegalBlock[];
@@ -35,8 +33,8 @@ const terms: LegalDocument = {
   slug: "terms-of-service",
   title: "Terms of Service ",
   heading: "Terms of Service",
-  description: DESCRIPTION,
-  canonical: "https://jet.framer.website/legal/terms-of-service",
+  description:
+    "The terms that govern your use of the Jet website optimization platform and related services.",
   version: "1.8",
   date: "Jun 7, 2025",
   blocks: [
@@ -103,10 +101,10 @@ const privacy: LegalDocument = {
   slug: "privacy-policy",
   title: "Privacy Policy ",
   heading: "Privacy Policy",
-  description: DESCRIPTION,
-  canonical: "https://jet.framer.website/legal/privacy-policy",
-  version: "1.4",
-  date: "Feb 11, 2025",
+  description:
+    "How Jet collects, uses and protects personal data, including the cookies and analytics services used on this website.",
+  version: "1.5",
+  date: "Nov 16, 2026",
   blocks: [
     p(
       "Jet respects your privacy. This Privacy Policy explains what information we collect, how we use it, and your rights.",
@@ -136,8 +134,29 @@ const privacy: LegalDocument = {
     ),
     h2("4. Cookies & Tracking"),
     p(
-      "Jet uses cookies and similar technologies to analyze usage and enhance your experience. You can adjust your browser settings to refuse cookies.",
+      "We use cookies and similar technologies only with your consent, except for those strictly necessary to run the website. When you first visit, a consent banner provided by Cookiebot lets you accept or reject each category: preferences, statistics and marketing. Nothing in the statistics or marketing categories is stored on your device before you choose, and rejecting is as easy as accepting.",
     ),
+    p(
+      "You can change or withdraw your consent at any time through the \u201cCookie settings\u201d link in the footer of every page. Withdrawing consent stops further collection and removes the cookies we set for those categories.",
+    ),
+    {
+      kind: "list",
+      items: [
+        "Necessary: Cookiebot stores your consent choice so we do not ask again on every page.",
+        "Statistics: Google Analytics 4, PostHog and Microsoft Clarity help us understand how the website is used, including session recordings in which form fields are masked. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
+        "Marketing: Google Ads, Meta and LinkedIn measure whether our advertising leads to enquiries. With your consent we may share a hashed version of the email address you submit in a form, together with advertising click identifiers, with Google and Meta for conversion measurement.",
+      ],
+    },
+    p(
+      "If you submit a form without consenting to statistics or marketing, we still receive your message and the campaign name from the link you followed, but no advertising identifiers and no cookies are used.",
+    ),
+    p(
+      "We measure page speed with Vercel Speed Insights. It does not use cookies and does not identify or follow individual visitors, so it runs without consent.",
+    ),
+    p(
+      "Form submissions are stored in our customer relationship management system (HubSpot) so that we can reply to you.",
+    ),
+    { kind: "cookie-declaration" },
     h2("5. Data Security"),
     p(
       "We use industry-standard security measures to protect your data. However, no system is 100% secure.",

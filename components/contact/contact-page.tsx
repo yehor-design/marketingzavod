@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/contact/contact.module.css";
-
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const REASONS = [
   { value: "general", label: "General" },
@@ -18,36 +17,14 @@ type Errors = {
   email?: string;
   reason?: string;
   message?: string;
+  form?: string;
 };
-
-function validate(data: FormData): Errors {
-  const errors: Errors = {};
-  const name = String(data.get("Full name") ?? "").trim();
-  const email = String(data.get("Email") ?? "").trim();
-  const reason = String(data.get("Inquiry type") ?? "").trim();
-  const message = String(data.get("Message") ?? "").trim();
-
-  if (!name) {
-    errors.name = "Enter your full name.";
-  }
-  if (!email) {
-    errors.email = "Enter your email.";
-  } else if (!EMAIL.test(email)) {
-    errors.email = "Enter a valid email.";
-  }
-  if (!reason) {
-    errors.reason = "Select a reason for contact.";
-  }
-  if (!message) {
-    errors.message = "Tell us how we can help.";
-  }
-  return errors;
-}
 
 export function ContactPage() {
   const [errors, setErrors] = useState<Errors>({});
   const [done, setDone] = useState(false);
   const [reason, setReason] = useState("");
+  const [pending, setPending] = useState(false);
 
   return (
     <div className={styles.page}>
@@ -64,12 +41,49 @@ export function ContactPage() {
         <div className={styles.panel}>
           <form
             className={styles.form}
-            onSubmit={(event) => {
+            data-track-form="contact"
+            data-form-state={done ? "success" : pending ? "pending" : "idle"}
+            data-private=""
+            data-clarity-mask="true"
+            onSubmit={async (event) => {
               event.preventDefault();
+              if (pending || done) {
+                return;
+              }
+              const data = new FormData(event.currentTarget);
+              const value = (name: string) => String(data.get(name) ?? "").trim();
               setErrors({});
-              setDone(true);
+              setPending(true);
+              const result = await submitLead(
+                "contact",
+                {
+                  name: value("Full name"),
+                  email: value("Email"),
+                  reason: value("Inquiry type"),
+                  message: value("Message"),
+                },
+                value("company_url"),
+              );
+              setPending(false);
+              if (result.ok) {
+                setDone(true);
+              } else if (result.error === "validation") {
+                setErrors(result.errors);
+              } else {
+                setErrors({ form: SUBMIT_ERROR_TEXT[result.error] });
+              }
             }}
           >
+            <div className="visually-hidden" aria-hidden="true">
+              <label htmlFor="contact-company-url">Company URL</label>
+              <input
+                id="contact-company-url"
+                name="company_url"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             <div className={styles.heading}>
               <h2>Send us a message</h2>
               <p>We’d love to hear from you.</p>
@@ -84,7 +98,7 @@ export function ContactPage() {
                   autoComplete="name"
                   placeholder="Jane Smith"
                   required
-                  disabled={done}
+                  disabled={done || pending}
                   aria-invalid={errors.name ? true : undefined}
                   aria-describedby={errors.name ? "contact-name-error" : undefined}
                 />
@@ -104,7 +118,7 @@ export function ContactPage() {
                   autoComplete="email"
                   placeholder="orin@framer.com"
                   required
-                  disabled={done}
+                  disabled={done || pending}
                   aria-invalid={errors.email ? true : undefined}
                   aria-describedby={errors.email ? "contact-email-error" : undefined}
                 />
@@ -121,7 +135,7 @@ export function ContactPage() {
                 id="contact-reason"
                 name="Inquiry type"
                 required
-                disabled={done}
+                disabled={done || pending}
                 value={reason}
                 data-empty={reason ? undefined : "true"}
                 aria-invalid={errors.reason ? true : undefined}
@@ -150,7 +164,7 @@ export function ContactPage() {
                 name="Message"
                 placeholder="Tell us what you need help with…"
                 required
-                disabled={done}
+                disabled={done || pending}
                 aria-invalid={errors.message ? true : undefined}
                 aria-describedby={errors.message ? "contact-message-error" : undefined}
               />
@@ -160,12 +174,17 @@ export function ContactPage() {
                 </span>
               ) : null}
             </label>
+            {errors.form ? (
+              <p className={styles.fieldError} role="alert">
+                {errors.form}
+              </p>
+            ) : null}
             {done ? (
-              <p className={styles.success} role="status">
+              <p className={styles.success} role="status" data-form-success="contact">
                 We&apos;ll get back to you soon!
               </p>
             ) : (
-              <button className={styles.submit} type="submit">
+              <button className={styles.submit} type="submit" disabled={pending} aria-busy={pending}>
                 Get in touch
               </button>
             )}

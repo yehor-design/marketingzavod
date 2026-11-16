@@ -18,12 +18,16 @@ function NavRoll({
   className: string;
   lineHeightPx: number;
 }) {
+  const label = text.replace(/\u00a0/g, " ");
   const [rolling, setRolling] = useState(false);
 
   return (
     <Link
       href={href}
       className={className}
+      data-track="cta_click"
+      data-track-cta-text={label}
+      data-track-cta-location="header"
       onPointerEnter={() => setRolling(true)}
       onPointerLeave={() => setRolling(false)}
       onFocus={() => setRolling(true)}
@@ -232,7 +236,14 @@ export function SiteHeader() {
               })}
             </ul>
           </nav>
-          <Link className="mobile-cta" href="/waitlist" onClick={closeSoon}>
+          <Link
+            className="mobile-cta"
+            href="/waitlist"
+            data-track="cta_click"
+            data-track-cta-text="Join waitlist"
+            data-track-cta-location="mobile_menu"
+            onClick={closeSoon}
+          >
             <RollingText text={"Join\u00A0waitlist"} />
           </Link>
         </div>

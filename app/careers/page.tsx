@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import { CareersPage } from "@/components/careers/careers-page";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Careers – Jet",
   description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  alternates: {
-    canonical: "https://jet.framer.website/careers",
-  },
-};
+    "Join Jet, a remote-first team making the web faster. See our benefits and open roles in engineering, design, marketing and customer success.",
+  path: "/careers",
+});
 
 export default function Page() {
   return <CareersPage />;

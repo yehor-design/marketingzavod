@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import { UpdatesIndex } from "@/components/updates/changelog";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Updates – Jet",
   description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  alternates: {
-    canonical: "https://jet.framer.website/updates",
-  },
-};
+    "The Jet changelog: new features, improvements and fixes, release by release.",
+  path: "/updates",
+});
 
 export default function Page() {
   return <UpdatesIndex />;

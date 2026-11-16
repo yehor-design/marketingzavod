@@ -14,6 +14,9 @@ export function JoinButton() {
     <Link
       href="/waitlist"
       className={styles.button}
+      data-track="cta_click"
+      data-track-cta-text="Join waitlist"
+      data-track-cta-location="updates"
       onPointerEnter={() => setRolling(true)}
       onPointerLeave={() => setRolling(false)}
       onFocus={() => setRolling(true)}

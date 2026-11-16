@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TrackView } from "@/components/tracking/track-view";
 import styles from "@/components/checkout/checkout.module.css";
 
 /**
@@ -17,6 +18,9 @@ const PLANS = [
   { id: "once", price: "$149", detail: "Single payment" },
   { id: "split", price: "$79/month", detail: "2 payments" },
 ] as const;
+
+/** Reported with begin_checkout for the plan that is selected when the page opens. */
+const DEFAULT_CHECKOUT = { plan: "once", value: 149, currency: "USD" } as const;
 
 const templatePoints = [
   'Unlocks 25% off discount on the "Pro" Framer plan',
@@ -180,7 +184,15 @@ function ActionLink({
   className: string;
 }) {
   return (
-    <a className={className} href={href} target="_blank" rel="noreferrer">
+    <a
+      className={className}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      data-track="cta_click"
+      data-track-cta-text={text.replace(/\u00a0/g, " ")}
+      data-track-cta-location="checkout"
+    >
       {text}
     </a>
   );
@@ -191,6 +203,7 @@ export function CheckoutPage() {
 
   return (
     <div className={styles.page}>
+      <TrackView event="begin_checkout" params={DEFAULT_CHECKOUT} />
       <section className={styles.card} aria-label="Buy template">
         <header className={styles.header}>
           <h1>Buy template</h1>
