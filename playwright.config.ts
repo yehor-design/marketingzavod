@@ -23,7 +23,6 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_TRACKING_DEBUG: "true",
       NEXT_PUBLIC_GTM_ID: "GTM-E2ETEST",
-      NEXT_PUBLIC_COOKIEBOT_ID: "00000000-0000-0000-0000-000000000000",
       NEXT_PUBLIC_POSTHOG_KEY: "phc_e2e_test_key",
       NEXT_PUBLIC_POSTHOG_HOST: "https://eu.i.posthog.com",
       // Keeps a real project token from .env.local out of the test build.

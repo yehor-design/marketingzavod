@@ -7,9 +7,7 @@ export type RichText =
 export type LegalBlock =
   | { kind: "p"; content: RichText[] }
   | { kind: "h2"; text: string }
-  | { kind: "list"; items: string[] }
-  /** The live Cookiebot cookie declaration. Renders nothing until Cookiebot is configured. */
-  | { kind: "cookie-declaration" };
+  | { kind: "list"; items: string[] };
 
 export type LegalDocument = {
   slug: (typeof legalSlugs)[number];
@@ -134,7 +132,7 @@ const privacy: LegalDocument = {
     ),
     h2("4. Cookies & Tracking"),
     p(
-      "We use cookies and similar technologies only with your consent, except for those strictly necessary to run the website. When you first visit, a consent banner provided by Cookiebot lets you accept or reject each category: preferences, statistics and marketing. Nothing in the statistics or marketing categories is stored on your device before you choose, and rejecting is as easy as accepting.",
+      "We use cookies and similar technologies only with your consent, except for those strictly necessary to run the website. When you first visit, a consent banner lets you accept or reject each category: preferences, statistics and marketing. Nothing in the statistics or marketing categories is stored on your device before you choose, and rejecting is as easy as accepting.",
     ),
     p(
       "You can change or withdraw your consent at any time through the \u201cCookie settings\u201d link in the footer of every page. Withdrawing consent stops further collection and removes the cookies we set for those categories.",
@@ -142,7 +140,7 @@ const privacy: LegalDocument = {
     {
       kind: "list",
       items: [
-        "Necessary: Cookiebot stores your consent choice so we do not ask again on every page.",
+        "Necessary: we store your consent choice so we do not ask again on every page.",
         "Statistics: Google Analytics 4, PostHog and Microsoft Clarity help us understand how the website is used, including session recordings in which form fields are masked. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
         "Marketing: Google Ads, Meta and LinkedIn measure whether our advertising leads to enquiries. With your consent we may share a hashed version of the email address you submit in a form, together with advertising click identifiers, with Google and Meta for conversion measurement.",
       ],
@@ -156,7 +154,6 @@ const privacy: LegalDocument = {
     p(
       "Form submissions are stored in our customer relationship management system (HubSpot) so that we can reply to you.",
     ),
-    { kind: "cookie-declaration" },
     h2("5. Data Security"),
     p(
       "We use industry-standard security measures to protect your data. However, no system is 100% secure.",

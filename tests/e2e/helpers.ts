@@ -2,8 +2,6 @@ import type { Page } from "@playwright/test";
 
 export type Entry = Record<string, unknown> & { event?: string };
 
-type Consent = { preferences: boolean; statistics: boolean; marketing: boolean };
-
 let ipCounter = 0;
 
 /**
@@ -29,31 +27,6 @@ export async function prepare(page: Page) {
     route.fulfill({ status: 200, contentType: "application/javascript", body: "" }),
   );
   return requests;
-}
-
-/** Puts a Cookiebot double on the page before any script runs. */
-export async function stubCookiebot(page: Page, consent: Consent, answered = true) {
-  await page.addInitScript(
-    ({ consent, answered }) => {
-      (window as unknown as Record<string, unknown>).Cookiebot = {
-        consent: { necessary: true, ...consent },
-        hasResponse: answered,
-        renew() {
-          (window as unknown as Record<string, unknown>).__cookiebotRenewed = true;
-        },
-      };
-    },
-    { consent, answered },
-  );
-}
-
-/** Changes the visitor's choice the way Cookiebot does: new state, then its event. */
-export async function changeConsent(page: Page, consent: Consent) {
-  await page.evaluate((next) => {
-    const cookiebot = (window as unknown as { Cookiebot: { consent: Record<string, boolean> } }).Cookiebot;
-    cookiebot.consent = { necessary: true, ...next };
-    window.dispatchEvent(new Event(next.statistics || next.marketing ? "CookiebotOnAccept" : "CookiebotOnDecline"));
-  }, consent);
 }
 
 export async function dataLayer(page: Page): Promise<Entry[]> {

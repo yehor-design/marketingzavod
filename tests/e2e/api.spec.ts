@@ -58,8 +58,6 @@ test("search files: sitemap, robots and noindex outside production", async ({ re
   expect(urls.some((url) => url.includes("/updates/"))).toBe(true);
   expect(urls.some((url) => url.includes("/careers/"))).toBe(true);
   expect(urls.some((url) => /checkout|\/dev\//.test(url))).toBe(false);
-  // Cookiebot's free plan covers 50 subpages. Keep at least 10 in reserve.
-  expect(urls.length).toBeLessThanOrEqual(40);
 
   // This build is not the production deployment, so it must stay out of search.
   const robots = await (await request.get("/robots.txt")).text();

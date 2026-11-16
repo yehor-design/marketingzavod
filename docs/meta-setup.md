@@ -16,7 +16,7 @@ Meta отримує конверсію двома шляхами: з брауз�
 
 | Тег | Тригер | Подія Meta |
 | --- | --- | --- |
-| `Meta - PageView` | кожен `page_view`, а також `cookie_consent_update` | `PageView` |
+| `Meta - PageView` | кожен `page_view`, а також `consent_update` | `PageView` |
 | `Meta - Lead` | `generate_lead`, `form_name = contact` | `Lead` |
 | `Meta - CompleteRegistration` | `join_waitlist` | `CompleteRegistration` |
 | `Meta - InitiateCheckout` | `begin_checkout` | `InitiateCheckout` |

@@ -15,8 +15,8 @@
 
 | Тег GTM | Коли | Вимога згоди |
 | --- | --- | --- |
-| `Clarity - Base` | Перший `page_view` або `cookie_consent_update`, один раз на завантаження | `analytics_storage` |
-| `Clarity - Consent update` | Кожен `cookie_consent_update` | немає: саме він повідомляє Clarity про відкликання |
+| `Clarity - Base` | Перший `page_view` або `consent_update`, один раз на завантаження | `analytics_storage` |
+| `Clarity - Consent update` | Кожен `consent_update` | немає: саме він повідомляє Clarity про відкликання |
 | `Clarity - Form tag` | `generate_lead` | `analytics_storage` |
 
 - Без згоди на статистику скрипт Clarity не вантажиться, запитів до `clarity.ms` немає.

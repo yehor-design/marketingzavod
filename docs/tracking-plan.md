@@ -101,9 +101,9 @@
 
 ## Згода
 
-| Категорія Cookiebot | Сигнали Consent Mode | Що вмикає поза GTM |
+| Категорія згоди | Сигнали Consent Mode | Що вмикає поза GTM |
 | --- | --- | --- |
-| Necessary | `security_storage` | cookie самого Cookiebot |
+| Necessary | `security_storage` | збережений вибір відвідувача |
 | Preferences | `functionality_storage`, `personalization_storage` | нічого |
 | Statistics | `analytics_storage` | постійне сховище і записи PostHog, cookie атрибуції, серверна подія PostHog |
 | Marketing | `ad_storage`, `ad_user_data`, `ad_personalization` | click ID, Meta Conversions API, передача email у Enhanced Conversions |
@@ -117,7 +117,6 @@
 | `NEXT_PUBLIC_TRACKING_DEBUG` | публічна | `true` дозволяє трекінг поза production |
 | `NEXT_PUBLIC_GTM_ID` | публічна | ID контейнера GTM (`GTM-…`) |
 | `NEXT_PUBLIC_GA4_ID` | публічна | Measurement ID (`G-…`) |
-| `NEXT_PUBLIC_COOKIEBOT_ID` | публічна | Domain Group ID Cookiebot |
 | `NEXT_PUBLIC_POSTHOG_KEY` | публічна | Ключ проєкту PostHog (`phc_…`) |
 | `NEXT_PUBLIC_POSTHOG_HOST` | публічна | Хост PostHog. Типово `https://eu.i.posthog.com` |
 | `NEXT_PUBLIC_CLARITY_ID` | публічна | ID проєкту Clarity |

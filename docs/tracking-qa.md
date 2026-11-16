@@ -12,22 +12,15 @@
 
 ## Автоматичні сценарії (`npm run test:e2e`)
 
-Збірка: `next build` з `NEXT_PUBLIC_TRACKING_DEBUG=true`, `GTM-E2ETEST`, підставний Cookiebot ID і ключ PostHog. Запити до GTM, PostHog і Cookiebot перехоплюються, Cookiebot замінено дублером із заданим станом згоди. Шлях у кожному сценарії: захід на `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → Contact → заявка.
+Збірка: `next build` з `NEXT_PUBLIC_TRACKING_DEBUG=true`, `GTM-E2ETEST` і підставний ключ PostHog. Запити до GTM і PostHog перехоплюються. Засобу згоди на сайті ще немає, тому автоматично перевіряється лише стан «без вибору»; сценарії з прийнятою, відхиленою і зміненою згодою треба написати разом із власним банером. Шлях у кожному сценарії: захід на `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → Contact → заявка.
 
 | Сценарій | Перевірка | Результат |
 | --- | --- | --- |
-| Згода прийнята | Cookie `wb_attr` створена, містить `utm_source=qa` і `gclid=TEST` | пройдено |
-| | PostHog зберігає стан (`ph_…_posthog`), запити йдуть лише на `/ingest`, не на `posthog.com` | пройдено |
-| | У запиті до `/api/lead`: згода `true`, first і last touch з `gclid`, distinct ID PostHog | пройдено |
-| | Повторний захід з `utm_source=newsletter` змінює last touch і не змінює first touch | пройдено |
-| Згода відхилена | Cookie `wb_attr` немає, `ph_*` у localStorage немає | пройдено |
-| | У запиті до `/api/lead`: згода `false`, лише UTM, рядка `TEST` немає | пройдено |
 | Без вибору | Жодної cookie з префіксами `ph_`, `_ga`, `_gcl`, `_fb`, `_clck`, `_clsk`, `li_`, немає `wb_attr` | пройдено |
 | | У запиті до `/api/lead` лише `utm_source`, `utm_medium`, `utm_campaign`; distinct ID немає | пройдено |
 | | Три сторінки дали рівно три `page_view` | пройдено |
-| Лише статистика | `wb_attr` є, click ID у ній немає | пройдено |
-| Зміна згоди без перезавантаження | Після згоди cookie з'являється, після відкликання зникає разом із `ph_*`; `page_view` не дублюється | пройдено |
-| Порядок старту GTM | У `dataLayer`: ідентифікатори → `gtm.js` → `page_view`. Контейнер запитано один раз | пройдено |
+| Порядок старту GTM | У `dataLayer`: ідентифікатори → Consent Mode `default` (усе `denied`) → `gtm.js` → `page_view`. Контейнер запитано один раз | пройдено |
+| Футер | Кнопки «Cookie settings» немає, доки немає засобу згоди | пройдено |
 | Події | `page_view` один на маршрут, `cta_click`, `faq_open` (лише розкриття), `outbound_click`, `contact_click`, `view_pricing`, `begin_checkout`, `form_start`, `form_error`, `generate_lead`, `join_waitlist` | пройдено |
 | Персональні дані | У `dataLayer` і в URL після заявки немає email, імені, тексту повідомлення і ключа `user_data` | пройдено |
 | API заявок | Валідація (400 з назвами полів), поле-пастка, чужий origin (403), ліміт 5 на хвилину (429) | пройдено |
@@ -39,7 +32,7 @@
 
 - Що `gtm/container.json` імпортується в GTM без помилок.
 - Що теги в контейнері спрацьовують у правильному порядку в справжньому GTM.
-- Що запити Google мають `gcs=G100` до згоди: це поведінка тегів Google і шаблона Cookiebot, а не коду сайту.
+- Що запити Google мають `gcs=G100` до згоди: це поведінка тегів Google, а не коду сайту.
 - Що HubSpot, Meta і Google Ads приймають дані у форматі, який шле сайт.
 
 ## Production без ідентифікаторів
@@ -57,7 +50,7 @@
 | `POST /api/lead` | 200, повернув `lead_id` і `event_id` |
 | Що пішло з формою | Лише `utm_source`, `utm_medium`, `utm_campaign`. `gclid=TEST` не передано. Згода `false` |
 | Помилки в консолі, зокрема гідратації | Немає |
-| Кнопка «Cookie settings» у футері | Не показується, бо Cookiebot не налаштовано. Так і задумано |
+| Кнопка «Cookie settings» у футері | Не показується, бо банера згоди немає. Так і задумано |
 | `sitemap.xml` | 200, 29 URL |
 | `robots.txt` | Дозволяє сайт, закриває `/api/`, `/ingest/`, `/dev/`, `/checkout`, вказує sitemap |
 | Canonical, JSON-LD | `https://www.heywowboy.com`, `Organization` і `WebSite` на головній |
@@ -82,9 +75,9 @@
 
 | Де дивитися | Очікуване |
 | --- | --- |
-| DevTools → Cookies | `CookieConsent`, `wb_attr`, `ph_*`, `_ga`, `_ga_*`, `_gcl_au`, `_gcl_aw`, `_fbp`, `_clck`, `_clsk` |
+| DevTools → Cookies | cookie власного банера, `wb_attr`, `ph_*`, `_ga`, `_ga_*`, `_gcl_au`, `_gcl_aw`, `_fbp`, `_clck`, `_clsk` |
 | Network | `google-analytics.com/g/collect` з `gcs=G111`; `clarity.ms`; `facebook.com/tr` з `ev=Lead` і `eid`; `/ingest/…`; `/api/lead` → 200 |
-| GTM Preview | Cookiebot на Consent Initialization; чотири `page_view`; `generate_lead`; спрацювали теги GA4, Google Ads Contact lead, Meta Lead |
+| GTM Preview | `consent_update` після вибору; чотири `page_view`; `generate_lead`; спрацювали теги GA4, Google Ads Contact lead, Meta Lead |
 | GA4 DebugView | Чотири `page_view`, один `generate_lead` з `form_name=contact` і `lead_id` |
 | PostHog Live events | Чотири `$pageview`, один `generate_lead`, один `lead_saved`; особа ідентифікована за `lead_id` |
 | Clarity | Запис сесії, поля форми замасковані, теги `utm_source=qa`, `form_name=contact` |
@@ -98,7 +91,7 @@
 
 | Де дивитися | Очікуване |
 | --- | --- |
-| Cookies | Лише `CookieConsent` |
+| Cookies | Лише cookie власного банера |
 | Network | `g/collect` з `gcs=G100` і без cookies; немає запитів до `clarity.ms`, `connect.facebook.net`, `facebook.com/tr`, `snap.licdn.com`; `/ingest/…` є, без cookie |
 | GTM Preview | Теги Clarity, Meta, LinkedIn у стані «Blocked by consent» |
 | Meta Test Events | Жодної події, ні з браузера, ні з сервера |

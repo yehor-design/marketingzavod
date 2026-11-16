@@ -8,6 +8,9 @@
  * the dataLayer from its environment variables before GTM starts, and the
  * container reads them through "ID - …" variables. A tag whose ID is missing
  * is held back by a blocking trigger, so an unset variable keeps it inactive.
+ *
+ * The container has no consent tag. The site sets the Consent Mode default
+ * (denied) before GTM starts, and its consent tool sends the updates.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -22,7 +25,6 @@ const FINGERPRINT = "1794787200000";
 
 /** Built-in "All Pages" style triggers have fixed IDs in every container. */
 const BUILT_IN = {
-  consentInit: "2147479572",
   init: "2147479573",
 };
 
@@ -50,6 +52,10 @@ const ID = Object.fromEntries(config.map((key) => [key, dataLayerVariable(`ID - 
 
 dataLayerVariable("DLV - user_data.email", "user_data.email");
 dataLayerVariable("DLV - user_data.phone_number", "user_data.phone_number");
+
+// Set by the site with every consent_update event.
+const CONSENT_STATISTICS = dataLayerVariable("DLV - consent_statistics", "consent_statistics");
+const CONSENT_MARKETING = dataLayerVariable("DLV - consent_marketing", "consent_marketing");
 
 // Google Ads tags take the numeric part of AW-123456789.
 const ADS_NUMERIC = addVariable("JS - Google Ads conversion ID", "jsm", [
@@ -95,8 +101,9 @@ const CE = Object.fromEntries(
 const CE_LEAD_CONTACT = addEventTrigger("CE - generate_lead - contact", "generate_lead", [
   equals(DLV.form_name, "contact"),
 ]);
-// Pushed by Cookiebot whenever the visitor's choice is known or changes.
-const CE_CONSENT_UPDATE = addEventTrigger("CE - cookie_consent_update", "cookie_consent_update");
+// Pushed by the site's consent tool whenever the visitor's choice is known or
+// changes, together with consent_statistics and consent_marketing (booleans).
+const CE_CONSENT_UPDATE = addEventTrigger("CE - consent_update", "consent_update");
 
 /** Fires on every event while the ID does not look valid. Used as an exception. */
 const addBlock = (name, variable, pattern) => {
@@ -120,7 +127,7 @@ const addBlock = (name, variable, pattern) => {
 };
 
 const BLOCK = {
-  cookiebot: addBlock("Block - Cookiebot ID missing", ID.cookiebot_id, "^[0-9a-fA-F-]{36}$"),
+  consent: addBlock("Block - Consent tool missing", ID.consent_ready, "^true$"),
   ga4: addBlock("Block - GA4 ID missing", ID.ga4_id, "^G-[A-Z0-9]+$"),
   clarity: addBlock("Block - Clarity ID missing", ID.clarity_id, "^[a-z0-9]{6,}$"),
   ads: addBlock("Block - Google Ads ID missing", ID.google_ads_id, "^AW-[0-9]+$"),
@@ -170,8 +177,8 @@ const addTag = ({ name, type, parameter, firing, blocking = [], consent, once = 
     type,
     parameter,
     firingTriggerId: firing,
-    // No tag other than Cookiebot itself may run while Cookiebot is not configured.
-    blockingTriggerId: [...new Set([...blocking, BLOCK.cookiebot])],
+    // No tag may run while the site has no consent tool.
+    blockingTriggerId: [...new Set([...blocking, BLOCK.consent])],
     tagFiringOption: once ? "ONCE_PER_LOAD" : "ONCE_PER_EVENT",
     consentSettings: consent,
     monitoringMetadata: { type: "MAP" },
@@ -179,43 +186,6 @@ const addTag = ({ name, type, parameter, firing, blocking = [], consent, once = 
   });
 };
 const html = (code) => [template("html", code.trim()), bool("supportDocumentWrite", false)];
-
-// Cookiebot CMP: the official template from the Community Template Gallery,
-// embedded below. It sets Consent Mode v2 defaults before anything else runs.
-const COOKIEBOT_TEMPLATE_ID = "1";
-const consentRow = {
-  type: "MAP",
-  map: [
-    template("region", ""),
-    template("defaultConsentPreferences", "denied"),
-    template("defaultConsentStatistics", "denied"),
-    template("defaultConsentMarketing", "denied"),
-    template("defaultConsentMarketingAdUserData", "denied"),
-    template("defaultConsentMarketingAdPersonalization", "denied"),
-  ],
-};
-addTag({
-  name: "Cookiebot CMP",
-  type: `cvt_${CONTAINER}_${COOKIEBOT_TEMPLATE_ID}`,
-  parameter: [
-    template("serial", ref(ID.cookiebot_id)),
-    template("language", "auto"),
-    template("cdnRegion", "com"),
-    bool("addGeoRegion", false),
-    bool("consentModeEnabled", true),
-    bool("iabFramework", false),
-    template("waitForUpdate", 2000),
-    template("adsDataRedaction", "dynamic"),
-    bool("urlPassthrough", false),
-    bool("advertiserConsentModeEnabled", true),
-    { type: "LIST", key: "regionSettings", list: [consentRow] },
-  ],
-  firing: [BUILT_IN.consentInit],
-  blocking: [BLOCK.cookiebot],
-  consent: builtInConsent,
-  notes:
-    "Default consent is denied for every region, which covers the EEA, the UK and Switzerland. Auto-blocking stays off: it rewrites script tags and breaks Next.js hydration.",
-});
 
 // GA4. The Google tag never sends page_view on its own. The site reports one
 // page_view per route change and the event tag below forwards it. Turn off
@@ -272,8 +242,8 @@ addTag({
   y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window,document,"clarity","script","${ref(ID.clarity_id)}");
 (function(){
-  var consent=(window.Cookiebot&&window.Cookiebot.consent)||{};
-  window.clarity("consentv2",{ad_Storage:consent.marketing?"granted":"denied",analytics_Storage:"granted"});
+  var marketing=${ref(CONSENT_MARKETING)}===true;
+  window.clarity("consentv2",{ad_Storage:marketing?"granted":"denied",analytics_Storage:"granted"});
   var keys=["utm_source","utm_campaign"],query=new URLSearchParams(window.location.search),stored={};
   try{
     var raw=document.cookie.split("; ").filter(function(row){return row.indexOf("wb_attr=")===0})[0];
@@ -298,9 +268,9 @@ addTag({
 <script>
 (function(){
   if(typeof window.clarity!=="function"){return;}
-  var consent=(window.Cookiebot&&window.Cookiebot.consent)||{};
-  if(consent.statistics){
-    window.clarity("consentv2",{ad_Storage:consent.marketing?"granted":"denied",analytics_Storage:"granted"});
+  var statistics=${ref(CONSENT_STATISTICS)}===true,marketing=${ref(CONSENT_MARKETING)}===true;
+  if(statistics){
+    window.clarity("consentv2",{ad_Storage:marketing?"granted":"denied",analytics_Storage:"granted"});
   }else{
     window.clarity("consentv2",{ad_Storage:"denied",analytics_Storage:"denied"});
     window.clarity("consent",false);
@@ -463,10 +433,6 @@ linkedinTag({
   blocking: [BLOCK.linkedinWaitlist],
 });
 
-// ----------------------------------------------------------- custom template
-// The official Cookiebot template (see gtm/templates/README.md for its source).
-const templateData = readFileSync(join(here, "templates", "cookiebot-cmp.tpl"), "utf8");
-
 const container = {
   exportFormatVersion: 2,
   exportTime: "2026-11-16 00:00:00",
@@ -495,14 +461,6 @@ const container = {
       { accountId: ACCOUNT, containerId: CONTAINER, type: "PAGE_URL", name: "Page URL" },
       { accountId: ACCOUNT, containerId: CONTAINER, type: "PAGE_PATH", name: "Page Path" },
       { accountId: ACCOUNT, containerId: CONTAINER, type: "EVENT", name: "Event" },
-    ],
-    customTemplate: [
-      {
-        ...base(),
-        templateId: COOKIEBOT_TEMPLATE_ID,
-        name: "Cookiebot CMP",
-        templateData,
-      },
     ],
     fingerprint: FINGERPRINT,
     tagManagerUrl: "https://tagmanager.google.com/",

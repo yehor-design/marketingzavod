@@ -2,12 +2,13 @@
  * Every public identifier the tracking stack reads. A missing value keeps the
  * matching integration inactive. Nothing here is secret.
  */
+import { CONSENT_TOOL_READY } from "@/lib/consent";
+
 const clean = (value: string | undefined) => (value ?? "").trim();
 
 export const trackingIds = {
   gtm: clean(process.env.NEXT_PUBLIC_GTM_ID),
   ga4: clean(process.env.NEXT_PUBLIC_GA4_ID),
-  cookiebot: clean(process.env.NEXT_PUBLIC_COOKIEBOT_ID),
   clarity: clean(process.env.NEXT_PUBLIC_CLARITY_ID),
   googleAds: clean(process.env.NEXT_PUBLIC_GOOGLE_ADS_ID),
   googleAdsLabelContact: clean(process.env.NEXT_PUBLIC_GOOGLE_ADS_LABEL_CONTACT),
@@ -38,7 +39,7 @@ export const POSTHOG_PROXY_PATH = "/ingest";
 export function gtmConfig(): Record<string, string> {
   return {
     ga4_id: trackingIds.ga4,
-    cookiebot_id: trackingIds.cookiebot,
+    consent_ready: CONSENT_TOOL_READY ? "true" : "false",
     clarity_id: trackingIds.clarity,
     google_ads_id: trackingIds.googleAds,
     google_ads_label_contact: trackingIds.googleAdsLabelContact,
