@@ -44,7 +44,35 @@
 
 ## Production без ідентифікаторів
 
-<!-- PRODUCTION-RESULTS -->
+Перевірено 16 листопада 2026 на `https://www.heywowboy.com` після деплою коміту `0372159`, скриптом Playwright у чистому профілі. У Vercel на цей момент не задано жодного ідентифікатора, тому банера немає і три сценарії згоди збігаються в один: вибрати нічого не можна.
+
+Шлях: `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About → Contact → заявка з адресою `qa+mar39-20261116@example.com`.
+
+| Перевірка | Результат |
+| --- | --- |
+| Запити до сторонніх доменів | Жодного. Усі 86 запитів пішли на `www.heywowboy.com` |
+| Cookies | Жодної |
+| localStorage | Порожній |
+| `dataLayer` | `page_view` ×4 (по одному на сторінку), `view_pricing`, `cta_click`, `form_start`, `generate_lead` |
+| `POST /api/lead` | 200, повернув `lead_id` і `event_id` |
+| Що пішло з формою | Лише `utm_source`, `utm_medium`, `utm_campaign`. `gclid=TEST` не передано. Згода `false` |
+| Помилки в консолі, зокрема гідратації | Немає |
+| Кнопка «Cookie settings» у футері | Не показується, бо Cookiebot не налаштовано. Так і задумано |
+| `sitemap.xml` | 200, 29 URL |
+| `robots.txt` | Дозволяє сайт, закриває `/api/`, `/ingest/`, `/dev/`, `/checkout`, вказує sitemap |
+| Canonical, JSON-LD | `https://www.heywowboy.com`, `Organization` і `WebSite` на головній |
+| Неіснуюча сторінка | 404 |
+| Адреса зі слешем у кінці | Один 308 на адресу без слеша |
+| `wowboy.vercel.app` | Віддає `X-Robots-Tag: noindex, nofollow` |
+| Проксі PostHog `/ingest/static/array.js` | 200 |
+| Endpoint офлайн-конверсій без налаштувань | 503 |
+| Скрипт Speed Insights `/_vercel/speed-insights/script.js` | 200, скрипт віддається. Чи з'являються дані в панелі Vercel, агент не бачив |
+
+Що лишилося неперевіреним у цьому прогоні:
+
+- **Чи збереглася тестова заявка.** Сервер відповів 200, а без токена HubSpot заявка має потрапити в лог Vercel. Логи проєкту `wowboy/wowboy` агенту недоступні. Перевір сам: Vercel → Project → Logs, пошук `d4b70edb-46de-4cff-81a0-6dd9d284ff2d`.
+- **Preview-деплой.** Він закритий авторизацією Vercel (302), тому відсутність запитів до `googletagmanager.com` на preview агент не бачив. Це гарантує код: `TRACKING_ENABLED` дорівнює `false`, коли `VERCEL_ENV` не `production`.
+- **Rich Results Test** для JSON-LD не запускався.
 
 ## Сценарій для production з ідентифікаторами
 
