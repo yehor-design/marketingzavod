@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
+import { track as amplitudeTrack } from "@amplitude/unified";
 import posthog from "posthog-js";
 import { posthogLog } from "@/lib/posthog-logs";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
@@ -186,6 +187,7 @@ export function WaitlistPage() {
               );
               setPending(false);
               if (result.ok) {
+                amplitudeTrack("Waitlist Joined");
                 if (posthogEnabled) {
                   posthog.capture("waitlist_joined");
                   posthogLog.info("waitlist_form_submitted", { form: "waitlist" });
