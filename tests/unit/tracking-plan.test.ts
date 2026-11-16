@@ -22,7 +22,7 @@ const container = JSON.parse(read("gtm/container.json")).containerVersion as {
   tag: Tag[];
   trigger: Array<{ triggerId: string; name: string }>;
   variable: Array<{ name: string }>;
-  customTemplate: Array<{ templateData: string }>;
+  customTemplate?: unknown[];
 };
 
 describe("one event list for code, plan and container", () => {
@@ -71,29 +71,16 @@ describe("gtm/container.json", () => {
     }
   });
 
-  it("fires Cookiebot on Consent Initialization with everything denied", () => {
-    const cookiebot = tag("Cookiebot CMP");
-    expect(cookiebot.firingTriggerId).toEqual(["2147479572"]);
-    const row = cookiebot.parameter.find((param) => param.key === "regionSettings")?.list?.[0].map ?? [];
-    const defaults = Object.fromEntries(row.map((item) => [item.key, item.value]));
-    expect(defaults).toEqual({
-      region: "",
-      defaultConsentPreferences: "denied",
-      defaultConsentStatistics: "denied",
-      defaultConsentMarketing: "denied",
-      defaultConsentMarketingAdUserData: "denied",
-      defaultConsentMarketingAdPersonalization: "denied",
-    });
-    expect(container.customTemplate[0].templateData).toContain("setDefaultConsentState");
-  });
-
-  it("lets no other tag fire on Consent Initialization", () => {
+  it("carries no consent tag or template: the site owns consent", () => {
     const early = container.tag.filter((item) => item.firingTriggerId.includes("2147479572"));
-    expect(early.map((item) => item.name)).toEqual(["Cookiebot CMP"]);
+    expect(early).toEqual([]);
+    expect(container.customTemplate ?? []).toEqual([]);
   });
 
-  it("holds every tag back while Cookiebot is not configured", () => {
-    const block = triggerId("Block - Cookiebot ID missing");
+  it("holds every tag back while the site has no consent tool", () => {
+    const block = triggerId("Block - Consent tool missing");
+    expect(block).toBeDefined();
+    expect(gtmConfig().consent_ready).toBe("false");
     for (const item of container.tag) {
       expect(item.blockingTriggerId, item.name).toContain(block);
     }

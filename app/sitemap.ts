@@ -7,8 +7,7 @@ import { updates } from "@/lib/updates";
 
 /**
  * Every public, indexable page. /checkout and /dev/* are left out on purpose:
- * they are noindex. Cookiebot's free plan covers 50 subpages per domain, so
- * check docs/cookiebot-setup.md before adding many pages.
+ * they are noindex.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = ["/", "/pricing", "/about", "/blog", "/updates", "/careers", "/contact", "/waitlist"];

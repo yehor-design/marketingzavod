@@ -1,5 +1,4 @@
 import type { LegalBlock, LegalDocument, RichText } from "@/lib/legal";
-import { CookieDeclaration } from "@/components/tracking/cookie-declaration";
 import styles from "@/components/legal/legal.module.css";
 
 function Rich({ content }: { content: RichText[] }) {
@@ -18,9 +17,6 @@ function Blocks({ blocks }: { blocks: LegalBlock[] }) {
   return blocks.map((block, index) => {
     if (block.kind === "h2") {
       return <h2 key={index}>{block.text}</h2>;
-    }
-    if (block.kind === "cookie-declaration") {
-      return <CookieDeclaration key={index} />;
     }
     if (block.kind === "list") {
       return (

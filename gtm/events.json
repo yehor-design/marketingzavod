@@ -16,7 +16,7 @@
   "sharedParams": ["event_id"],
   "config": [
     "ga4_id",
-    "cookiebot_id",
+    "consent_ready",
     "clarity_id",
     "google_ads_id",
     "google_ads_label_contact",

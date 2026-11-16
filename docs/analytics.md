@@ -7,14 +7,14 @@
 ```
                          ┌──────────────── браузер ─────────────────┐
  відвідувач ──► сторінка │ track(event, params)   lib/tracking       │
-                         │   ├─► dataLayer ──► GTM ──► Cookiebot (згода, Consent Mode v2)
+                         │   ├─► dataLayer ──► GTM (Consent Mode v2, типово denied)
                          │   │                    ├─► GA4
                          │   │                    ├─► Microsoft Clarity
                          │   │                    ├─► Google Ads (конверсії, ремаркетинг)
                          │   │                    ├─► Meta Pixel
                          │   │                    └─► LinkedIn Insight Tag
                          │   └─► PostHog ──► /ingest (власний домен) ──► eu.i.posthog.com
-                         │ lib/consent      читає стан Cookiebot
+                         │ lib/consent      стан згоди, типово відмова
                          │ lib/attribution  UTM і click ID → cookie wb_attr (за згоди)
                          └────────────────────────┬─────────────────┘
                                  форма: поля + атрибуція + згода
@@ -35,7 +35,7 @@
 
 | Сервіс | Для чого | Як підключений | Згода |
 | --- | --- | --- | --- |
-| Cookiebot | Банер згоди, сигнали Consent Mode v2 | Тег GTM на Consent Initialization | — |
+| Власний засіб згоди | Банер згоди, сигнали Consent Mode v2 | Ще не написаний. Точка входу: `lib/consent` | — |
 | Google Tag Manager | Єдина точка входу для тегів Google, Meta, Clarity, LinkedIn | `components/tracking/gtm.tsx` | вантажиться завжди, теги чекають згоди |
 | GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage`, без згоди запити без cookies |
 | PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | до згоди без cookies і без записів |
@@ -60,7 +60,7 @@
 | Перегляди, делеговані слухачі | `components/tracking/tracking-provider.tsx` |
 | Події показу сторінки | `components/tracking/track-view.tsx` |
 | Завантаження GTM | `components/tracking/gtm.tsx` |
-| Кнопка «Cookie settings», декларація cookies | `components/tracking/cookie-settings.tsx`, `cookie-declaration.tsx` |
+| Кнопка «Cookie settings» | `components/tracking/cookie-settings.tsx` |
 | Обробник заявок | `app/api/lead/route.ts`, `lib/leads/*` |
 | Meta Conversions API | `lib/meta/capi.ts` |
 | Офлайн-конверсії | `app/api/crm/hubspot/route.ts`, `app/api/offline-conversions/google-ads/route.ts`, `lib/offline/*` |
@@ -76,7 +76,6 @@
 | --- | --- |
 | Змінні середовища | `.env.example`, `tracking-plan.md` |
 | Імпорт і публікація контейнера | `gtm/README.md` |
-| Cookiebot | `cookiebot-setup.md` |
 | GA4 | `ga4-setup.md` |
 | PostHog і воронки | `posthog-setup.md` |
 | Clarity | `clarity-setup.md` |
@@ -100,6 +99,22 @@
 | Будь-де з `NEXT_PUBLIC_TRACKING_DEBUG=true` | так |
 
 Події в `dataLayer` пишуться завжди: це лише масив у пам'яті сторінки. Назовні вони йдуть, тільки коли завантажено GTM або PostHog.
+
+## Згода
+
+Стороннього банера згоди на сайті немає. Власний засіб ще не написаний, тому зараз згоди не може дати ніхто і все, що від неї залежить, вимкнено:
+
+- `lib/consent` завжди повертає відмову. PostHog працює без cookies і записів, cookie атрибуції не створюється, click ID не йдуть на сервер.
+- `components/tracking/gtm.tsx` до старту GTM задає Consent Mode v2: усе `denied`.
+- Константа `CONSENT_TOOL_READY` у `lib/consent` дорівнює `false`. Сайт передає її в GTM як `consent_ready`, і тригер-виняток `Block - Consent tool missing` тримає всі теги контейнера. Кнопки «Cookie settings» у футері теж немає.
+
+Що має зробити власний засіб згоди:
+
+1. Після вибору відвідувача (і при відновленні збереженого вибору) викликати `setConsent()` з `lib/consent`. Атрибуція і PostHog підхоплять зміну самі.
+2. Надіслати в GTM `gtag('consent', 'update', …)` і подію `consent_update` з булевими `consent_statistics` та `consent_marketing`. На неї підписані теги Clarity, Meta і LinkedIn.
+3. Реалізувати `openConsentSettings()` і перемкнути `CONSENT_TOOL_READY` на `true`.
+
+Відповідність категорій сигналам Consent Mode — у `tracking-plan.md`.
 
 ## Розмітка подій у верстці
 

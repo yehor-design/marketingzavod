@@ -22,7 +22,7 @@
 
 | Тег GTM | Тригер | Вимога згоди |
 | --- | --- | --- |
-| `LinkedIn - Insight Tag` | перший `page_view` або `cookie_consent_update` | `ad_storage` |
+| `LinkedIn - Insight Tag` | перший `page_view` або `consent_update` | `ad_storage` |
 | `LinkedIn - Conversion - Contact lead` | `generate_lead`, `form_name = contact` | `ad_storage` |
 | `LinkedIn - Conversion - Waitlist signup` | `join_waitlist` | `ad_storage` |
 

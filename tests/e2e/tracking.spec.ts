@@ -99,7 +99,8 @@ test("contact: form_start, form_error, generate_lead and no personal data", asyn
   expect(await events(page, "join_waitlist")).toHaveLength(0);
 
   const dump = JSON.stringify(await dataLayer(page)).toLowerCase();
-  for (const secret of ["qa.tester@example.com", "quality tester", "private message", "user_data"]) {
+  // The quoted key: the Consent Mode default legitimately names "ad_user_data".
+  for (const secret of ["qa.tester@example.com", "quality tester", "private message", '"user_data"']) {
     expect(dump).not.toContain(secret);
   }
   expect(page.url()).not.toContain("example.com");

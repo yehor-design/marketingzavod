@@ -1,14 +1,14 @@
 "use client";
 
-import { openConsentSettings } from "@/lib/consent";
-import { TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
+import { CONSENT_TOOL_READY, openConsentSettings } from "@/lib/consent";
+import { TRACKING_ENABLED } from "@/lib/tracking/env";
 
 /**
- * Reopens the Cookiebot dialog. Shown only when Cookiebot is configured, so the
- * footer never carries a control that does nothing.
+ * Reopens the consent dialog. Shown only once the site has a consent tool, so
+ * the footer never carries a control that does nothing.
  */
 export function CookieSettingsButton({ className }: { className?: string }) {
-  if (!TRACKING_ENABLED || !trackingIds.cookiebot || !trackingIds.gtm) {
+  if (!TRACKING_ENABLED || !CONSENT_TOOL_READY) {
     return null;
   }
   return (
