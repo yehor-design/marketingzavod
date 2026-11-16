@@ -26,6 +26,8 @@ export default defineConfig({
       NEXT_PUBLIC_COOKIEBOT_ID: "00000000-0000-0000-0000-000000000000",
       NEXT_PUBLIC_POSTHOG_KEY: "phc_e2e_test_key",
       NEXT_PUBLIC_POSTHOG_HOST: "https://eu.i.posthog.com",
+      // Keeps a real project token from .env.local out of the test build.
+      NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: "",
     },
   },
 });

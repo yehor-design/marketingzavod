@@ -7,6 +7,7 @@ import { saveLead } from "@/lib/leads/store";
 import type { Lead } from "@/lib/leads/types";
 import { fbcFromClickId, sendMetaEvent } from "@/lib/meta/capi";
 import { capturePosthogServerEvent } from "@/lib/posthog-server";
+import { flushServerLogs, serverLog } from "@/lib/posthog-server-logs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -105,6 +106,17 @@ export async function POST(request: NextRequest) {
 
   const saved = await saveLead(lead);
 
+  // No personal data here: IDs, the form name and where the lead was stored.
+  serverLog.info("lead_saved", {
+    route: "/api/lead",
+    form_name: lead.form_name,
+    lead_id: lead.lead_id,
+    event_id: lead.event_id,
+    store: saved.store,
+    consent_marketing: consent.marketing,
+    consent_statistics: consent.statistics,
+  });
+
   after(async () => {
     const tasks: Promise<unknown>[] = [];
     const metaEvent = META_EVENTS[lead.form_name];
@@ -136,6 +148,7 @@ export async function POST(request: NextRequest) {
         }),
       );
     }
+    tasks.push(flushServerLogs());
     await Promise.allSettled(tasks);
   });
 
