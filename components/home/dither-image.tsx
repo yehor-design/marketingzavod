@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dither, orderedDither, randomDither } from "@/components/motion";
+import { Dither } from "@/components/motion";
 
 type Preset = {
   algorithm: "ordered" | "random";

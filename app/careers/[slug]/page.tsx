@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RolePage } from "@/components/careers/role-page";
 import { careers, getCareer } from "@/lib/careers";
+import { pageMetadata } from "@/lib/seo";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -20,13 +21,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
-  return {
+  return pageMetadata({
     title: `${role.title} – ${role.department}`,
     description: role.summary,
-    alternates: {
-      canonical: `https://jet.framer.website/careers/${role.slug}`,
-    },
-  };
+    path: `/careers/${role.slug}`,
+  });
 }
 
 export default async function Page({ params }: PageProps) {

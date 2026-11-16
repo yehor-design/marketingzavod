@@ -25,6 +25,9 @@ export function SiteCta({ titleId = "site-cta" }: { titleId?: string }) {
           <Link
             href="/waitlist"
             className={styles.button}
+            data-track="cta_click"
+            data-track-cta-text="Join waitlist"
+            data-track-cta-location="footer_cta"
             onPointerEnter={() => setRolling(true)}
             onPointerLeave={() => setRolling(false)}
             onFocus={() => setRolling(true)}

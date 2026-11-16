@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { TextGlitch } from "@/components/motion";
+import { CookieSettingsButton } from "@/components/tracking/cookie-settings";
 import { footerColumns, socialLinks } from "@/lib/routes";
 
 function isCurrent(pathname: string, href: string) {
@@ -37,6 +38,12 @@ function FooterLink({
       {badge}
     </Link>
   );
+}
+
+/** Renders nothing until Cookiebot is configured. */
+function CookieSettingsItem() {
+  const button = CookieSettingsButton({ className: "footer-cookie-settings" });
+  return button ? <li>{button}</li> : null;
 }
 
 function HiringMark() {
@@ -82,6 +89,7 @@ export function SiteFooter() {
                       />
                     </li>
                   ))}
+                  {column.title === "Legal" ? <CookieSettingsItem /> : null}
                 </ul>
               </div>
             ))}
