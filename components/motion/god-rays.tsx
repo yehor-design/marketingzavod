@@ -292,7 +292,6 @@ function paintPaper(
       let accumR = 0;
       let accumG = 0;
       let accumB = 0;
-      let accumA = 0;
       for (let index = 0; index < colors.length; index += 1) {
         const [rx, ry] = rotate(uvX, uvY, index + 1);
         const r1 = radius * (1 + 0.4 * index) - 3 * clock;
@@ -308,7 +307,6 @@ function paintPaper(
         accumR += color[0] * srcA;
         accumG += color[1] * srcA;
         accumB += color[2] * srcA;
-        accumA += srcA;
       }
       const grain =
         (1 / 256) *

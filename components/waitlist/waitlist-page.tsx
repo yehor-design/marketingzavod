@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
-import posthog from "posthog-js";
 import { DitherImage } from "@/components/home/dither-image";
-import { posthogLog } from "@/lib/posthog-logs";
 import { orderedDither, randomDither } from "@/components/motion";
+import posthog from "posthog-js";
+import { posthogLog } from "@/lib/posthog-logs";
+import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/waitlist/waitlist.module.css";
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const posthogEnabled = Boolean(
   process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
 );
@@ -132,19 +132,10 @@ function Flashlight({ children }: { children: ReactNode }) {
   );
 }
 
-function emailError(value: string) {
-  if (!value) {
-    return "Enter your email.";
-  }
-  if (!EMAIL.test(value)) {
-    return "Enter a valid email.";
-  }
-  return "";
-}
-
 export function WaitlistPage() {
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [pending, setPending] = useState(false);
 
   return (
     <div className={styles.page}>
@@ -176,16 +167,47 @@ export function WaitlistPage() {
           </div>
           <form
             className={styles.form}
-            onSubmit={(event) => {
+            data-track-form="waitlist"
+            data-form-state={done ? "success" : pending ? "pending" : "idle"}
+            data-private=""
+            data-clarity-mask="true"
+            onSubmit={async (event) => {
               event.preventDefault();
+              if (pending || done) {
+                return;
+              }
+              const data = new FormData(event.currentTarget);
               setError("");
-              setDone(true);
-              if (posthogEnabled) {
-                posthog.capture("waitlist_joined");
-                posthogLog.info("waitlist_form_submitted", { form: "waitlist" });
+              setPending(true);
+              const result = await submitLead(
+                "waitlist",
+                { email: String(data.get("Email") ?? "").trim() },
+                String(data.get("company_url") ?? ""),
+              );
+              setPending(false);
+              if (result.ok) {
+                if (posthogEnabled) {
+                  posthog.capture("waitlist_joined");
+                  posthogLog.info("waitlist_form_submitted", { form: "waitlist" });
+                }
+                setDone(true);
+              } else if (result.error === "validation") {
+                setError(result.errors.email ?? "Enter a valid email.");
+              } else {
+                setError(SUBMIT_ERROR_TEXT[result.error]);
               }
             }}
           >
+            <div className="visually-hidden" aria-hidden="true">
+              <label htmlFor="waitlist-company-url">Company URL</label>
+              <input
+                id="waitlist-company-url"
+                name="company_url"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             <div className={styles.row}>
               <label className={styles.field} htmlFor="waitlist-email">
                 <span className="visually-hidden">Email</span>
@@ -197,19 +219,19 @@ export function WaitlistPage() {
                   autoComplete="email"
                   placeholder="Enter your email"
                   required
-                  disabled={done}
+                  disabled={done || pending}
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? "waitlist-email-error" : undefined}
                 />
               </label>
               {done ? null : (
-                <button className={styles.submit} type="submit">
+                <button className={styles.submit} type="submit" disabled={pending} aria-busy={pending}>
                   Join now
                 </button>
               )}
             </div>
             {done ? (
-              <p className={styles.success} role="status">
+              <p className={styles.success} role="status" data-form-success="waitlist">
                 You&apos;re on the waitlist!
               </p>
             ) : null}

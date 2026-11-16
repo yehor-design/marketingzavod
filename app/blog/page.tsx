@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import { BlogIndex } from "@/components/blog/blog-index";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Blog – Jet",
   description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  alternates: {
-    canonical: "https://jet.framer.website/blog",
-  },
-};
+    "Guides and field notes from the Jet team on Core Web Vitals, image optimization, CDNs and making websites load faster.",
+  path: "/blog",
+});
 
 export default function Page() {
   return <BlogIndex />;

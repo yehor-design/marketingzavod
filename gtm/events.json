@@ -1,0 +1,31 @@
+{
+  "events": [
+    { "name": "page_view", "params": ["page_location", "page_path", "page_title"], "keyEvent": false },
+    { "name": "generate_lead", "params": ["form_name", "lead_id"], "keyEvent": true },
+    { "name": "join_waitlist", "params": ["form_name", "lead_id"], "keyEvent": true },
+    { "name": "submit_application", "params": ["form_name", "lead_id", "role"], "keyEvent": false },
+    { "name": "begin_checkout", "params": ["plan", "value", "currency"], "keyEvent": true },
+    { "name": "view_pricing", "params": ["billing_period"], "keyEvent": false },
+    { "name": "cta_click", "params": ["cta_text", "cta_location", "destination"], "keyEvent": false },
+    { "name": "contact_click", "params": ["method"], "keyEvent": false },
+    { "name": "outbound_click", "params": ["link_domain", "link_url"], "keyEvent": false },
+    { "name": "form_start", "params": ["form_name"], "keyEvent": false },
+    { "name": "form_error", "params": ["form_name", "field"], "keyEvent": false },
+    { "name": "faq_open", "params": ["question"], "keyEvent": false }
+  ],
+  "sharedParams": ["event_id"],
+  "config": [
+    "ga4_id",
+    "cookiebot_id",
+    "clarity_id",
+    "google_ads_id",
+    "google_ads_label_contact",
+    "google_ads_label_waitlist",
+    "google_ads_label_checkout",
+    "google_ads_label_contact_click",
+    "meta_pixel_id",
+    "linkedin_partner_id",
+    "linkedin_conversion_contact",
+    "linkedin_conversion_waitlist"
+  ]
+}

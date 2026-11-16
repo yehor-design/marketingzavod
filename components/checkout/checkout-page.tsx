@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import posthog from "posthog-js";
-import styles from "@/components/checkout/checkout.module.css";
 import { posthogLog } from "@/lib/posthog-logs";
+import { TrackView } from "@/components/tracking/track-view";
+import styles from "@/components/checkout/checkout.module.css";
 
 /**
  * https://jet.framer.website/checkout is the template purchase card.
@@ -11,17 +12,21 @@ import { posthogLog } from "@/lib/posthog-logs";
  * published Whop URL. Nothing on this page charges a card.
  */
 const ACCESS_HREF = "https://whop.com/checkout/plan_gIldr5rd6rTY3";
-const posthogEnabled = Boolean(
-  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
-);
 const ASK_DESKTOP = "https://dub.link/jet-ask-desktop";
 const ASK_MOBILE = "https://dub.link/jet-ask-mobile";
 const TWEET = "https://x.com/WebsitesByKris/status/1935991610325561365";
+
+const posthogEnabled = Boolean(
+  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
+);
 
 const PLANS = [
   { id: "once", price: "$149", detail: "Single payment" },
   { id: "split", price: "$79/month", detail: "2 payments" },
 ] as const;
+
+/** Reported with begin_checkout for the plan that is selected when the page opens. */
+const DEFAULT_CHECKOUT = { plan: "once", value: 149, currency: "USD" } as const;
 
 const templatePoints = [
   'Unlocks 25% off discount on the "Pro" Framer plan',
@@ -187,7 +192,16 @@ function ActionLink({
   onClick?: () => void;
 }) {
   return (
-    <a className={className} href={href} target="_blank" rel="noreferrer" onClick={onClick}>
+    <a
+      className={className}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      onClick={onClick}
+      data-track="cta_click"
+      data-track-cta-text={text.replace(/\u00a0/g, " ")}
+      data-track-cta-location="checkout"
+    >
       {text}
     </a>
   );
@@ -198,6 +212,7 @@ export function CheckoutPage() {
 
   return (
     <div className={styles.page}>
+      <TrackView event="begin_checkout" params={DEFAULT_CHECKOUT} />
       <section className={styles.card} aria-label="Buy template">
         <header className={styles.header}>
           <h1>Buy template</h1>

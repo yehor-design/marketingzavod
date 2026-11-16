@@ -1,14 +1,13 @@
-import type { Metadata } from "next";
 import { CheckoutPage } from "@/components/checkout/checkout-page";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Jet – Lightning-Fast Website Optimization",
+export const metadata = pageMetadata({
+  title: "Checkout – Jet",
   description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  alternates: {
-    canonical: "https://jet.framer.website/checkout",
-  },
-};
+    "Choose a payment option and get access to the Jet template with the bonus SaaS launch kit.",
+  path: "/checkout",
+  index: false,
+});
 
 export default function Page() {
   return <CheckoutPage />;

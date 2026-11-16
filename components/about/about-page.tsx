@@ -226,6 +226,9 @@ function RollLink({
     <Link
       href={href}
       className={styles.button}
+      data-track="cta_click"
+      data-track-cta-text={text.replace(/\u00a0/g, " ")}
+      data-track-cta-location="about"
       onPointerEnter={() => setRolling(true)}
       onPointerLeave={() => setRolling(false)}
       onFocus={() => setRolling(true)}

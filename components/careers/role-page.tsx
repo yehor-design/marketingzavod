@@ -53,7 +53,7 @@ export function RolePage({ role }: { role: CareerRole }) {
         <div className={styles.details}>
           <div className={styles.detailMain}>
             <div>
-              <h2 id="duties-title">What you'll do</h2>
+              <h2 id="duties-title">What you&apos;ll do</h2>
               <BulletList items={role.duties} />
             </div>
             <div>

@@ -296,10 +296,12 @@ function RollLink({
   href,
   text,
   tone,
+  location,
 }: {
   href: string;
   text: string;
   tone: "primary" | "secondary";
+  location: string;
 }) {
   const [rolling, setRolling] = useState(false);
 
@@ -309,6 +311,9 @@ function RollLink({
       className={
         tone === "primary" ? styles.buttonPrimary : `${styles.buttonSecondary} gray-pill`
       }
+      data-track="cta_click"
+      data-track-cta-text={text.replace(/\u00a0/g, " ")}
+      data-track-cta-location={location}
       onPointerEnter={() => setRolling(true)}
       onPointerLeave={() => setRolling(false)}
       onFocus={() => setRolling(true)}
@@ -505,8 +510,8 @@ export function HomePage() {
             <p>No code, no hassle. Jet simply keeps your website blazing fast 24/7.</p>
           </div>
           <div className={styles.actions}>
-            <RollLink href="/waitlist" text={`Join${NBSP}waitlist`} tone="primary" />
-            <RollLink href="/#benefits" text="Learn more" tone="secondary" />
+            <RollLink href="/waitlist" text={`Join${NBSP}waitlist`} tone="primary" location="hero" />
+            <RollLink href="/#benefits" text="Learn more" tone="secondary" location="hero" />
           </div>
         </div>
       </section>
@@ -726,6 +731,9 @@ export function HomePage() {
                     type="button"
                     aria-expanded={open}
                     aria-controls={answerId}
+                    data-track="faq_open"
+                    data-track-if="collapsed"
+                    data-track-question={item.q}
                     onClick={() => setOpenFaq(open ? null : index)}
                     initial={false}
                     animate={{ paddingBottom: open ? 12 : 28 }}
@@ -767,7 +775,7 @@ export function HomePage() {
           <div className={styles.ctaCopy}>
             <h2 id="cta-title">Boost your site speed today.</h2>
             <p>Try Jet now—one click, instant performance. No risk, cancel anytime.</p>
-            <RollLink href="/waitlist" text={`Join${NBSP}waitlist`} tone="primary" />
+            <RollLink href="/waitlist" text={`Join${NBSP}waitlist`} tone="primary" location="footer_cta" />
           </div>
         </div>
       </section>
