@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import styles from "./motion.module.css";
+import styles from "./motion-styles";
 import { usePrefersReducedMotion } from "./use-reduced-motion";
 
 /** Nav and footer instance. Not the component default of 1200ms / 40ms / 100%. */
@@ -82,7 +82,7 @@ export function TextGlitch({
       onBlur={() => setHovered(false)}
       style={{ color: engaged ? TEXT_GLITCH_HOVER_COLOR : restingColor }}
     >
-      <span className="visually-hidden">{children}</span>
+      <span className="sr-only">{children}</span>
       <span className={styles.glitchSizer} aria-hidden="true">
         {children}
       </span>

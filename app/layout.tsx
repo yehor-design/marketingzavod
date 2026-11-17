@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fragment_Mono, Geist, Geist_Mono } from "next/font/google";
+import { Google_Sans, Google_Sans_Code } from "next/font/google";
 import { ConsentBanner } from "@/components/consent/consent-banner";
 import { ConsentSettings } from "@/components/consent/consent-settings";
 import { MotionProvider } from "@/components/motion-provider";
@@ -10,25 +10,19 @@ import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { IS_PRODUCTION_DEPLOY, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const geist = Geist({
+const googleSans = Google_Sans({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: "variable",
+  axes: ["opsz"],
   display: "swap",
-  variable: "--font-geist",
+  variable: "--font-google-sans",
 });
 
-const geistMono = Geist_Mono({
+const googleSansCode = Google_Sans_Code({
   subsets: ["latin"],
-  weight: ["500", "700"],
+  weight: "variable",
   display: "swap",
-  variable: "--font-geist-mono",
-});
-
-const fragmentMono = Fragment_Mono({
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-  variable: "--font-fragment-mono",
+  variable: "--font-google-sans-code",
 });
 
 const TITLE = "Jet – Lightning-Fast Website Optimization";
@@ -70,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} ${fragmentMono.variable}`}
+      className={`dark bg-background text-[125%] scheme-dark max-[809.98px]:text-[87.5%] min-[810px]:max-[1199.98px]:text-[112.5%] ${googleSans.variable} ${googleSansCode.variable}`}
     >
       <body>
         <GoogleTagManager />

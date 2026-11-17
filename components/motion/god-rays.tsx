@@ -4,7 +4,7 @@ import { useAnimationFrame } from "motion/react";
 import { useCallback, useEffect, useRef } from "react";
 import { drawSourceGodRays } from "./god-rays-shader";
 import { loadMask, punchMask } from "./mask-composite";
-import styles from "./motion.module.css";
+import styles from "./motion-styles";
 import { usePrefersReducedMotion } from "./use-reduced-motion";
 
 /** No CSS duration or easing. time += deltaSeconds * speed. */

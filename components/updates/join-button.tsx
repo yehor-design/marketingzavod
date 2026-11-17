@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { RollingText } from "@/components/motion";
-import styles from "@/components/updates/updates.module.css";
+import styles from "@/components/updates/updates-styles";
 
 const NBSP = "\u00A0";
 

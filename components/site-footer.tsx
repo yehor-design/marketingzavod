@@ -1,5 +1,6 @@
 "use client";
 
+import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type CSSProperties, type ReactNode } from "react";
@@ -42,15 +43,15 @@ function FooterLink({
 
 /** Renders nothing where the consent banner cannot appear. */
 function CookieSettingsItem() {
-  const button = CookieSettingsButton({ className: "footer-cookie-settings" });
+  const button = CookieSettingsButton({ className: cx("footer-cookie-settings") });
   return button ? <li>{button}</li> : null;
 }
 
 function HiringMark() {
   return (
-    <span className="hiring-badge">
+    <span className={cx("hiring-badge")}>
       HIRING
-      <span className="shimmer-text-glow" aria-hidden="true">
+      <span className={cx("shimmer-text-glow")} aria-hidden="true">
         HIRING
       </span>
     </span>
@@ -62,22 +63,22 @@ export function SiteFooter() {
   const home = pathname === "/";
 
   return (
-    <footer className="site-footer">
-      <div className="footer-inner">
-        <div className="footer-top">
+    <footer className={cx("site-footer")}>
+      <div className={cx("footer-inner")}>
+        <div className={cx("footer-top")}>
           <Link
             href="/"
-            className="footer-logo"
-            aria-label="Jet"
+            className={cx("footer-logo")}
+            aria-label="WOWboy"
             aria-current={home ? "page" : undefined}
             data-framer-page-link-current={home ? "true" : undefined}
           >
-            <img src="/brand/logo-mark.svg" alt="" width={24} height={24} />
+            <img src="/brand/logo.svg" alt="" width={100.31} height={24} />
           </Link>
-          <div className="footer-columns">
+          <div className={cx("footer-columns")}>
             {footerColumns.map((column) => (
-              <div className="footer-column" key={column.title}>
-                <p className="footer-title">{column.title}</p>
+              <div className={cx("footer-column")} key={column.title}>
+                <p className={cx("footer-title")}>{column.title}</p>
                 <ul>
                   {column.links.map((link) => (
                     <li key={link.href}>
@@ -95,22 +96,22 @@ export function SiteFooter() {
             ))}
           </div>
         </div>
-        <div className="footer-bottom">
-          <p className="copyright">
+        <div className={cx("footer-bottom")}>
+          <p className={cx("copyright")}>
             Copyright © 2025 Jet.
             <br />
             All rights reserved.
           </p>
-          <ul className="socials">
+          <ul className={cx("socials")}>
             {socialLinks.map((link) => (
               <li key={link.href}>
                 <a href={link.href} target="_blank" rel="noopener noreferrer">
                   <span
-                    className="social-icon"
+                    className={cx("social-icon")}
                     style={{ "--icon": `url(/icons/${link.icon}.svg)` } as CSSProperties}
                     aria-hidden="true"
                   />
-                  <span className="visually-hidden">{link.label}</span>
+                  <span className="sr-only">{link.label}</span>
                 </a>
               </li>
             ))}

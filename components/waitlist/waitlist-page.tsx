@@ -1,12 +1,19 @@
 "use client";
 
+import { cx } from "@/components/chrome-styles";
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
+import { Button } from "@ui-sdk/react/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
+import { Input } from "@ui-sdk/react/input";
+import { textControlClass } from "@/components/forms/control-classes";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { amplitudeTrack } from "@/lib/tracking/amplitude";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
-import styles from "@/components/waitlist/waitlist.module.css";
+import styles from "@/components/waitlist/waitlist-styles";
 
 
 const artBase = {
@@ -150,9 +157,9 @@ export function WaitlistPage() {
         <div className={styles.copy}>
           <div className={styles.text}>
             <p className={styles.badge}>
-              <span className="shimmer-text">
+              <span className={cx("shimmer-text")}>
                 WAITLIST IS NOW OPEN
-                <span className="shimmer-text-glow" aria-hidden="true">
+                <span className={cx("shimmer-text-glow")} aria-hidden="true">
                   WAITLIST IS NOW OPEN
                 </span>
               </span>
@@ -193,7 +200,8 @@ export function WaitlistPage() {
               }
             }}
           >
-            <div className="visually-hidden" aria-hidden="true">
+            {/* Spam trap: a native input so it is not a named control. */}
+            <div className="sr-only" aria-hidden="true">
               <label htmlFor="waitlist-company-url">Company URL</label>
               <input
                 id="waitlist-company-url"
@@ -203,38 +211,30 @@ export function WaitlistPage() {
                 autoComplete="off"
               />
             </div>
-            <div className={styles.row}>
-              <label className={styles.field} htmlFor="waitlist-email">
-                <span className="visually-hidden">Email</span>
-                <input
-                  id="waitlist-email"
-                  name="Email"
+            <FieldGroup className="flex w-full flex-row items-end gap-3">
+              <Field className="min-w-0 flex-1" name="Email" disabled={done || pending} invalid={error ? true : undefined}>
+                <FieldLabel className="sr-only">Email</FieldLabel>
+                <Input
+                  className={textControlClass}
                   type="email"
                   inputMode="email"
                   autoComplete="email"
                   placeholder="Enter your email"
                   required
-                  disabled={done || pending}
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? "waitlist-email-error" : undefined}
                 />
-              </label>
+              </Field>
               {done ? null : (
-                <button className={styles.submit} type="submit" disabled={pending} aria-busy={pending}>
+                <Button className={cn(buttonVariants())} type="submit" disabled={pending} aria-busy={pending}>
                   Join now
-                </button>
+                </Button>
               )}
-            </div>
+            </FieldGroup>
             {done ? (
-              <p className={styles.success} role="status" data-form-success="waitlist">
+              <p className="text-brand" role="status" data-form-success="waitlist">
                 You&apos;re on the waitlist!
               </p>
             ) : null}
-            {error ? (
-              <p className={styles.fieldError} id="waitlist-email-error" role="alert">
-                {error}
-              </p>
-            ) : null}
+            {error ? <FieldError match>{error}</FieldError> : null}
           </form>
         </div>
       </section>

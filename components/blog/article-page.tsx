@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getPost, posts, type Block, type Post } from "@/lib/blog";
 import { CoverImage, PostCard } from "@/components/blog/post-card";
 import { SiteCta } from "@/components/site-cta";
-import styles from "@/components/blog/blog.module.css";
+import styles from "@/components/blog/blog-styles";
 
 function Blocks({ blocks }: { blocks: Block[] }) {
   return (

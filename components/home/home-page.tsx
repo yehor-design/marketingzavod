@@ -18,7 +18,7 @@ import { Announcement } from "@/components/announcement";
 import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
 import { PhosphorIcon } from "@/components/home/phosphor-icon";
-import styles from "@/components/home/home.module.css";
+import styles from "@/components/home/home-styles";
 
 const NBSP = "\u00A0";
 
