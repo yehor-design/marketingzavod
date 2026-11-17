@@ -70,6 +70,7 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 | Meta Conversions API | `lib/meta/capi.ts` |
 | Офлайн-конверсії | `app/api/crm/hubspot/route.ts`, `app/api/offline-conversions/google-ads/route.ts`, `lib/offline/*` |
 | Контейнер GTM | `gtm/` |
+| Cloudflare Zaraz (замість GTM за перемикачем) | `lib/tracking/zaraz.ts`, `zaraz/` |
 | SEO | `app/sitemap.ts`, `app/robots.ts`, `lib/seo.ts`, `components/json-ld.tsx` |
 | Запити BigQuery | `analytics/sql/` |
 | Тести | `tests/unit/`, `tests/e2e/` |
@@ -81,6 +82,7 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 | --- | --- |
 | Змінні середовища | `.env.example`, `tracking-plan.md` |
 | Імпорт і публікація контейнера | `gtm/README.md` |
+| Zaraz: конфіг, публікація, перемикач `NEXT_PUBLIC_TAG_MANAGER` | `zaraz/README.md` |
 | GA4 | `ga4-setup.md` |
 | PostHog і воронки | `posthog-setup.md` |
 | Google Ads | `google-ads-setup.md` |

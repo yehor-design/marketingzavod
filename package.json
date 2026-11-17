@@ -11,6 +11,9 @@
     "test:e2e": "playwright test",
     "gtm:build": "node gtm/build-container.mjs",
     "hubspot:setup": "node scripts/hubspot-setup.mjs",
+    "zaraz:build": "node zaraz/build-config.mjs",
+    "zaraz:check": "node zaraz/publish.mjs --check",
+    "zaraz:publish": "node zaraz/publish.mjs",
     "lighthouse": "lhci autorun"
   },
   "dependencies": {

@@ -126,9 +126,20 @@ export const CATEGORY_STORAGE_PREFIXES: Record<keyof ConsentChoice, readonly str
   // GA4, PostHog, Amplitude (incl. its guides and surveys SDK). _clck, _clsk
   // and _cltk are Microsoft Clarity's, kept so visitors from before its removal
   // lose them on withdrawal too. Checked against production on 17.11.2026.
-  statistics: ["_ga", "_gid", "ph_", "__ph", "_clck", "_clsk", "_cltk", "AMP_", "amp_", "amplitude."],
+  // With Zaraz (lib/tracking/zaraz.ts) its tools keep cfz_<tool> and cfzs_<tool>
+  // cookies on heywowboy.com, and wb_zaraz_consent holds the purposes it was
+  // given. The consent cookie is in both categories: Zaraz writes it again on
+  // its next load if one of them is still on.
+  statistics: [
+    "_ga", "_gid", "ph_", "__ph", "_clck", "_clsk", "_cltk", "AMP_", "amp_", "amplitude.",
+    "cfz_google-analytics", "cfzs_google-analytics", "cfz_zaraz-analytics", "cfzs_zaraz-analytics",
+    "wb_zaraz_consent",
+  ],
   // Google Ads, Meta (the pixel also keeps lastExternalReferrer* in localStorage), LinkedIn.
-  marketing: ["_gcl_", "_fbp", "_fbc", "lastExternalReferrer", "li_fat_id", "li_gc"],
+  marketing: [
+    "_gcl_", "_fbp", "_fbc", "lastExternalReferrer", "li_fat_id", "li_gc",
+    "cfz_facebook-pixel", "cfzs_facebook-pixel", "wb_zaraz_consent",
+  ],
 };
 
 /** The prefixes to clear when moving from one choice to the next. */

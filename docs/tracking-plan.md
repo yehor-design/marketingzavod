@@ -116,6 +116,8 @@
 | `NEXT_PUBLIC_GSC_VERIFICATION` | публічна | Запасне підтвердження Search Console мета-тегом |
 | `NEXT_PUBLIC_TRACKING_DEBUG` | публічна | `true` дозволяє трекінг поза production |
 | `NEXT_PUBLIC_GTM_ID` | публічна | ID контейнера GTM (`GTM-…`) |
+| `NEXT_PUBLIC_TAG_MANAGER` | публічна | `gtm` (за замовчуванням) або `zaraz`. Див. `zaraz/README.md` |
+| `NEXT_PUBLIC_ZARAZ_HOST` | публічна | Проксійований піддомен Zaraz, `z.heywowboy.com` |
 | `NEXT_PUBLIC_GA4_ID` | публічна | Measurement ID (`G-…`) |
 | `NEXT_PUBLIC_POSTHOG_KEY` | публічна | Ключ проєкту PostHog (`phc_…`). Якщо порожня, браузер бере `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` |
 | `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | публічна | Той самий ключ під назвою з майстра PostHog. Ним користуються серверні логи (`instrumentation.ts`) |

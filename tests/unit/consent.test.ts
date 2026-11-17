@@ -90,6 +90,9 @@ describe("consent cookie format", () => {
       "lastExternalReferrer",
       "li_fat_id",
       "li_gc",
+      "cfz_facebook-pixel",
+      "cfzs_facebook-pixel",
+      "wb_zaraz_consent",
     ]);
     expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("amplitude.");
     expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("ph_");

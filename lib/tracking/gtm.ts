@@ -6,7 +6,7 @@
  * GTM on page load. This module covers a choice made on the page itself.
  */
 import type { ConsentState } from "@/lib/consent";
-import { TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
+import { TAG_MANAGER, TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
 
 export const GTM_ID_PATTERN = /^GTM-[A-Z0-9]+$/;
 
@@ -21,7 +21,7 @@ declare global {
 }
 
 export function gtmActive(): boolean {
-  return TRACKING_ENABLED && GTM_ID_PATTERN.test(trackingIds.gtm);
+  return TRACKING_ENABLED && TAG_MANAGER === "gtm" && GTM_ID_PATTERN.test(trackingIds.gtm);
 }
 
 export function gtmScriptUrl(id: string = trackingIds.gtm): string {

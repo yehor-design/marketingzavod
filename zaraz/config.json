@@ -1,0 +1,529 @@
+{
+  "consent": {
+    "enabled": true,
+    "hideModal": true,
+    "cookieName": "wb_zaraz_consent",
+    "defaultLanguage": "en",
+    "customIntroDisclaimerDismissed": true,
+    "tcfCompliant": false,
+    "purposesWithTranslations": {
+      "statistics": {
+        "name": {
+          "en": "Statistics"
+        },
+        "description": {
+          "en": "Google Analytics 4"
+        },
+        "order": 0
+      },
+      "marketing": {
+        "name": {
+          "en": "Marketing"
+        },
+        "description": {
+          "en": "Meta, Google Ads, LinkedIn"
+        },
+        "order": 1
+      }
+    }
+  },
+  "dataLayer": false,
+  "historyChange": false,
+  "settings": {
+    "autoInjectScript": false,
+    "cookieDomain": "heywowboy.com",
+    "ecommerce": false,
+    "hideExternalReferer": false,
+    "hideIPAddress": false,
+    "hideQueryParams": false,
+    "hideUserAgent": false,
+    "injectIframes": false
+  },
+  "analytics": {
+    "enabled": true,
+    "defaultPurpose": "statistics",
+    "sessionExpTime": 1800
+  },
+  "tools": {
+    "ga4": {
+      "type": "component",
+      "component": "google-analytics_v4",
+      "name": "Google Analytics 4",
+      "enabled": true,
+      "defaultPurpose": "statistics",
+      "permissions": [
+        "access_client_kv",
+        "server_network_requests"
+      ],
+      "settings": {
+        "tid": "G-FC7QKZ0DYD",
+        "hideOriginalIP": false,
+        "ecommerce": false,
+        "ga-audiences": false
+      },
+      "defaultFields": {},
+      "blockingTriggers": [],
+      "actions": {
+        "pageView": {
+          "actionType": "pageview",
+          "firingTriggers": [
+            "evPageView"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "page_view",
+            "page_location": "{{ client.page_location }}",
+            "page_path": "{{ client.page_path }}",
+            "page_title": "{{ client.page_title }}",
+            "event_id": "{{ client.event_id }}",
+            "dl": "{{ client.page_location }}",
+            "dt": "{{ client.page_title }}"
+          }
+        },
+        "generateLead": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evGenerateLead"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "generate_lead",
+            "en": "generate_lead",
+            "form_name": "{{ client.form_name }}",
+            "lead_id": "{{ client.lead_id }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "joinWaitlist": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evJoinWaitlist"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "join_waitlist",
+            "en": "join_waitlist",
+            "form_name": "{{ client.form_name }}",
+            "lead_id": "{{ client.lead_id }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "submitApplication": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evSubmitApplication"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "submit_application",
+            "en": "submit_application",
+            "form_name": "{{ client.form_name }}",
+            "lead_id": "{{ client.lead_id }}",
+            "role": "{{ client.role }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "beginCheckout": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evBeginCheckout"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "begin_checkout",
+            "en": "begin_checkout",
+            "plan": "{{ client.plan }}",
+            "value": "{{ client.value }}",
+            "currency": "{{ client.currency }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "viewPricing": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evViewPricing"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "view_pricing",
+            "en": "view_pricing",
+            "billing_period": "{{ client.billing_period }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "ctaClick": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evCtaClick"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "cta_click",
+            "en": "cta_click",
+            "cta_text": "{{ client.cta_text }}",
+            "cta_location": "{{ client.cta_location }}",
+            "destination": "{{ client.destination }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "contactClick": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evContactClick"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "contact_click",
+            "en": "contact_click",
+            "method": "{{ client.method }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "outboundClick": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evOutboundClick"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "outbound_click",
+            "en": "outbound_click",
+            "link_domain": "{{ client.link_domain }}",
+            "link_url": "{{ client.link_url }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "formStart": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evFormStart"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "form_start",
+            "en": "form_start",
+            "form_name": "{{ client.form_name }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "formError": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evFormError"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "form_error",
+            "en": "form_error",
+            "form_name": "{{ client.form_name }}",
+            "field": "{{ client.field }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "faqOpen": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evFaqOpen"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "faq_open",
+            "en": "faq_open",
+            "question": "{{ client.question }}",
+            "event_id": "{{ client.event_id }}"
+          }
+        }
+      }
+    },
+    "metaPixel": {
+      "type": "component",
+      "component": "facebook-pixel",
+      "name": "Meta Pixel",
+      "enabled": true,
+      "defaultPurpose": "marketing",
+      "permissions": [
+        "access_client_kv",
+        "server_network_requests"
+      ],
+      "settings": {
+        "property": "2315595119284520",
+        "accessToken": "{{ $$metaCapiToken$$ }}"
+      },
+      "defaultFields": {},
+      "blockingTriggers": [],
+      "actions": {
+        "pageView": {
+          "actionType": "pageview",
+          "firingTriggers": [
+            "evPageView"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "PageView",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "lead": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evGenerateLeadContact"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "Lead",
+            "ev": "Lead",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "completeRegistration": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evJoinWaitlist"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "CompleteRegistration",
+            "ev": "CompleteRegistration",
+            "event_id": "{{ client.event_id }}"
+          }
+        },
+        "initiateCheckout": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evBeginCheckout"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "InitiateCheckout",
+            "ev": "InitiateCheckout",
+            "event_id": "{{ client.event_id }}",
+            "value": "{{ client.value }}",
+            "currency": "{{ client.currency }}"
+          }
+        },
+        "viewContent": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evViewPricing"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "ViewContent",
+            "ev": "ViewContent",
+            "event_id": "{{ client.event_id }}",
+            "content_name": "pricing"
+          }
+        },
+        "contact": {
+          "actionType": "event",
+          "firingTriggers": [
+            "evContactClick"
+          ],
+          "blockingTriggers": [],
+          "data": {
+            "__zaraz_setting_name": "Contact",
+            "ev": "Contact",
+            "event_id": "{{ client.event_id }}"
+          }
+        }
+      }
+    }
+  },
+  "triggers": {
+    "evPageView": {
+      "name": "page_view",
+      "description": "zaraz.track(\"page_view\")",
+      "loadRules": [
+        {
+          "id": "evPageViewr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "page_view"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evGenerateLead": {
+      "name": "generate_lead",
+      "description": "zaraz.track(\"generate_lead\")",
+      "loadRules": [
+        {
+          "id": "evGenerateLeadr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "generate_lead"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evJoinWaitlist": {
+      "name": "join_waitlist",
+      "description": "zaraz.track(\"join_waitlist\")",
+      "loadRules": [
+        {
+          "id": "evJoinWaitlistr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "join_waitlist"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evSubmitApplication": {
+      "name": "submit_application",
+      "description": "zaraz.track(\"submit_application\")",
+      "loadRules": [
+        {
+          "id": "evSubmitApplicationr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "submit_application"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evBeginCheckout": {
+      "name": "begin_checkout",
+      "description": "zaraz.track(\"begin_checkout\")",
+      "loadRules": [
+        {
+          "id": "evBeginCheckoutr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "begin_checkout"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evViewPricing": {
+      "name": "view_pricing",
+      "description": "zaraz.track(\"view_pricing\")",
+      "loadRules": [
+        {
+          "id": "evViewPricingr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "view_pricing"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evCtaClick": {
+      "name": "cta_click",
+      "description": "zaraz.track(\"cta_click\")",
+      "loadRules": [
+        {
+          "id": "evCtaClickr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "cta_click"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evContactClick": {
+      "name": "contact_click",
+      "description": "zaraz.track(\"contact_click\")",
+      "loadRules": [
+        {
+          "id": "evContactClickr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "contact_click"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evOutboundClick": {
+      "name": "outbound_click",
+      "description": "zaraz.track(\"outbound_click\")",
+      "loadRules": [
+        {
+          "id": "evOutboundClickr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "outbound_click"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evFormStart": {
+      "name": "form_start",
+      "description": "zaraz.track(\"form_start\")",
+      "loadRules": [
+        {
+          "id": "evFormStartr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "form_start"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evFormError": {
+      "name": "form_error",
+      "description": "zaraz.track(\"form_error\")",
+      "loadRules": [
+        {
+          "id": "evFormErrorr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "form_error"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evFaqOpen": {
+      "name": "faq_open",
+      "description": "zaraz.track(\"faq_open\")",
+      "loadRules": [
+        {
+          "id": "evFaqOpenr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "faq_open"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    },
+    "evGenerateLeadContact": {
+      "name": "generate_lead (contact)",
+      "description": "zaraz.track(\"generate_lead\") from the Contact form",
+      "loadRules": [
+        {
+          "id": "evGenerateLeadContactr0",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "generate_lead"
+        },
+        {
+          "id": "evGenerateLeadContactr1",
+          "match": "{{ client.form_name }}",
+          "op": "EQUALS",
+          "value": "contact"
+        }
+      ],
+      "excludeRules": [],
+      "clientRules": []
+    }
+  },
+  "variables": {
+    "metaCapiToken": {
+      "name": "Meta Conversions API token",
+      "type": "secret",
+      "value": ""
+    }
+  }
+}
