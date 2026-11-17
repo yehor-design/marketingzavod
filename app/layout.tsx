@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fragment_Mono, Geist, Geist_Mono } from "next/font/google";
+import { ConsentBanner } from "@/components/consent/consent-banner";
 import { MotionProvider } from "@/components/motion-provider";
 import { SiteShell } from "@/components/site-shell";
 import { GoogleTagManager } from "@/components/tracking/gtm";
@@ -73,6 +74,8 @@ export default function RootLayout({
       <body>
         <GoogleTagManager />
         <MotionProvider>
+          {/* First in the tab order, though it sits at the bottom of the screen. */}
+          <ConsentBanner />
           <SiteShell>{children}</SiteShell>
         </MotionProvider>
         <TrackingProvider />
