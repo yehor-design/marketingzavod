@@ -40,7 +40,7 @@ function FooterLink({
   );
 }
 
-/** Renders nothing until the site has a consent tool. */
+/** Renders nothing where the consent banner cannot appear. */
 function CookieSettingsItem() {
   const button = CookieSettingsButton({ className: "footer-cookie-settings" });
   return button ? <li>{button}</li> : null;

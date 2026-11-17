@@ -1,7 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
-import { dataLayer, events, prepare } from "./helpers";
+import { dataLayer, events, prepare, storeConsent } from "./helpers";
 
 const banner = (page: Page) => page.locator("[data-consent-banner]");
+const panel = (page: Page) => page.locator("[data-consent-settings]");
+const LANDING = "/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST";
 
 async function consentCookie(page: Page): Promise<string | undefined> {
   return (await page.context().cookies()).find((cookie) => cookie.name === "wb_consent")?.value;
@@ -26,7 +28,8 @@ test("first visit: a small banner with two equal choices and a link to the detai
   const necessary = banner(page).getByRole("button", { name: "Necessary only" });
   const accept = banner(page).getByRole("button", { name: "Accept all" });
   const [a, b] = [await necessary.boundingBox(), await accept.boundingBox()];
-  expect(a?.width).toBe(b?.width);
+  // Equal up to subpixel rounding.
+  expect(Math.abs((a?.width ?? 0) - (b?.width ?? 0))).toBeLessThan(0.5);
   expect(a?.height).toBe(b?.height);
   const look = (selector: string) =>
     banner(page)
@@ -99,9 +102,102 @@ test("keyboard: the banner comes first and a choice moves focus to the page", as
   await expect(banner(page).getByRole("button", { name: "Necessary only" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(banner(page).getByRole("button", { name: "Accept all" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(banner(page).getByRole("button", { name: "Settings" })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Enter");
 
   await expect(banner(page)).toHaveCount(0);
   await expect(page.locator("main")).toBeFocused();
   expect(await consentCookie(page)).toMatch(/^1\.s1m1\./);
+});
+
+test("settings from the banner: statistics only, and click IDs stay out of the cookie", async ({ page }) => {
+  const requests = await prepare(page, { choice: "none" });
+  await page.goto(LANDING);
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+  await banner(page).getByRole("button", { name: "Settings" }).click();
+
+  await expect(panel(page)).toBeVisible();
+  await expect(panel(page).getByRole("heading", { name: "Cookie settings" })).toBeVisible();
+  const necessary = panel(page).getByRole("switch", { name: "Necessary" });
+  const statistics = panel(page).getByRole("switch", { name: "Statistics" });
+  const marketing = panel(page).getByRole("switch", { name: "Marketing" });
+  await expect(necessary).toHaveAttribute("aria-checked", "true");
+  await expect(necessary).toHaveAttribute("aria-disabled", "true");
+  await expect(statistics).toHaveAttribute("aria-checked", "false");
+  await expect(marketing).toHaveAttribute("aria-checked", "false");
+  await expect(statistics).toBeFocused();
+  await expect(panel(page)).toContainText("Google Analytics, PostHog, Microsoft Clarity, Amplitude, Vercel Speed Insights");
+
+  await statistics.click();
+  await panel(page).getByRole("button", { name: "Save choices" }).click();
+
+  await expect(panel(page)).toBeHidden();
+  await expect(banner(page)).toHaveCount(0);
+  expect(await consentCookie(page)).toMatch(/^1\.s1m0\./);
+  const attribution = (await page.context().cookies()).find((cookie) => cookie.name === "wb_attr")?.value ?? "";
+  expect(decodeURIComponent(attribution)).toContain("qa_test");
+  expect(decodeURIComponent(attribution)).not.toContain("TEST");
+  const updates = (await dataLayer(page)).filter((entry) => entry.event === "consent_update");
+  expect(updates).toEqual([{ event: "consent_update", consent_statistics: true, consent_marketing: false }]);
+  await expect.poll(() => requests.filter((url) => url.includes("gtm.js?id=GTM-E2ETEST")).length).toBe(1);
+});
+
+test("withdrawal from the footer removes stored data and reloads the page", async ({ page }) => {
+  const requests = await prepare(page, { choice: "none" });
+  await storeConsent(page, true, true);
+  await page.goto(LANDING);
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+  await page.context().addCookies(
+    ["_ga", "_ga_TEST", "_gcl_au", "_fbp", "_clck"].map((name) => ({ name, value: "1", url: "http://localhost:3100" })),
+  );
+  await page.evaluate(() => localStorage.setItem("ph_phc_e2e_test_key_posthog", "{}"));
+  expect((await page.context().cookies()).map((cookie) => cookie.name)).toContain("wb_attr");
+
+  await page.locator(".site-footer").getByRole("button", { name: "Cookie settings" }).click();
+  await expect(panel(page).getByRole("switch", { name: "Statistics" })).toHaveAttribute("aria-checked", "true");
+  await expect(panel(page).getByRole("switch", { name: "Marketing" })).toHaveAttribute("aria-checked", "true");
+
+  requests.length = 0;
+  const reloaded = page.waitForEvent("load");
+  await panel(page).getByRole("button", { name: "Necessary only" }).click();
+  await reloaded;
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+  await page.waitForTimeout(4500);
+
+  expect((await page.context().cookies()).map((cookie) => cookie.name)).toEqual(["wb_consent"]);
+  expect(await consentCookie(page)).toMatch(/^1\.s0m0\./);
+  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  expect(requests.filter((url) => /googletagmanager|\/ingest\/|speed-insights/.test(url))).toEqual([]);
+  await expect(banner(page)).toHaveCount(0);
+});
+
+test("keyboard: Escape closes the panel without a choice and returns focus", async ({ page }) => {
+  await prepare(page, { choice: "none" });
+  await page.goto("/");
+  const settings = banner(page).getByRole("button", { name: "Settings" });
+  await settings.focus();
+  await page.keyboard.press("Enter");
+
+  const statistics = panel(page).getByRole("switch", { name: "Statistics" });
+  await expect(statistics).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(statistics).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("Escape");
+
+  await expect(panel(page)).toBeHidden();
+  await expect(settings).toBeFocused();
+  await expect(banner(page)).toBeVisible();
+  expect(await consentCookie(page)).toBeUndefined();
+});
+
+test("necessary only: the footer offers Cookie settings with the stored choice", async ({ page }) => {
+  await prepare(page);
+  await page.goto("/");
+  await page.locator(".site-footer").getByRole("button", { name: "Cookie settings" }).click();
+  await expect(panel(page)).toBeVisible();
+  await expect(panel(page).getByRole("switch", { name: "Statistics" })).toHaveAttribute("aria-checked", "false");
+  await panel(page).getByRole("button", { name: "Close" }).click();
+  await expect(panel(page)).toBeHidden();
 });

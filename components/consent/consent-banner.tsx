@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ConsentButton } from "@/components/consent/consent-button";
 import styles from "@/components/consent/consent.module.css";
-import { saveConsent, type ConsentChoice } from "@/lib/consent";
+import { openConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { useConsent } from "@/lib/consent/use-consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
 
@@ -30,7 +30,8 @@ function moveFocusOut(banner: HTMLElement | null) {
 /**
  * The first layer of the consent banner. It sits in a corner, blocks nothing
  * and has no close button: the visitor either accepts everything or keeps
- * only what is necessary, in one click each. Rendered after hydration only,
+ * only what is necessary, in one click each. "Settings" opens the second
+ * layer with a switch per category. Rendered after hydration only,
  * because the server does not know the visitor's choice.
  */
 export function ConsentBanner() {
@@ -65,6 +66,9 @@ export function ConsentBanner() {
       <div className={styles.actions}>
         <ConsentButton text="Necessary only" onClick={() => choose({ statistics: false, marketing: false })} />
         <ConsentButton text="Accept all" onClick={() => choose({ statistics: true, marketing: true })} />
+        <button type="button" className={styles.textButton} onClick={() => openConsentSettings()}>
+          Settings
+        </button>
       </div>
     </section>
   );

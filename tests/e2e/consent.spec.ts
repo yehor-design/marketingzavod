@@ -134,13 +134,6 @@ test("necessary only: no analytics cookies, only UTM leaves with the form", asyn
   expect(await events(page, "page_view")).toHaveLength(3);
 });
 
-test("the footer has no cookie settings control while there is no consent tool", async ({ page }) => {
-  await prepare(page);
-  await page.goto("/");
-  await expect(page.locator(".site-footer")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Cookie settings" })).toHaveCount(0);
-});
-
 test("necessary only: Amplitude and PostHog's own hosts are never contacted", async ({ page }) => {
   const requests = await prepare(page);
   await page.goto("/waitlist");

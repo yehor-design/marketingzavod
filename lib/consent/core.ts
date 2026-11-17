@@ -116,6 +116,26 @@ export function newConsentId(): string {
   return id;
 }
 
+/**
+ * First-party cookie and storage names each category leaves behind, by
+ * prefix. wb_attr is not here: lib/attribution rewrites or deletes it on
+ * every consent change. Cookies on other domains (clarity.ms, linkedin.com,
+ * facebook.com) cannot be removed by the site.
+ */
+export const CATEGORY_STORAGE_PREFIXES: Record<keyof ConsentChoice, readonly string[]> = {
+  // GA4, PostHog, Microsoft Clarity, Amplitude.
+  statistics: ["_ga", "_gid", "ph_", "__ph", "_clck", "_clsk", "_cltk", "AMP_", "amp_"],
+  // Google Ads, Meta, LinkedIn.
+  marketing: ["_gcl_", "_fbp", "_fbc", "li_fat_id", "li_gc"],
+};
+
+/** The prefixes to clear when moving from one choice to the next. */
+export function prefixesToClear(previous: ConsentChoice, next: ConsentChoice): string[] {
+  return (Object.keys(CATEGORY_STORAGE_PREFIXES) as Array<keyof ConsentChoice>)
+    .filter((category) => previous[category] && !next[category])
+    .flatMap((category) => CATEGORY_STORAGE_PREFIXES[category]);
+}
+
 /** True when the new choice turns off a category the old one had on. */
 export function narrowsConsent(previous: ConsentChoice, next: ConsentChoice): boolean {
   return (previous.statistics && !next.statistics) || (previous.marketing && !next.marketing);

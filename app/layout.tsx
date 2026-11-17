@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fragment_Mono, Geist, Geist_Mono } from "next/font/google";
 import { ConsentBanner } from "@/components/consent/consent-banner";
+import { ConsentSettings } from "@/components/consent/consent-settings";
 import { MotionProvider } from "@/components/motion-provider";
 import { SiteShell } from "@/components/site-shell";
 import { GoogleTagManager } from "@/components/tracking/gtm";
@@ -77,6 +78,7 @@ export default function RootLayout({
           {/* First in the tab order, though it sits at the bottom of the screen. */}
           <ConsentBanner />
           <SiteShell>{children}</SiteShell>
+          <ConsentSettings />
         </MotionProvider>
         <TrackingProvider />
         <ConsentedSpeedInsights />

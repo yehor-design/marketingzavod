@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { captureAttribution, syncAttributionWithConsent } from "@/lib/attribution";
-import { onConsentChange } from "@/lib/consent";
+import { clearRefusedStorage, onConsentChange } from "@/lib/consent";
 import {
   isTrackEventName,
   NUMERIC_PARAMS,
@@ -112,6 +112,7 @@ export function TrackingProvider() {
   const pathname = usePathname();
 
   useEffect(() => {
+    clearRefusedStorage();
     captureAttribution();
     initPosthog();
     void initAmplitude();
