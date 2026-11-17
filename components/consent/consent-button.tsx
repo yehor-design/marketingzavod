@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { cx } from "@/components/chrome-styles";
 import { RollingText } from "@/components/motion";
 import { GrayRing } from "@/components/motion/gray-ring";
-import { cn } from "@/lib/utils";
 
 /**
- * A consent choice. Accept all is the primary (white) button. Every other
- * choice keeps the secondary button and its rolling label. The dashed hover
- * ring stays on secondary buttons only, so the primary fill stays white.
+ * Same control as the navbar. Accept all uses Join waitlist (primary):
+ * 30px, 12px Google Sans, 6px radius, 14.4px roll, no dashed ring.
+ * Every other choice uses Contact (secondary): the same shell, a 21.6px
+ * roll, and the gray pill hover. Width stays on the label. Do not stretch it.
  */
 export function ConsentButton({
   text,
@@ -24,18 +24,26 @@ export function ConsentButton({
   const primary = variant === "default";
 
   return (
-    <Button
+    <button
       type="button"
-      variant={variant}
-      className={cn("w-full min-w-0", !primary && "gray-pill")}
+      className={
+        primary
+          ? cx("nav-button", "nav-button-primary", "cursor-pointer")
+          : cx("nav-button", "nav-button-secondary", "gray-pill", "cursor-pointer")
+      }
       onClick={onClick}
       onPointerEnter={() => setRolling(true)}
       onPointerLeave={() => setRolling(false)}
       onFocus={() => setRolling(true)}
       onBlur={() => setRolling(false)}
     >
-      <RollingText text={text} rolling={rolling} fontSize={12} lineHeightPx={21.6} />
+      <RollingText
+        text={text}
+        rolling={rolling}
+        fontSize={12}
+        lineHeightPx={primary ? 14.4 : 21.6}
+      />
       {primary ? null : <GrayRing />}
-    </Button>
+    </button>
   );
 }

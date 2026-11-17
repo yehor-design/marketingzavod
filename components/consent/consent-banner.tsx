@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ConsentButton } from "@/components/consent/consent-button";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { openConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { useConsent } from "@/lib/consent/use-consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
@@ -54,17 +52,17 @@ export function ConsentBanner() {
   };
 
   return (
-    <Card
+    <div
       ref={ref}
       role="region"
-      className="fixed inset-x-4 bottom-4 z-10 w-auto animate-consent-in gap-3 border border-border bg-nav p-4 text-foreground shadow-none ring-0 backdrop-blur-[5px] motion-reduce:animate-none min-[810px]:right-auto min-[810px]:w-[360px]"
+      className="fixed bottom-[16px] left-[16px] z-10 flex w-auto animate-consent-in flex-col gap-[10px] rounded-field border border-border bg-nav p-[12px] text-foreground backdrop-blur-[5px] motion-reduce:animate-none max-[809.98px]:right-[16px] min-[810px]:w-[360px]"
       aria-labelledby="consent-banner-title"
       data-consent-banner=""
     >
       <h2 id="consent-banner-title" className="sr-only">
         Cookie consent
       </h2>
-      <p className="text-sm leading-normal text-muted-foreground">
+      <p className="m-0 font-display text-[12px] leading-[1.6] font-[1000] tracking-normal text-muted-foreground [font-variation-settings:'opsz'_14,'wght'_450]">
         We use cookies for analytics and ads, some set by our partners.{" "}
         <Link
           href={PRIVACY_COOKIES_HREF}
@@ -74,22 +72,15 @@ export function ConsentBanner() {
           Learn more
         </Link>
       </p>
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2 max-[374.98px]:grid-cols-2">
+      <div className="flex flex-wrap items-center gap-[8px]">
         <ConsentButton text="Necessary only" onClick={() => choose({ statistics: false, marketing: false })} />
         <ConsentButton
           text="Accept all"
           variant="default"
           onClick={() => choose({ statistics: true, marketing: true })}
         />
-        <Button
-          type="button"
-          variant="secondary"
-          className="max-[374.98px]:col-span-2 max-[374.98px]:justify-self-start"
-          onClick={() => openConsentSettings()}
-        >
-          Settings
-        </Button>
+        <ConsentButton text="Settings" onClick={() => openConsentSettings()} />
       </div>
-    </Card>
+    </div>
   );
 }
