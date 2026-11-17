@@ -6,6 +6,23 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "next-dev-tracking",
+      "runtimeExecutable": "/usr/bin/env",
+      "runtimeArgs": [
+        "NEXT_PUBLIC_TRACKING_DEBUG=true",
+        "NEXT_PUBLIC_POSTHOG_KEY=",
+        "NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=",
+        "NEXT_PUBLIC_AMPLITUDE_API_KEY=",
+        "npm",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "3001"
+      ],
+      "port": 3001
     }
   ]
 }
