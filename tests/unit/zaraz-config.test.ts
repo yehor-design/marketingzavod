@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { META_BROWSER_EVENTS, META_SERVER_LEAD_EVENTS } from "@/lib/meta/browser-events";
 import { TRACK_EVENT_NAMES } from "@/lib/tracking/events";
 import { config as built } from "../../zaraz/build-config.mjs";
 
@@ -54,7 +55,6 @@ describe("zaraz/config.json", () => {
       expect(tool.permissions, id).not.toContain("execute_unsafe_scripts");
     }
     expect(tools.ga4.defaultPurpose).toBe("statistics");
-    expect(tools.metaPixel.defaultPurpose).toBe("marketing");
   });
 
   it("leaves page views and the script tag to the site", () => {
@@ -86,33 +86,19 @@ describe("zaraz/config.json", () => {
     }
   });
 
-  it("sends Meta the same standard events as the GTM container, with the shared event_id", () => {
+  it("leaves Meta to the site's relay, which with /api/lead covers the GTM pixel events", () => {
+    expect(Object.values(tools).map((tool) => tool.component)).not.toContain("facebook-pixel");
     const gtmMeta = (container.containerVersion.tag as Array<{ name: string }>)
       .map((tag) => tag.name)
       .filter((name) => name.startsWith("Meta - "))
       .map((name) => name.slice("Meta - ".length))
       .sort();
-    const zarazMeta = Object.values(tools.metaPixel.actions)
-      .map((action) => action.data.__zaraz_setting_name)
-      .sort();
-    expect(zarazMeta).toEqual(gtmMeta);
-    for (const action of Object.values(tools.metaPixel.actions)) {
-      expect(action.data.event_id).toBe("{{ client.event_id }}");
-    }
-    // Lead fires for the Contact form only, as in GTM.
-    const lead = Object.values(tools.metaPixel.actions).find((action) => action.data.ev === "Lead")!;
-    expect(triggers[lead.firingTriggers[0]].loadRules.map((rule) => rule.value)).toEqual([
-      "generate_lead",
-      "contact",
-    ]);
+    const relayed = [...Object.values(META_BROWSER_EVENTS), ...Object.values(META_SERVER_LEAD_EVENTS)].sort();
+    expect(relayed).toEqual(gtmMeta);
   });
 
   it("holds no secret", () => {
-    for (const variable of Object.values(committed.variables) as Array<{ type: string; value: string }>) {
-      if (variable.type === "secret") {
-        expect(variable.value).toBe("");
-      }
-    }
-    expect(JSON.stringify(committed)).not.toMatch(/EAA[A-Za-z0-9]{20,}/);
+    expect(committed.variables).toEqual({});
+    expect(JSON.stringify(committed)).not.toMatch(/EAA[A-Za-z0-9]{20,}|accessToken|secret/i);
   });
 });

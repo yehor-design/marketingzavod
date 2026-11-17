@@ -6,6 +6,7 @@ import { createRateLimiter } from "@/lib/leads/rate-limit";
 import { cleanPageUrl, fieldErrors, leadRequestSchema } from "@/lib/leads/schema";
 import { saveLead } from "@/lib/leads/store";
 import type { Lead } from "@/lib/leads/types";
+import { META_SERVER_LEAD_EVENTS } from "@/lib/meta/browser-events";
 import { fbcFromClickId, sendMetaEvent } from "@/lib/meta/capi";
 import { capturePosthogServerEvent } from "@/lib/posthog-server";
 import { flushServerLogs, serverLog } from "@/lib/posthog-server-logs";
@@ -17,10 +18,7 @@ export const dynamic = "force-dynamic";
 const allow = createRateLimiter(5, 60_000);
 
 /** Server-side Meta event per form. Kept in step with docs/tracking-plan.md. */
-const META_EVENTS: Record<string, string | undefined> = {
-  contact: "Lead",
-  waitlist: "CompleteRegistration",
-};
+const META_EVENTS: Record<string, string | undefined> = META_SERVER_LEAD_EVENTS;
 
 const TRACKING_ALLOWED =
   process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_TRACKING_DEBUG === "true";

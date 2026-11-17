@@ -7,13 +7,13 @@
  *
  * The site sends every event with zaraz.track(name, params), see
  * lib/tracking/zaraz.ts. Each event has a trigger that matches its name. The
- * tools map those triggers to GA4 events and Meta standard events, the same
- * mapping as the GTM container. Every tool belongs to a consent purpose:
- * GA4 to statistics, Meta, Google Ads and LinkedIn to marketing.
+ * GA4 tool maps those triggers to GA4 events, the same mapping as the GTM
+ * container. Every tool belongs to a consent purpose: GA4 to statistics,
+ * Google Ads and LinkedIn (once they have accounts) to marketing. Meta is
+ * relayed by the site's own server, see below.
  *
  * Public IDs come from zaraz/ids.json. A tool without an ID is left out.
- * Secrets never go in this file: the Meta access token is a Zaraz secret
- * variable whose value zaraz/publish.mjs sends from the environment.
+ * The configuration holds no secrets.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 
@@ -23,9 +23,6 @@ const ids = read("./ids.json");
 
 const pascal = (name) => name.replace(/(^|_)([a-z])/g, (_, __, letter) => letter.toUpperCase());
 const client = (key) => `{{ client.${key} }}`;
-
-/** The variable that holds the Meta Conversions API token. Its value is set by publish.mjs. */
-export const META_TOKEN_VARIABLE = "metaCapiToken";
 
 // Triggers: one per event, matched on the name given to zaraz.track().
 const triggers = {};
@@ -46,13 +43,6 @@ for (const event of plan.events) {
     ["{{ client.__zarazTrack }}", event.name],
   ]);
 }
-// The GTM container fires the lead conversions for Contact only: Waitlist has
-// join_waitlist (CompleteRegistration) of its own.
-const LEAD_CONTACT = "evGenerateLeadContact";
-addTrigger(LEAD_CONTACT, "generate_lead (contact)", 'zaraz.track("generate_lead") from the Contact form', [
-  ["{{ client.__zarazTrack }}", "generate_lead"],
-  [client("form_name"), "contact"],
-]);
 
 const action = (actionType, firing, name, data = {}) => ({
   actionType,
@@ -101,35 +91,9 @@ if (ids.ga4) {
   };
 }
 
-// Meta. Zaraz sends these through the Conversions API from Cloudflare. The
-// event_id is the one the server uses for Lead, so Meta deduplicates them.
-if (ids.metaPixel) {
-  const meta = (ev, extra = {}) => ({ ev, event_id: client("event_id"), ...extra });
-  tools.metaPixel = {
-    type: "component",
-    component: "facebook-pixel",
-    name: "Meta Pixel",
-    enabled: true,
-    defaultPurpose: "marketing",
-    permissions: ["access_client_kv", "server_network_requests"],
-    settings: { property: ids.metaPixel, accessToken: `{{ $$${META_TOKEN_VARIABLE}$$ }}` },
-    defaultFields: {},
-    blockingTriggers: [],
-    actions: {
-      pageView: action("pageview", triggerId("page_view"), "PageView", { event_id: client("event_id") }),
-      lead: action("event", LEAD_CONTACT, "Lead", meta("Lead")),
-      completeRegistration: action("event", triggerId("join_waitlist"), "CompleteRegistration", meta("CompleteRegistration")),
-      initiateCheckout: action(
-        "event",
-        triggerId("begin_checkout"),
-        "InitiateCheckout",
-        meta("InitiateCheckout", { value: client("value"), currency: client("currency") }),
-      ),
-      viewContent: action("event", triggerId("view_pricing"), "ViewContent", meta("ViewContent", { content_name: "pricing" })),
-      contact: action("event", triggerId("contact_click"), "Contact", meta("Contact")),
-    },
-  };
-}
+// Meta is not a Zaraz tool: its Conversions API needs an access token, and
+// that token stays in Vercel. The site relays Meta's events through its own
+// /api/meta/event instead (lib/tracking/meta-relay.ts).
 
 // Google Ads and LinkedIn are added the same way once their accounts exist
 // (ids.googleAds, ids.linkedin). Until then they are not configured at all.
@@ -153,7 +117,7 @@ export const config = {
     tcfCompliant: false,
     purposesWithTranslations: {
       statistics: purpose("Statistics", "Google Analytics 4", 0),
-      marketing: purpose("Marketing", "Meta, Google Ads, LinkedIn", 1),
+      marketing: purpose("Marketing", "Google Ads, LinkedIn", 1),
     },
   },
   // Events come from zaraz.track() only. The dataLayer belongs to GTM.
@@ -176,9 +140,7 @@ export const config = {
   analytics: { enabled: true, defaultPurpose: "statistics", sessionExpTime: 1800 },
   tools,
   triggers,
-  variables: {
-    ...(ids.metaPixel && { [META_TOKEN_VARIABLE]: { name: "Meta Conversions API token", type: "secret", value: "" } }),
-  },
+  variables: {},
 };
 
 if (import.meta.url === `file://${process.argv[1]}`) {

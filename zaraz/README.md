@@ -7,7 +7,8 @@
 - Сайт не проксіюється через Cloudflare. Zaraz віддає проксійований піддомен `NEXT_PUBLIC_ZARAZ_HOST` (`z.heywowboy.com`, запис AAAA `100::`, Proxied).
 - До згоди скрипт `https://z.heywowboy.com/cdn-cgi/zaraz/i.js` не вантажиться. Після згоди на Statistics або Marketing його додає `lib/tracking/zaraz.ts`. Події сторінки чекають у черзі, доки Zaraz не отримає Consent Mode default і мети згоди (`zaraz.consent.set({ statistics, marketing })`).
 - `track()` викликає `zaraz.track(назва, параметри)` замість `dataLayer.push`. Назви й параметри ті самі, що в `docs/tracking-plan.md`.
-- Сервери Cloudflare шлють події в GA4 і в Meta Conversions API. У браузері немає ні gtag, ні fbq.
+- Сервери Cloudflare шлють події в GA4. У браузері немає ні gtag, ні fbq.
+- **Meta йде не через Zaraz.** Його Conversions API потребує токена, а токен зберігається лише у Vercel. Тому браузер шле стандартні події Meta (`PageView`, `ViewContent`, `Contact`, `InitiateCheckout`) на власний `/api/meta/event`, а сервер передає їх у Conversions API з тим самим `event_id`, IP, user agent і cookie `_fbp`/`_fbc` у форматі пікселя. `Lead` і `CompleteRegistration` шле `/api/lead`, як і раніше. Усе це працює лише за згоди на маркетинг: сервер перевіряє cookie `wb_consent`. Код: `lib/tracking/meta-relay.ts`, `app/api/meta/event/route.ts`, `lib/meta/relay.ts`.
 
 ## Файли
 
@@ -15,22 +16,22 @@
 | --- | --- |
 | `build-config.mjs` | Будує `config.json` з плану подій `gtm/events.json`. Один тригер на подію, дії GA4 і Meta такі самі, як теги контейнера GTM |
 | `config.json` | Згенерований конфіг. Не редагуй руками: `npm run zaraz:build` |
-| `ids.json` | Публічні ID: GA4, піксель Meta. Google Ads і LinkedIn додаються, коли з'являться акаунти |
+| `ids.json` | Публічні ID: GA4. Google Ads і LinkedIn додаються, коли з'являться акаунти |
 | `publish.mjs` | Публікація і перевірка синхронізації через API Cloudflare |
 
-`tests/unit/zaraz-config.test.ts` перевіряє, що `config.json` збігається з білдером, кожна подія має тригер, кожен інструмент прив'язаний до мети згоди, події Meta ті самі, що в GTM, і в конфігу немає секретів.
+`tests/unit/zaraz-config.test.ts` перевіряє, що `config.json` збігається з білдером, кожна подія має тригер, кожен інструмент прив'язаний до мети згоди, події Meta (ретранслятор і `/api/lead`) ті самі, що в GTM, і в конфігу немає секретів. `tests/unit/meta-relay.test.ts` перевіряє ретранслятор Meta.
 
 ## Публікація
 
-Потрібен API-токен Cloudflare з правом **Zaraz Admin** на зоні `heywowboy.com` і ID зони.
+Конфіг можна опублікувати двома способами: через панель Cloudflare (Zaraz → інструменти, тригери, налаштування за `config.json`) або скриптом з API-токеном Cloudflare (право **Zaraz Admin** на зоні `heywowboy.com`) і ID зони.
 
 ```bash
 CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ZONE_ID=… npm run zaraz:check
-CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ZONE_ID=… ZARAZ_META_ACCESS_TOKEN=… npm run zaraz:publish
+CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ZONE_ID=… npm run zaraz:publish
 ```
 
 - `zaraz:check` порівнює опублікований конфіг з `config.json` і завершується з помилкою, якщо вони розійшлися.
-- `zaraz:publish` записує конфіг і публікує його. Токен Meta Conversions API зберігається в секретній змінній Zaraz `metaCapiToken`. Його треба передати лише під час першої публікації. Далі скрипт залишає збережене значення: API його не повертає.
+- `zaraz:publish` записує конфіг і публікує його. Секретів конфіг не містить.
 
 ## Налаштування в Zaraz, яких немає в API
 
@@ -40,7 +41,7 @@ CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ZONE_ID=… ZARAZ_META_ACCESS_TOKEN=… npm 
 ## Перевірка після перемикання
 
 1. Без згоди: жодного запиту до `z.heywowboy.com`.
-2. «Accept all»: `i.js` і події йдуть на `z.heywowboy.com`. Прямих запитів до `google-analytics.com` чи `facebook.com` немає.
+2. «Accept all»: `i.js` і події GA4 йдуть на `z.heywowboy.com`, події Meta — на `/api/meta/event`. Прямих запитів до `google-analytics.com` чи `facebook.com` немає.
 3. GA4 Realtime і DebugView показують `page_view` та інші події один раз, без дублів.
-4. Meta Events Manager → Test events: `PageView`, `Lead` з тим самим `event_id`, що й серверний `Lead`.
+4. Meta Events Manager → Test events (з `META_TEST_EVENT_CODE`): `PageView`, `ViewContent`, `Contact` від `/api/meta/event` і `Lead` від `/api/lead`, кожна подія один раз.
 5. `npm run zaraz:check` проходить.

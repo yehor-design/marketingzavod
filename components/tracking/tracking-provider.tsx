@@ -16,6 +16,7 @@ import {
 import { applyAmplitudeConsent, initAmplitude } from "@/lib/tracking/amplitude";
 import { applyGtmConsent } from "@/lib/tracking/gtm";
 import { applyPosthogConsent, initPosthog } from "@/lib/tracking/posthog";
+import { applyMetaRelayConsent } from "@/lib/tracking/meta-relay";
 import { applyZarazConsent } from "@/lib/tracking/zaraz";
 
 /** Survives React strict-mode remounts, so a route produces one page_view. */
@@ -123,6 +124,7 @@ export function TrackingProvider() {
     const stopConsent = onConsentChange((state) => {
       applyGtmConsent(state);
       applyZarazConsent(state);
+      applyMetaRelayConsent(state);
       syncAttributionWithConsent(state);
       applyPosthogConsent(state);
       void applyAmplitudeConsent(state);

@@ -11,6 +11,7 @@ import { getConsent } from "@/lib/consent";
 import type { EventMeta, TrackEventName, TrackEvents } from "@/lib/tracking/events";
 import { TAG_MANAGER, TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
 import { posthogCapture } from "@/lib/tracking/posthog";
+import { relayMetaEvent } from "@/lib/tracking/meta-relay";
 import { zarazTrack } from "@/lib/tracking/zaraz";
 
 export * from "@/lib/tracking/events";
@@ -63,6 +64,8 @@ export function track<E extends TrackEventName>(
   if (TAG_MANAGER === "zaraz") {
     // Zaraz gets no contact details: Enhanced Conversions stay a GTM feature.
     zarazTrack(event, { ...params, ...meta });
+    // Meta goes through the site's own server, not through Zaraz.
+    relayMetaEvent(event, params as Record<string, unknown>, eventId);
     mirrorToPosthog(event, params, meta);
     return eventId;
   }

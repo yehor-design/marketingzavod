@@ -21,7 +21,7 @@
           "en": "Marketing"
         },
         "description": {
-          "en": "Meta, Google Ads, LinkedIn"
+          "en": "Google Ads, LinkedIn"
         },
         "order": 1
       }
@@ -234,99 +234,6 @@
           }
         }
       }
-    },
-    "metaPixel": {
-      "type": "component",
-      "component": "facebook-pixel",
-      "name": "Meta Pixel",
-      "enabled": true,
-      "defaultPurpose": "marketing",
-      "permissions": [
-        "access_client_kv",
-        "server_network_requests"
-      ],
-      "settings": {
-        "property": "2315595119284520",
-        "accessToken": "{{ $$metaCapiToken$$ }}"
-      },
-      "defaultFields": {},
-      "blockingTriggers": [],
-      "actions": {
-        "pageView": {
-          "actionType": "pageview",
-          "firingTriggers": [
-            "evPageView"
-          ],
-          "blockingTriggers": [],
-          "data": {
-            "__zaraz_setting_name": "PageView",
-            "event_id": "{{ client.event_id }}"
-          }
-        },
-        "lead": {
-          "actionType": "event",
-          "firingTriggers": [
-            "evGenerateLeadContact"
-          ],
-          "blockingTriggers": [],
-          "data": {
-            "__zaraz_setting_name": "Lead",
-            "ev": "Lead",
-            "event_id": "{{ client.event_id }}"
-          }
-        },
-        "completeRegistration": {
-          "actionType": "event",
-          "firingTriggers": [
-            "evJoinWaitlist"
-          ],
-          "blockingTriggers": [],
-          "data": {
-            "__zaraz_setting_name": "CompleteRegistration",
-            "ev": "CompleteRegistration",
-            "event_id": "{{ client.event_id }}"
-          }
-        },
-        "initiateCheckout": {
-          "actionType": "event",
-          "firingTriggers": [
-            "evBeginCheckout"
-          ],
-          "blockingTriggers": [],
-          "data": {
-            "__zaraz_setting_name": "InitiateCheckout",
-            "ev": "InitiateCheckout",
-            "event_id": "{{ client.event_id }}",
-            "value": "{{ client.value }}",
-            "currency": "{{ client.currency }}"
-          }
-        },
-        "viewContent": {
-          "actionType": "event",
-          "firingTriggers": [
-            "evViewPricing"
-          ],
-          "blockingTriggers": [],
-          "data": {
-            "__zaraz_setting_name": "ViewContent",
-            "ev": "ViewContent",
-            "event_id": "{{ client.event_id }}",
-            "content_name": "pricing"
-          }
-        },
-        "contact": {
-          "actionType": "event",
-          "firingTriggers": [
-            "evContactClick"
-          ],
-          "blockingTriggers": [],
-          "data": {
-            "__zaraz_setting_name": "Contact",
-            "ev": "Contact",
-            "event_id": "{{ client.event_id }}"
-          }
-        }
-      }
     }
   },
   "triggers": {
@@ -497,33 +404,7 @@
       ],
       "excludeRules": [],
       "clientRules": []
-    },
-    "evGenerateLeadContact": {
-      "name": "generate_lead (contact)",
-      "description": "zaraz.track(\"generate_lead\") from the Contact form",
-      "loadRules": [
-        {
-          "id": "evGenerateLeadContactr0",
-          "match": "{{ client.__zarazTrack }}",
-          "op": "EQUALS",
-          "value": "generate_lead"
-        },
-        {
-          "id": "evGenerateLeadContactr1",
-          "match": "{{ client.form_name }}",
-          "op": "EQUALS",
-          "value": "contact"
-        }
-      ],
-      "excludeRules": [],
-      "clientRules": []
     }
   },
-  "variables": {
-    "metaCapiToken": {
-      "name": "Meta Conversions API token",
-      "type": "secret",
-      "value": ""
-    }
-  }
+  "variables": {}
 }
