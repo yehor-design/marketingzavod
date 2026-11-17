@@ -27,7 +27,8 @@ export default defineConfig({
       NEXT_PUBLIC_POSTHOG_HOST: "https://eu.i.posthog.com",
       // Keeps a real project token from .env.local out of the test build.
       NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: "",
-      NEXT_PUBLIC_AMPLITUDE_API_KEY: "",
+      // A placeholder key, so the tests can prove Amplitude waits for consent.
+      NEXT_PUBLIC_AMPLITUDE_API_KEY: "e2e_amplitude_key",
     },
   },
 });

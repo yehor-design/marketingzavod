@@ -1,12 +1,8 @@
 "use client";
 
 import NextError from "next/error";
-import posthog from "posthog-js";
 import { useEffect } from "react";
-
-const posthogEnabled = Boolean(
-  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
-);
+import { posthogCaptureException } from "@/lib/tracking/posthog";
 
 export default function GlobalError({
   error,
@@ -14,10 +10,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }>) {
+  // Reaches PostHog only when it is running, which needs statistics consent.
   useEffect(() => {
-    if (posthogEnabled) {
-      posthog.captureException(error);
-    }
+    posthogCaptureException(error);
   }, [error]);
 
   return (

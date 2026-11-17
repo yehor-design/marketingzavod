@@ -105,7 +105,7 @@
 | --- | --- | --- |
 | Necessary | `security_storage` | збережений вибір відвідувача |
 | Preferences | `functionality_storage`, `personalization_storage` | нічого |
-| Statistics | `analytics_storage` | постійне сховище і записи PostHog, cookie атрибуції, серверна подія PostHog |
+| Statistics | `analytics_storage` | постійне сховище і записи PostHog, Amplitude, cookie атрибуції, серверна подія PostHog |
 | Marketing | `ad_storage`, `ad_user_data`, `ad_personalization` | click ID, Meta Conversions API, передача email у Enhanced Conversions |
 
 ## Змінні середовища
@@ -117,7 +117,9 @@
 | `NEXT_PUBLIC_TRACKING_DEBUG` | публічна | `true` дозволяє трекінг поза production |
 | `NEXT_PUBLIC_GTM_ID` | публічна | ID контейнера GTM (`GTM-…`) |
 | `NEXT_PUBLIC_GA4_ID` | публічна | Measurement ID (`G-…`) |
-| `NEXT_PUBLIC_POSTHOG_KEY` | публічна | Ключ проєкту PostHog (`phc_…`) |
+| `NEXT_PUBLIC_POSTHOG_KEY` | публічна | Ключ проєкту PostHog (`phc_…`). Якщо порожня, браузер бере `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` |
+| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | публічна | Той самий ключ під назвою з майстра PostHog. Ним користуються серверні логи (`instrumentation.ts`) |
+| `NEXT_PUBLIC_AMPLITUDE_API_KEY` | публічна | Ключ проєкту Amplitude. Amplitude вантажиться лише за згоди на статистику |
 | `NEXT_PUBLIC_POSTHOG_HOST` | публічна | Хост PostHog. Типово `https://eu.i.posthog.com` |
 | `NEXT_PUBLIC_CLARITY_ID` | публічна | ID проєкту Clarity |
 | `NEXT_PUBLIC_GOOGLE_ADS_ID` | публічна | ID акаунта Google Ads (`AW-…`) |

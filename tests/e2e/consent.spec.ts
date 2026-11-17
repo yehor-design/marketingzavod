@@ -82,3 +82,18 @@ test("the footer has no cookie settings control while there is no consent tool",
   await expect(page.locator(".site-footer")).toBeVisible();
   await expect(page.getByRole("button", { name: "Cookie settings" })).toHaveCount(0);
 });
+
+test("no choice: Amplitude and PostHog's own hosts are never contacted", async ({ page }) => {
+  const requests = await prepare(page);
+  await page.goto("/waitlist");
+  await page.getByPlaceholder("Enter your email").fill("amplitude.tester@example.com");
+  await page.getByRole("button", { name: "Join now" }).click();
+  await expect(page.locator('[data-form-success="waitlist"]')).toBeVisible();
+  await page.goto("/");
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+
+  expect(requests.filter((url) => /amplitude\.com|posthog\.com/.test(url))).toEqual([]);
+  const names = await cookieNames(page);
+  expect(names.filter((name) => name.startsWith("AMP_"))).toEqual([]);
+  expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith("AMP_")))).toEqual([]);
+});

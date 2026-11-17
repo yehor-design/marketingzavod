@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import posthog from "posthog-js";
-import { posthogLog } from "@/lib/posthog-logs";
+import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/contact/contact.module.css";
 
-const posthogEnabled = Boolean(
-  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
-);
 
 const REASONS = [
   { value: "general", label: "General" },
@@ -72,10 +68,8 @@ export function ContactPage() {
               );
               setPending(false);
               if (result.ok) {
-                if (posthogEnabled) {
-                  posthog.capture("contact_form_submitted", { inquiry_type: reason });
-                  posthogLog.info("contact_form_submitted", { inquiry_type: reason });
-                }
+                posthogCapture("contact_form_submitted", { inquiry_type: reason });
+                posthogLogInfo("contact_form_submitted", { inquiry_type: reason });
                 setDone(true);
               } else if (result.error === "validation") {
                 setErrors(result.errors);

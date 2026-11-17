@@ -3,15 +3,11 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
-import { track as amplitudeTrack } from "@amplitude/unified";
-import posthog from "posthog-js";
-import { posthogLog } from "@/lib/posthog-logs";
+import { amplitudeTrack } from "@/lib/tracking/amplitude";
+import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/waitlist/waitlist.module.css";
 
-const posthogEnabled = Boolean(
-  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
-);
 
 const artBase = {
   ...orderedDither,
@@ -188,10 +184,8 @@ export function WaitlistPage() {
               setPending(false);
               if (result.ok) {
                 amplitudeTrack("Waitlist Joined");
-                if (posthogEnabled) {
-                  posthog.capture("waitlist_joined");
-                  posthogLog.info("waitlist_form_submitted", { form: "waitlist" });
-                }
+                posthogCapture("waitlist_joined");
+                posthogLogInfo("waitlist_form_submitted", { form: "waitlist" });
                 setDone(true);
               } else if (result.error === "validation") {
                 setError(result.errors.email ?? "Enter a valid email.");

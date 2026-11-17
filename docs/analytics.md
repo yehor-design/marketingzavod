@@ -14,6 +14,7 @@
                          │   │                    ├─► Meta Pixel
                          │   │                    └─► LinkedIn Insight Tag
                          │   └─► PostHog ──► /ingest (власний домен) ──► eu.i.posthog.com
+                         │ Amplitude        лише за згоди на статистику
                          │ lib/consent      стан згоди, типово відмова
                          │ lib/attribution  UTM і click ID → cookie wb_attr (за згоди)
                          └────────────────────────┬─────────────────┘
@@ -40,6 +41,7 @@
 | GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage`, без згоди запити без cookies |
 | PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | до згоди без cookies і без записів |
 | Microsoft Clarity | Записи сесій і теплові карти | GTM | `analytics_storage` |
+| Amplitude | Продуктова аналітика, автозбір подій, записи сесій | Код: `lib/tracking/amplitude.ts`, викликається з `TrackingProvider` | згода на статистику; без неї SDK навіть не завантажується |
 | Google Ads | Конверсії, Enhanced Conversions, ремаркетинг | GTM | `ad_storage`, `ad_user_data` |
 | Meta | Піксель і Conversions API з дедуплікацією | GTM і сервер | `ad_storage` / згода на маркетинг |
 | LinkedIn | Insight Tag і конверсії | GTM | `ad_storage` |
@@ -55,6 +57,7 @@
 | `track()` | `lib/tracking/index.ts` |
 | Умови ввімкнення, ідентифікатори | `lib/tracking/env.ts` |
 | PostHog у браузері / на сервері | `lib/tracking/posthog.ts` / `lib/posthog-server.ts` |
+| Amplitude | `lib/tracking/amplitude.ts` |
 | Згода | `lib/consent/index.ts` |
 | Атрибуція | `lib/attribution/core.ts` (логіка), `lib/attribution/index.ts` (cookie) |
 | Перегляди, делеговані слухачі | `components/tracking/tracking-provider.tsx` |

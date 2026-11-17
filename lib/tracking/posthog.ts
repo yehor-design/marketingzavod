@@ -66,6 +66,7 @@ export function initPosthog() {
         capture_pageview: false,
         capture_pageleave: true,
         autocapture: true,
+        capture_exceptions: true,
         person_profiles: "identified_only",
         persistence: consent ? "localStorage+cookie" : "memory",
         disable_session_recording: !consent,
@@ -85,8 +86,18 @@ export function initPosthog() {
   }
 }
 
-export function posthogCapture(event: string, properties: Record<string, unknown>) {
+export function posthogCapture(event: string, properties: Record<string, unknown> = {}) {
   run((posthog) => posthog.capture(event, properties));
+}
+
+/** A log line in PostHog Logs. Same consent rules as events: attributes carry no personal data. */
+export function posthogLogInfo(body: string, attributes: Record<string, string | number | boolean>) {
+  run((posthog) => posthog.captureLog({ body, level: "info", attributes }));
+}
+
+/** Reports an uncaught error to PostHog error tracking. */
+export function posthogCaptureException(error: unknown) {
+  run((posthog) => posthog.captureException(error));
 }
 
 /** Applies a consent change without reloading the page. */

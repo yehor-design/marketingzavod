@@ -13,6 +13,7 @@ import {
   type TrackEventName,
   type TrackEvents,
 } from "@/lib/tracking";
+import { applyAmplitudeConsent, initAmplitude } from "@/lib/tracking/amplitude";
 import { applyPosthogConsent, initPosthog } from "@/lib/tracking/posthog";
 
 /** Survives React strict-mode remounts, so a route produces one page_view. */
@@ -112,10 +113,12 @@ export function TrackingProvider() {
   useEffect(() => {
     captureAttribution();
     initPosthog();
+    void initAmplitude();
 
     const stopConsent = onConsentChange((state) => {
       syncAttributionWithConsent(state);
       applyPosthogConsent(state);
+      void applyAmplitudeConsent(state);
     });
 
     const startedForms = new WeakSet<HTMLFormElement>();
