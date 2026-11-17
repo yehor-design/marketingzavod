@@ -47,7 +47,7 @@
 
 Чому webhook, а не опитування: webhook у застосунку HubSpot доступний на безкоштовному тарифі і спрацьовує одразу. Vercel Cron на тарифі Hobby запускається раз на добу. Workflow з дією «Send webhook» потребує платного Operations Hub, тому він не використовується.
 
-- [ ] Запусти `npm run hubspot:setup` (створює властивості `wb_lead_id`, `wb_offline_sent` та інші).
+- [x] Властивості `wb_*` створено 17.11.2026 через HubSpot MCP: 36 у контактів, 3 в угод (група «Custom information»). Для нового акаунта: `npm run hubspot:setup`. Назва `wb_message` — «Website message», бо «Message» уже зайнята стандартною властивістю HubSpot.
 - [ ] У налаштуваннях застосунку HubSpot → Webhooks:
   - Target URL: `https://www.heywowboy.com/api/crm/hubspot`;
   - підписка: **Deal → Property changed → `dealstage`**;

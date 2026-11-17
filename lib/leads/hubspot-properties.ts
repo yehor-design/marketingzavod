@@ -45,7 +45,7 @@ export const CONTACT_PROPERTIES: PropertyDef[] = [
   text("wb_consent_marketing", "Consent: marketing"),
   text("wb_consent_statistics", "Consent: statistics"),
   text("wb_inquiry_type", "Inquiry type"),
-  area("wb_message", "Message"),
+  area("wb_message", "Website message"),
   area("wb_application", "Job application"),
   ...[...UTM_FIELDS, ...TOUCH_EXTRAS].map((key) => text(`wb_ft_${key}`, `First touch: ${key}`)),
   ...[...UTM_FIELDS, ...TOUCH_EXTRAS].map((key) => text(`wb_lt_${key}`, `Last touch: ${key}`)),
