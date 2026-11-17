@@ -105,17 +105,19 @@ describe("lib/tracking/zaraz", () => {
     loadZaraz({ consentReady: true });
     expect(calls).toEqual([
       ["set", "google_consent_default", expect.objectContaining({ analytics_storage: "granted", ad_storage: "denied" })],
-      ["consent.set", { MwUo: true, vMnc: false }],
+      ["consent.set", { MwUo: true }],
+      ["consent.set", { vMnc: false }],
       ["track", "page_view", { page_path: "/", event_id: "a" }],
     ]);
 
     // Afterwards events go straight through, and a new choice is an update.
     zaraz.zarazTrack("faq_open", { question: "q" });
     zaraz.applyZarazConsent(state(true, true));
-    expect(calls.slice(3)).toEqual([
+    expect(calls.slice(4)).toEqual([
       ["track", "faq_open", { question: "q" }],
       ["set", "google_consent_update", expect.objectContaining({ ad_storage: "granted", ad_user_data: "granted" })],
-      ["consent.set", { MwUo: true, vMnc: true }],
+      ["consent.set", { MwUo: true }],
+      ["consent.set", { vMnc: true }],
     ]);
     expect(scripts).toHaveLength(1);
   });
@@ -128,10 +130,10 @@ describe("lib/tracking/zaraz", () => {
     first.loadZaraz({ consentReady: false });
     expect(first.calls).toEqual([]);
     first.documentListeners.get("zarazConsentAPIReady")?.();
-    expect(first.calls.map((call) => call[0])).toEqual(["set", "consent.set", "track"]);
+    expect(first.calls.map((call) => call[0])).toEqual(["set", "consent.set", "consent.set", "track"]);
     // The timeout firing later changes nothing.
     first.timers.forEach((fn) => fn());
-    expect(first.calls).toHaveLength(3);
+    expect(first.calls).toHaveLength(4);
 
     const second = browser();
     const fresh = await load();
@@ -140,7 +142,7 @@ describe("lib/tracking/zaraz", () => {
     second.loadZaraz({ consentReady: false });
     expect(second.calls).toEqual([]);
     second.timers.forEach((fn) => fn());
-    expect(second.calls.map((call) => call[0])).toEqual(["set", "consent.set", "track"]);
+    expect(second.calls.map((call) => call[0])).toEqual(["set", "consent.set", "consent.set", "track"]);
   });
 
   it("uses the latest choice made before Zaraz finished loading", async () => {
@@ -150,7 +152,8 @@ describe("lib/tracking/zaraz", () => {
     zaraz.applyZarazConsent(state(true, false));
     loadZaraz({ consentReady: true });
     expect(calls[0]).toEqual(["set", "google_consent_default", expect.objectContaining({ ad_storage: "denied" })]);
-    expect(calls[1]).toEqual(["consent.set", { MwUo: true, vMnc: false }]);
+    expect(calls[1]).toEqual(["consent.set", { MwUo: true }]);
+    expect(calls[2]).toEqual(["consent.set", { vMnc: false }]);
   });
 
   it("matches the Zaraz purposes by name, whatever IDs Zaraz gave them", async () => {
@@ -162,6 +165,28 @@ describe("lib/tracking/zaraz", () => {
     });
     // Without purposes the names themselves are used.
     expect(purposeIds(zaraz)).toEqual({ statistics: "statistics", marketing: "marketing" });
+  });
+
+  it("still sets Statistics when Zaraz rejects the Marketing purpose no tool uses", async () => {
+    const { win, scripts, calls } = browser();
+    const zaraz = await load();
+    zaraz.applyZarazConsent(state(true, true));
+    win.zaraz = {
+      track: () => Promise.resolve(),
+      set: () => undefined,
+      consent: {
+        APIReady: true,
+        purposes: { MwUo: { name: { en: "Statistics" } }, vMnc: { name: { en: "Marketing" } } },
+        set: (purposes: Record<string, boolean>) => {
+          if ("vMnc" in purposes) {
+            throw new Error("Unknown purpose id: vMnc");
+          }
+          calls.push(["consent.set", purposes]);
+        },
+      },
+    };
+    expect(() => scripts[0].load?.()).not.toThrow();
+    expect(calls).toEqual([["consent.set", { MwUo: true }]]);
   });
 
   it("keeps at most 100 queued events", async () => {

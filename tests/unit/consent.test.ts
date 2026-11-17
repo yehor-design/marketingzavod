@@ -92,6 +92,7 @@ describe("consent cookie format", () => {
       "li_gc",
       "cfz_facebook-pixel",
       "cfzs_facebook-pixel",
+      "cf_zaraz",
       "wb_zaraz_consent",
     ]);
     expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("amplitude.");

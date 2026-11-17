@@ -102,7 +102,7 @@ const privacy: LegalDocument = {
   heading: "Privacy Policy",
   description:
     "How Jet collects, uses and protects personal data, including the cookies and analytics services used on this website.",
-  version: "1.7",
+  version: "1.8",
   date: "Nov 17, 2026",
   blocks: [
     p(
@@ -154,6 +154,9 @@ const privacy: LegalDocument = {
     ),
     p(
       "Form submissions are stored in our customer relationship management system (HubSpot) so that we can reply to you.",
+    ),
+    p(
+      "After you consent, Google Analytics runs through Cloudflare Zaraz: your browser sends events to our own subdomain, and Cloudflare forwards them to Google from its servers, acting as our processor. Events for Meta are sent from our own server to Meta\u2019s Conversions API rather than by a script in your browser. In both cases only the categories you consented to are used.",
     ),
     h2("5. Data Security"),
     p(
