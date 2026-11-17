@@ -23,7 +23,20 @@ export const trackingIds = {
     clean(process.env.NEXT_PUBLIC_POSTHOG_KEY) || clean(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN),
   amplitude: clean(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY),
   posthogHost: clean(process.env.NEXT_PUBLIC_POSTHOG_HOST) || "https://eu.i.posthog.com",
+  /** The Cloudflare-proxied host that serves Zaraz, for example z.heywowboy.com. */
+  zarazHost: clean(process.env.NEXT_PUBLIC_ZARAZ_HOST),
 } as const;
+
+/**
+ * Which tag manager carries the events to GA4, Google Ads, Meta and LinkedIn:
+ * Google Tag Manager (the default) or Cloudflare Zaraz. Switching back is one
+ * variable and a redeploy. PostHog and Amplitude are loaded by the site
+ * itself and do not depend on it.
+ */
+export type TagManager = "gtm" | "zaraz";
+
+export const TAG_MANAGER: TagManager =
+  clean(process.env.NEXT_PUBLIC_TAG_MANAGER) === "zaraz" ? "zaraz" : "gtm";
 
 /**
  * Tracking sends data only from the production deployment. Preview and local

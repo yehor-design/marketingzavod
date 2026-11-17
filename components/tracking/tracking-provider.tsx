@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { captureAttribution, syncAttributionWithConsent } from "@/lib/attribution";
-import { clearRefusedStorage, onConsentChange } from "@/lib/consent";
+import { clearRefusedStorage, getConsent, onConsentChange } from "@/lib/consent";
 import {
   isTrackEventName,
   NUMERIC_PARAMS,
@@ -16,6 +16,8 @@ import {
 import { applyAmplitudeConsent, initAmplitude } from "@/lib/tracking/amplitude";
 import { applyGtmConsent } from "@/lib/tracking/gtm";
 import { applyPosthogConsent, initPosthog } from "@/lib/tracking/posthog";
+import { applyMetaRelayConsent } from "@/lib/tracking/meta-relay";
+import { applyZarazConsent } from "@/lib/tracking/zaraz";
 
 /** Survives React strict-mode remounts, so a route produces one page_view. */
 let lastViewedPath: string | null = null;
@@ -116,9 +118,13 @@ export function TrackingProvider() {
     captureAttribution();
     initPosthog();
     void initAmplitude();
+    // GTM starts from its inline bootstrap. Zaraz starts here, from the stored choice.
+    applyZarazConsent(getConsent());
 
     const stopConsent = onConsentChange((state) => {
       applyGtmConsent(state);
+      applyZarazConsent(state);
+      applyMetaRelayConsent(state);
       syncAttributionWithConsent(state);
       applyPosthogConsent(state);
       void applyAmplitudeConsent(state);

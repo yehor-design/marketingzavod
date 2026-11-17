@@ -1,0 +1,120 @@
+{
+  "consent": {
+    "buttonTextTranslations": {
+      "accept_all": {},
+      "confirm_my_choices": {},
+      "reject_all": {},
+      "view_all_partners": {}
+    },
+    "consentModalIntroHTMLWithTranslations": {
+      "en": ""
+    },
+    "cookieName": "wb_zaraz_consent",
+    "customCSS": "",
+    "customIntroDisclaimerDismissed": true,
+    "defaultLanguage": "en",
+    "enabled": true,
+    "hideModal": true,
+    "purposesWithTranslations": {
+      "MwUo": {
+        "name": {
+          "en": "Statistics"
+        },
+        "description": {
+          "en": "Google Analytics 4"
+        },
+        "order": 0
+      },
+      "vMnc": {
+        "name": {
+          "en": "Marketing"
+        },
+        "description": {
+          "en": "Google Ads, LinkedIn"
+        },
+        "order": 100
+      }
+    },
+    "tcfCompliant": false
+  },
+  "dataLayer": false,
+  "historyChange": false,
+  "settings": {
+    "autoInjectScript": false
+  },
+  "tools": {
+    "INqM": {
+      "actions": {
+        "JTJn": {
+          "actionType": "event",
+          "blockingTriggers": [],
+          "data": {
+            "__includeClient": true,
+            "__zaraz_setting_name": "Site events",
+            "conversion": false,
+            "en": "{{ client.__zarazTrack }}"
+          },
+          "firingTriggers": [
+            "AllTracks"
+          ]
+        }
+      },
+      "blockingTriggers": [],
+      "component": "google-analytics_v4",
+      "defaultFields": {},
+      "defaultPurpose": "MwUo",
+      "enabled": true,
+      "name": "Google Analytics 4",
+      "permissions": [
+        "access_client_kv",
+        "server_network_requests"
+      ],
+      "settings": {
+        "tid": "G-FC7QKZ0DYD"
+      },
+      "type": "component"
+    }
+  },
+  "triggers": {
+    "AllTracks": {
+      "description": "All zaraz.track() calls",
+      "excludeRules": [],
+      "loadRules": [
+        {
+          "id": "rul1",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "NOT_MATCH_REGEX",
+          "value": "^__zaraz.*"
+        },
+        {
+          "id": "rul2",
+          "match": "{{ client.__zarazEcommerce }}",
+          "op": "NOT_MATCH_REGEX",
+          "value": "true"
+        },
+        {
+          "id": "pgv2",
+          "match": "{{ client.__zarazTrack }}",
+          "op": "NOT_MATCH_REGEX",
+          "value": "^Pageview$"
+        }
+      ],
+      "name": "All Tracks"
+    },
+    "Pageview": {
+      "clientRules": [],
+      "description": "All page loads",
+      "excludeRules": [],
+      "loadRules": [
+        {
+          "match": "{{ client.__zarazTrack }}",
+          "op": "EQUALS",
+          "value": "Pageview"
+        }
+      ],
+      "name": "Pageview",
+      "system": "pageload"
+    }
+  },
+  "variables": {}
+}

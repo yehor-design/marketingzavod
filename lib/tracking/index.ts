@@ -1,14 +1,18 @@
 /**
- * The only way events leave the site. track() writes to the GTM dataLayer and
- * mirrors the same event to PostHog. Besides track(), only the GTM bootstrap
- * and lib/tracking/gtm.ts (consent signals) write to the dataLayer.
+ * The only way events leave the site. track() hands the event to the tag
+ * manager (the GTM dataLayer, or Cloudflare Zaraz with
+ * NEXT_PUBLIC_TAG_MANAGER=zaraz) and mirrors it to PostHog. Besides track(),
+ * only the GTM bootstrap and lib/tracking/gtm.ts (consent signals) write to
+ * the dataLayer.
  *
  * Parameters must never carry personal data: no email, name, phone or message.
  */
 import { getConsent } from "@/lib/consent";
 import type { EventMeta, TrackEventName, TrackEvents } from "@/lib/tracking/events";
-import { TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
+import { TAG_MANAGER, TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
 import { posthogCapture } from "@/lib/tracking/posthog";
+import { relayMetaEvent } from "@/lib/tracking/meta-relay";
+import { zarazTrack } from "@/lib/tracking/zaraz";
 
 export * from "@/lib/tracking/events";
 
@@ -56,6 +60,16 @@ export function track<E extends TrackEventName>(
   }
 
   const meta: EventMeta = { event_id: eventId };
+
+  if (TAG_MANAGER === "zaraz") {
+    // Zaraz gets no contact details: Enhanced Conversions stay a GTM feature.
+    zarazTrack(event, { ...params, ...meta });
+    // Meta goes through the site's own server, not through Zaraz.
+    relayMetaEvent(event, params as Record<string, unknown>, eventId);
+    mirrorToPosthog(event, params, meta);
+    return eventId;
+  }
+
   const entry: DataLayerEntry = { event, ...params, ...meta };
 
   // Enhanced Conversions: the address is given to the container for this one
@@ -75,6 +89,11 @@ export function track<E extends TrackEventName>(
     window.dataLayer.push({ user_data: undefined });
   }
 
+  mirrorToPosthog(event, params, meta);
+  return eventId;
+}
+
+function mirrorToPosthog<E extends TrackEventName>(event: E, params: TrackEvents[E], meta: EventMeta) {
   if (event === "page_view") {
     const view = params as TrackEvents["page_view"];
     posthogCapture("$pageview", {
@@ -85,6 +104,4 @@ export function track<E extends TrackEventName>(
   } else {
     posthogCapture(event, { ...params, ...meta });
   }
-
-  return eventId;
 }

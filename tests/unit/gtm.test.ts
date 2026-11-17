@@ -95,4 +95,17 @@ describe("lib/tracking/gtm", () => {
     fresh.applyGtmConsent(state(true, true));
     expect(second.scripts).toEqual([]);
   });
+
+  it("stays off when Zaraz is the tag manager, and track() leaves the dataLayer alone", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TAG_MANAGER", "zaraz");
+    const { dataLayer, scripts } = browser();
+    const gtm = await load();
+    expect(gtm.gtmActive()).toBe(false);
+    gtm.applyGtmConsent(state(true, true));
+    expect(scripts).toEqual([]);
+
+    const { track } = await import("@/lib/tracking");
+    track("faq_open", { question: "q" });
+    expect(dataLayer).toHaveLength(2);
+  });
 });
