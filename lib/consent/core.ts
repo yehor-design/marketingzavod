@@ -123,10 +123,11 @@ export function newConsentId(): string {
  * facebook.com) cannot be removed by the site.
  */
 export const CATEGORY_STORAGE_PREFIXES: Record<keyof ConsentChoice, readonly string[]> = {
-  // GA4, PostHog, Microsoft Clarity, Amplitude.
-  statistics: ["_ga", "_gid", "ph_", "__ph", "_clck", "_clsk", "_cltk", "AMP_", "amp_"],
-  // Google Ads, Meta, LinkedIn.
-  marketing: ["_gcl_", "_fbp", "_fbc", "li_fat_id", "li_gc"],
+  // GA4, PostHog, Microsoft Clarity, Amplitude (incl. its guides and surveys SDK).
+  // Checked against production on 17.11.2026.
+  statistics: ["_ga", "_gid", "ph_", "__ph", "_clck", "_clsk", "_cltk", "AMP_", "amp_", "amplitude."],
+  // Google Ads, Meta (the pixel also keeps lastExternalReferrer* in localStorage), LinkedIn.
+  marketing: ["_gcl_", "_fbp", "_fbc", "lastExternalReferrer", "li_fat_id", "li_gc"],
 };
 
 /** The prefixes to clear when moving from one choice to the next. */
