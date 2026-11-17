@@ -69,11 +69,11 @@ export function SiteFooter() {
           <Link
             href="/"
             className={cx("footer-logo")}
-            aria-label="Jet"
+            aria-label="WOWboy"
             aria-current={home ? "page" : undefined}
             data-framer-page-link-current={home ? "true" : undefined}
           >
-            <img src="/brand/logo-mark.svg" alt="" width={24} height={24} />
+            <img src="/brand/logo.svg" alt="" width={100.31} height={24} />
           </Link>
           <div className={cx("footer-columns")}>
             {footerColumns.map((column) => (

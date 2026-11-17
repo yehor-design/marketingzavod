@@ -58,7 +58,7 @@ export default async function Page({ params }: PageProps) {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: SITE_NAME,
-      logo: { "@type": "ImageObject", url: absoluteUrl("/brand/logo-mark.svg") },
+      logo: { "@type": "ImageObject", url: absoluteUrl("/brand/logo.svg") },
     },
     mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
   };
