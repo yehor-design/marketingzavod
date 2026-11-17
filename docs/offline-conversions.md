@@ -40,21 +40,25 @@
 | `OFFLINE_CONVERSIONS_SECRET` | секрет | Пароль до файла для Google Ads. Згенеруй довгий випадковий рядок |
 | `META_CAPI_ACCESS_TOKEN`, `NEXT_PUBLIC_META_PIXEL_ID` | секрет / публічна | Відправка в Meta |
 | `HUBSPOT_STAGE_QUALIFIED`, `HUBSPOT_STAGE_WON` | не секрет | ID стадій, якщо пайплайн не типовий |
+| `CRON_SECRET` | секрет, необов'язковий | Якщо задано, `/api/cron/offline-conversions` приймає лише виклики Vercel Cron |
 
-Без `HUBSPOT_ACCESS_TOKEN` обидва endpoint відповідають 503 і нічого не роблять.
+Без `HUBSPOT_ACCESS_TOKEN` усі три endpoint (webhook, синхронізація, файл для Google Ads) відповідають 503 і нічого не роблять.
 
 ## Налаштування HubSpot
 
-Чому webhook, а не опитування: webhook у застосунку HubSpot доступний на безкоштовному тарифі і спрацьовує одразу. Vercel Cron на тарифі Hobby запускається раз на добу. Workflow з дією «Send webhook» потребує платного Operations Hub, тому він не використовується.
+Конверсії в Meta надсилаються двома шляхами, обидва через `lib/offline/meta-sync.ts`:
+
+- **Щоденна синхронізація** (основний шлях): Vercel Cron щодня о 07:00 UTC викликає `GET /api/cron/offline-conversions` (`vercel.json`). Синхронізація бере угоди сайту, змінені за останні 7 дні в будь-якій стадії, і надсилає кожну досягнуту стадію-конверсію, якої ще немає в `wb_offline_sent`. Угода, що за добу пройшла і `qualifiedtobuy`, і `closedwon`, дає обидві події. Старші за 7 днів Meta не приймає, тож їх пропускає й синхронізація. Повторний виклик нічого не дублює. Якщо в Vercel задано `CRON_SECRET`, ендпоінт приймає лише виклики Vercel Cron.
+- **Webhook** (необов'язковий, миттєвий): `POST /api/crm/hubspot`. Потрібен застосунок HubSpot з webhooks і `HUBSPOT_CLIENT_SECRET`. Нові акаунти HubSpot (як wowboy, з листопада 2026) не можуть створити legacy private app, лише project-based app через HubSpot CLI. Тому webhook поки не підключено, і конверсії йдуть щоденною синхронізацією із затримкою до доби.
+
+Workflow з дією «Send webhook» потребує платного Operations Hub, тому він не використовується.
+
+Доступ до API: service key «heywowboy.com website» (HubSpot → Development → Keys → Service Keys) з правами `crm.objects.contacts.read`/`write` і `crm.objects.deals.read`/`write`. Його значення зберігається лише у Vercel як `HUBSPOT_ACCESS_TOKEN`.
 
 - [x] Властивості `wb_*` створено 17.11.2026 через HubSpot MCP: 36 у контактів, 3 в угод (група «Custom information»). Для нового акаунта: `npm run hubspot:setup`. Назва `wb_message` — «Website message», бо «Message» уже зайнята стандартною властивістю HubSpot.
-- [ ] У налаштуваннях застосунку HubSpot → Webhooks:
-  - Target URL: `https://www.heywowboy.com/api/crm/hubspot`;
-  - підписка: **Deal → Property changed → `dealstage`**;
-  - активуй підписку.
-- [ ] Скопіюй **Client secret** застосунку у Vercel як `HUBSPOT_CLIENT_SECRET`.
-
-Endpoint приймає запит, лише якщо підпис v3 збігається і мітка часу не старша за 5 хвилин.
+- [x] Service key створено 17.11.2026.
+- [ ] Значення service key у Vercel як `HUBSPOT_ACCESS_TOKEN` (Production, Sensitive), потім redeploy.
+- [ ] Необов'язково, для миттєвих подій: project-based app з webhook **Deal → Property changed → `dealstage`** на `https://www.heywowboy.com/api/crm/hubspot` і його Client secret у Vercel як `HUBSPOT_CLIENT_SECRET`. Endpoint приймає запит, лише якщо підпис v3 збігається і мітка часу не старша за 5 хвилин.
 
 ## Налаштування Google Ads
 

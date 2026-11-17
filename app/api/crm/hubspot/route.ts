@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { conversionForStage } from "@/lib/offline/config";
-import { getDeal, getDealContact, markSent, sentKeys, stageEnteredAt } from "@/lib/offline/hubspot-deals";
+import { getDeal, stageEnteredAt } from "@/lib/offline/hubspot-deals";
+import { sendDealConversion } from "@/lib/offline/meta-sync";
 import { verifyHubspotSignature } from "@/lib/offline/signature";
-import { sendMetaEvent } from "@/lib/meta/capi";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,13 +15,11 @@ type HubspotEvent = {
 };
 
 /**
- * HubSpot webhook for deal stage changes. When a deal reaches a conversion
- * stage, the matching event goes to Meta through the Conversions API with
- * action_source "system_generated". Google Ads reads the same conversions from
- * /api/offline-conversions/google-ads on its own schedule.
- *
- * Each conversion is recorded on the deal, so moving a deal back and forth
- * never reports it twice.
+ * HubSpot webhook for deal stage changes: reports a conversion to Meta at
+ * once (lib/offline/meta-sync.ts). It needs a HubSpot app with webhooks and
+ * HUBSPOT_CLIENT_SECRET. Without them the daily sync in
+ * /api/cron/offline-conversions reports the same conversions. Google Ads
+ * reads them from /api/offline-conversions/google-ads on its own schedule.
  */
 export async function POST(request: NextRequest) {
   const secret = process.env.HUBSPOT_CLIENT_SECRET?.trim();
@@ -66,43 +64,13 @@ export async function POST(request: NextRequest) {
     }
     try {
       const deal = await getDeal(token, dealId);
-      const leadId = deal.properties.wb_lead_id;
-      if (!leadId) {
-        results.push({ deal: dealId, status: "skipped_no_lead" });
-        continue;
-      }
-      if (sentKeys(deal).includes(conversion.key)) {
-        results.push({ deal: dealId, status: "already_sent" });
-        continue;
-      }
-      const contact = await getDealContact(token, dealId);
-      if (!contact || contact.properties.wb_consent_marketing !== "true") {
-        results.push({ deal: dealId, status: "skipped_no_consent" });
-        continue;
-      }
-      const sent = await sendMetaEvent({
-        eventName: conversion.metaEvent,
-        // Deterministic, so a retried delivery deduplicates on Meta's side too.
-        eventId: `${leadId}:${conversion.key}`,
-        eventTime: new Date(stageEnteredAt(deal, conversion.stage) ?? Date.now()),
-        actionSource: "system_generated",
-        email: contact.properties.email ?? undefined,
-        phone: contact.properties.phone ?? undefined,
-        fbp: contact.properties.wb_fbp ?? undefined,
-        fbc: contact.properties.wb_fbc ?? undefined,
-        leadId,
-        customData: {
-          event_source: "crm",
-          lead_event_source: "HubSpot",
-          value: conversion.value,
-          currency: conversion.currency,
-        },
-      });
-      // Marked when Meta accepted it, or when Meta is not connected at all.
-      if (sent.sent || sent.reason === "not_configured") {
-        await markSent(token, deal, conversion.key);
-      }
-      results.push({ deal: dealId, status: sent.sent ? "sent" : sent.reason });
+      const status = await sendDealConversion(
+        token,
+        deal,
+        conversion,
+        stageEnteredAt(deal, conversion.stage),
+      );
+      results.push({ deal: dealId, status });
     } catch (error) {
       console.error(
         JSON.stringify({
