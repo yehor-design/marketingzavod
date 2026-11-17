@@ -9,7 +9,7 @@ import { textAreaClass, textControlClass } from "@/components/forms/control-clas
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
-import styles from "@/components/careers/careers.module.css";
+import styles from "@/components/careers/careers-styles";
 
 
 const FIELDS = [
@@ -116,7 +116,7 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
       }}
     >
       {/* Spam trap: a native input so it is not a named control. */}
-      <div className="visually-hidden" aria-hidden="true">
+      <div className="sr-only" aria-hidden="true">
         <label htmlFor={`${slug}-company-url`}>Company URL</label>
         <input id={`${slug}-company-url`} name="company_url" type="text" tabIndex={-1} autoComplete="off" />
       </div>

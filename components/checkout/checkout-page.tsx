@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { TrackView } from "@/components/tracking/track-view";
-import styles from "@/components/checkout/checkout.module.css";
+import styles from "@/components/checkout/checkout-styles";
 
 /**
  * https://jet.framer.website/checkout is the template purchase card.

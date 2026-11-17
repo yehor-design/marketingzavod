@@ -6,7 +6,7 @@ import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither } from "@/components/motion";
 import { Badge } from "@/components/ui/badge";
 import type { Post } from "@/lib/blog";
-import styles from "@/components/blog/blog.module.css";
+import styles from "@/components/blog/blog-styles";
 
 const coverDither = {
   ...orderedDither,

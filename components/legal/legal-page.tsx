@@ -1,5 +1,5 @@
 import type { LegalBlock, LegalDocument, RichText } from "@/lib/legal";
-import styles from "@/components/legal/legal.module.css";
+import styles from "@/components/legal/legal-styles";
 
 function Rich({ content }: { content: RichText[] }) {
   return content.map((part, index) =>

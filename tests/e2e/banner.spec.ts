@@ -28,7 +28,7 @@ test("first visit: a small banner with two equal choices and a link to the detai
   const necessary = banner(page).getByRole("button", { name: "Necessary only" });
   const accept = banner(page).getByRole("button", { name: "Accept all" });
   const [a, b] = [await necessary.boundingBox(), await accept.boundingBox()];
-  // Equal up to subpixel rounding.
+  // Equal columns, up to subpixel rounding. Accept all is the white primary button.
   expect(Math.abs((a?.width ?? 0) - (b?.width ?? 0))).toBeLessThan(0.5);
   expect(a?.height).toBe(b?.height);
   const look = (selector: string) =>
@@ -36,9 +36,21 @@ test("first visit: a small banner with two equal choices and a link to the detai
       .getByRole("button", { name: selector })
       .evaluate((node) => {
         const style = getComputedStyle(node);
-        return [style.backgroundColor, style.color, style.fontSize, style.borderRadius].join(" ");
+        return {
+          backgroundColor: style.backgroundColor,
+          color: style.color,
+          fontSize: style.fontSize,
+          borderRadius: style.borderRadius,
+        };
       });
-  expect(await look("Necessary only")).toBe(await look("Accept all"));
+  const necessaryLook = await look("Necessary only");
+  const acceptLook = await look("Accept all");
+  expect(necessaryLook.fontSize).toBe(acceptLook.fontSize);
+  expect(necessaryLook.borderRadius).toBe(acceptLook.borderRadius);
+  expect(acceptLook.backgroundColor).toBe("rgb(255, 255, 255)");
+  expect(acceptLook.color).toBe("rgb(0, 0, 0)");
+  expect(necessaryLook.backgroundColor).toBe("rgb(23, 23, 23)");
+  expect(necessaryLook.color).toBe("rgb(255, 255, 255)");
 
   // Fixed in a corner: it does not push the page down.
   expect(await banner(page).evaluate((node) => getComputedStyle(node).position)).toBe("fixed");

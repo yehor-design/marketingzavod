@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import styles from "@/components/home/home.module.css";
+import styles from "@/components/home/home-styles";
 
 type HalftoneProps = {
   src: string;

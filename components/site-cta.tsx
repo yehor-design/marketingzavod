@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { LineAnimator, PulseGradient, RollingText } from "@/components/motion";
-import styles from "@/components/site-cta.module.css";
+import styles from "@/components/site-cta-styles";
 
 const NBSP = "\u00A0";
 
