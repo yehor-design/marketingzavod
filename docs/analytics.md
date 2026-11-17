@@ -120,7 +120,7 @@
 
 **Повторний візит.** Inline-скрипт у `components/tracking/gtm.tsx` читає `wb_consent` ще до будь-якого бандла і, якщо згода є, запускає GTM з потрібним станом уже на першому перегляді.
 
-**Де банер видно.** Лише там, де працює трекінг (`TRACKING_ENABLED`), і на production — лише коли `CONSENT_TOOL_READY = true` у `lib/consent`. На preview і в e2e з `NEXT_PUBLIC_TRACKING_DEBUG=true` банер видно завжди. Та сама константа передається в GTM як `consent_ready`: поки вона `false`, тригер-виняток `Block - Consent tool missing` тримає всі теги.
+**Де банер видно.** Лише там, де працює трекінг (`TRACKING_ENABLED`), і на production — лише коли `CONSENT_TOOL_READY = true` у `lib/consent` (зараз так). На preview і в e2e з `NEXT_PUBLIC_TRACKING_DEBUG=true` банер видно завжди. Та сама константа передається в GTM як `consent_ready`: поки вона `false`, тригер-виняток `Block - Consent tool missing` тримає всі теги.
 
 **Змінити тексти.** Банер — `components/consent/consent-banner.tsx`, панель — `components/consent/consent-settings.tsx`. Якщо змінюється перелік сервісів чи мет, онови Privacy Policy (`lib/legal.ts`) і підніми `CONSENT_VERSION`, щоб усі відвідувачі погодилися заново.
 

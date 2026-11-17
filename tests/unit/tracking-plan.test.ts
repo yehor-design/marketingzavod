@@ -77,10 +77,10 @@ describe("gtm/container.json", () => {
     expect(container.customTemplate ?? []).toEqual([]);
   });
 
-  it("holds every tag back while the site has no consent tool", () => {
+  it("keeps a kill switch on every tag, open while the consent banner is live", () => {
     const block = triggerId("Block - Consent tool missing");
     expect(block).toBeDefined();
-    expect(gtmConfig().consent_ready).toBe("false");
+    expect(gtmConfig().consent_ready).toBe("true");
     for (const item of container.tag) {
       expect(item.blockingTriggerId, item.name).toContain(block);
     }

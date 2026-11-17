@@ -45,10 +45,11 @@ export const DENIED: ConsentState = {
 };
 
 /**
- * Set to true when the site's consent tool ships. Until then every GTM tag is
- * held back and the footer shows no "Cookie settings" control.
+ * The site's own consent banner is live. This is also the kill switch: set it
+ * to false and production shows no banner and no "Cookie settings", while GTM
+ * holds every tag back (consent_ready = "false").
  */
-export const CONSENT_TOOL_READY: boolean = false;
+export const CONSENT_TOOL_READY: boolean = true;
 
 type Listener = (state: ConsentState, previous: ConsentState) => void;
 
