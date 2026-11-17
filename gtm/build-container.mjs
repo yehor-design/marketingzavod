@@ -53,10 +53,6 @@ const ID = Object.fromEntries(config.map((key) => [key, dataLayerVariable(`ID - 
 dataLayerVariable("DLV - user_data.email", "user_data.email");
 dataLayerVariable("DLV - user_data.phone_number", "user_data.phone_number");
 
-// Set by the site with every consent_update event.
-const CONSENT_STATISTICS = dataLayerVariable("DLV - consent_statistics", "consent_statistics");
-const CONSENT_MARKETING = dataLayerVariable("DLV - consent_marketing", "consent_marketing");
-
 // Google Ads tags take the numeric part of AW-123456789.
 const ADS_NUMERIC = addVariable("JS - Google Ads conversion ID", "jsm", [
   template(
@@ -129,7 +125,6 @@ const addBlock = (name, variable, pattern) => {
 const BLOCK = {
   consent: addBlock("Block - Consent tool missing", ID.consent_ready, "^true$"),
   ga4: addBlock("Block - GA4 ID missing", ID.ga4_id, "^G-[A-Z0-9]+$"),
-  clarity: addBlock("Block - Clarity ID missing", ID.clarity_id, "^[a-z0-9]{6,}$"),
   ads: addBlock("Block - Google Ads ID missing", ID.google_ads_id, "^AW-[0-9]+$"),
   adsContact: addBlock("Block - Ads label missing - contact", ID.google_ads_label_contact, "^.+$"),
   adsWaitlist: addBlock("Block - Ads label missing - waitlist", ID.google_ads_label_waitlist, "^.+$"),
@@ -159,9 +154,7 @@ const BLOCK = {
  * nothing that needs consent runs before it, so Google tags run in Basic
  * Consent Mode. Every tag, Google's included, gets an explicit requirement and
  * does not fire at all without it: no cookieless pings (gcs=G100) either.
- * The only exception is the tag that tells Clarity consent was withdrawn.
  */
-const builtInConsent = { consentStatus: "NOT_NEEDED" };
 const requires = (...types) => ({
   consentStatus: "NEEDED",
   consentType: { type: "LIST", list: types.map((value) => ({ type: "TEMPLATE", value })) },
@@ -227,72 +220,6 @@ for (const event of events) {
     consent: requires("analytics_storage"),
   });
 }
-
-// Microsoft Clarity. Loads only with analytics consent, then receives the
-// consent signal through its Consent API v2.
-addTag({
-  name: "Clarity - Base",
-  type: "html",
-  parameter: html(`
-<script>
-(function(c,l,a,r,i,t,y){
-  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-})(window,document,"clarity","script","${ref(ID.clarity_id)}");
-(function(){
-  var marketing=${ref(CONSENT_MARKETING)}===true;
-  window.clarity("consentv2",{ad_Storage:marketing?"granted":"denied",analytics_Storage:"granted"});
-  var keys=["utm_source","utm_campaign"],query=new URLSearchParams(window.location.search),stored={};
-  try{
-    var raw=document.cookie.split("; ").filter(function(row){return row.indexOf("wb_attr=")===0})[0];
-    if(raw){stored=(JSON.parse(decodeURIComponent(raw.slice(8))).last)||{};}
-  }catch(e){}
-  keys.forEach(function(key){
-    var value=(query.get(key)||stored[key]||"").toLowerCase().slice(0,100);
-    if(value){window.clarity("set",key,value);}
-  });
-})();
-</script>`),
-  firing: [CE.page_view, CE_CONSENT_UPDATE],
-  blocking: [BLOCK.clarity],
-  consent: requires("analytics_storage"),
-  once: true,
-});
-
-addTag({
-  name: "Clarity - Consent update",
-  type: "html",
-  parameter: html(`
-<script>
-(function(){
-  if(typeof window.clarity!=="function"){return;}
-  var statistics=${ref(CONSENT_STATISTICS)}===true,marketing=${ref(CONSENT_MARKETING)}===true;
-  if(statistics){
-    window.clarity("consentv2",{ad_Storage:marketing?"granted":"denied",analytics_Storage:"granted"});
-  }else{
-    window.clarity("consentv2",{ad_Storage:"denied",analytics_Storage:"denied"});
-    window.clarity("consent",false);
-  }
-})();
-</script>`),
-  firing: [CE_CONSENT_UPDATE],
-  blocking: [BLOCK.clarity],
-  consent: builtInConsent,
-  notes: "Runs without a consent requirement on purpose: it is the tag that tells Clarity consent was withdrawn. It does nothing unless Clarity is already on the page.",
-});
-
-addTag({
-  name: "Clarity - Form tag",
-  type: "html",
-  parameter: html(`
-<script>
-if(typeof window.clarity==="function"){window.clarity("set","form_name","${ref(DLV.form_name)}");}
-</script>`),
-  firing: [CE.generate_lead],
-  blocking: [BLOCK.clarity],
-  consent: requires("analytics_storage"),
-});
 
 // Google Ads.
 addTag({

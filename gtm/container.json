@@ -26,7 +26,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "64",
+        "tagId": "60",
         "name": "GA4 - Google tag",
         "type": "googtag",
         "parameter": [
@@ -61,8 +61,8 @@
           "2147479573"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -85,7 +85,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "65",
+        "tagId": "61",
         "name": "GA4 - page_view",
         "type": "gaawe",
         "parameter": [
@@ -172,11 +172,11 @@
           }
         ],
         "firingTriggerId": [
-          "38"
+          "35"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -199,7 +199,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "66",
+        "tagId": "62",
         "name": "GA4 - generate_lead",
         "type": "gaawe",
         "parameter": [
@@ -271,11 +271,11 @@
           }
         ],
         "firingTriggerId": [
-          "39"
+          "36"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -298,7 +298,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "67",
+        "tagId": "63",
         "name": "GA4 - join_waitlist",
         "type": "gaawe",
         "parameter": [
@@ -370,11 +370,11 @@
           }
         ],
         "firingTriggerId": [
-          "40"
+          "37"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -397,7 +397,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "68",
+        "tagId": "64",
         "name": "GA4 - submit_application",
         "type": "gaawe",
         "parameter": [
@@ -484,11 +484,11 @@
           }
         ],
         "firingTriggerId": [
-          "41"
+          "38"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -511,7 +511,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "69",
+        "tagId": "65",
         "name": "GA4 - begin_checkout",
         "type": "gaawe",
         "parameter": [
@@ -598,11 +598,11 @@
           }
         ],
         "firingTriggerId": [
-          "42"
+          "39"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -625,7 +625,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "70",
+        "tagId": "66",
         "name": "GA4 - view_pricing",
         "type": "gaawe",
         "parameter": [
@@ -682,11 +682,11 @@
           }
         ],
         "firingTriggerId": [
-          "43"
+          "40"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -709,7 +709,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "71",
+        "tagId": "67",
         "name": "GA4 - cta_click",
         "type": "gaawe",
         "parameter": [
@@ -796,11 +796,11 @@
           }
         ],
         "firingTriggerId": [
-          "44"
+          "41"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -823,7 +823,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "72",
+        "tagId": "68",
         "name": "GA4 - contact_click",
         "type": "gaawe",
         "parameter": [
@@ -880,11 +880,11 @@
           }
         ],
         "firingTriggerId": [
-          "45"
+          "42"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -907,7 +907,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "73",
+        "tagId": "69",
         "name": "GA4 - outbound_click",
         "type": "gaawe",
         "parameter": [
@@ -979,11 +979,11 @@
           }
         ],
         "firingTriggerId": [
-          "46"
+          "43"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1006,7 +1006,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "74",
+        "tagId": "70",
         "name": "GA4 - form_start",
         "type": "gaawe",
         "parameter": [
@@ -1063,11 +1063,11 @@
           }
         ],
         "firingTriggerId": [
-          "47"
+          "44"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1090,7 +1090,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "75",
+        "tagId": "71",
         "name": "GA4 - form_error",
         "type": "gaawe",
         "parameter": [
@@ -1162,11 +1162,11 @@
           }
         ],
         "firingTriggerId": [
-          "48"
+          "45"
         ],
         "blockingTriggerId": [
-          "53",
-          "52"
+          "50",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1189,7 +1189,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "76",
+        "tagId": "72",
         "name": "GA4 - faq_open",
         "type": "gaawe",
         "parameter": [
@@ -1246,12 +1246,12 @@
           }
         ],
         "firingTriggerId": [
+          "46"
+        ],
+        "blockingTriggerId": [
+          "50",
           "49"
         ],
-        "blockingTriggerId": [
-          "53",
-          "52"
-        ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
           "consentStatus": "NEEDED",
@@ -1273,129 +1273,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "77",
-        "name": "Clarity - Base",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(c,l,a,r,i,t,y){\n  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\n  t=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\n  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n})(window,document,\"clarity\",\"script\",\"{{ID - clarity_id}}\");\n(function(){\n  var marketing={{DLV - consent_marketing}}===true;\n  window.clarity(\"consentv2\",{ad_Storage:marketing?\"granted\":\"denied\",analytics_Storage:\"granted\"});\n  var keys=[\"utm_source\",\"utm_campaign\"],query=new URLSearchParams(window.location.search),stored={};\n  try{\n    var raw=document.cookie.split(\"; \").filter(function(row){return row.indexOf(\"wb_attr=\")===0})[0];\n    if(raw){stored=(JSON.parse(decodeURIComponent(raw.slice(8))).last)||{};}\n  }catch(e){}\n  keys.forEach(function(key){\n    var value=(query.get(key)||stored[key]||\"\").toLowerCase().slice(0,100);\n    if(value){window.clarity(\"set\",key,value);}\n  });\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "38",
-          "51"
-        ],
-        "blockingTriggerId": [
-          "54",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_LOAD",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "78",
-        "name": "Clarity - Consent update",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(typeof window.clarity!==\"function\"){return;}\n  var statistics={{DLV - consent_statistics}}===true,marketing={{DLV - consent_marketing}}===true;\n  if(statistics){\n    window.clarity(\"consentv2\",{ad_Storage:marketing?\"granted\":\"denied\",analytics_Storage:\"granted\"});\n  }else{\n    window.clarity(\"consentv2\",{ad_Storage:\"denied\",analytics_Storage:\"denied\"});\n    window.clarity(\"consent\",false);\n  }\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "51"
-        ],
-        "blockingTriggerId": [
-          "54",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NOT_NEEDED"
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        },
-        "notes": "Runs without a consent requirement on purpose: it is the tag that tells Clarity consent was withdrawn. It does nothing unless Clarity is already on the page."
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "79",
-        "name": "Clarity - Form tag",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\nif(typeof window.clarity===\"function\"){window.clarity(\"set\",\"form_name\",\"{{DLV - form_name}}\");}\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "39"
-        ],
-        "blockingTriggerId": [
-          "54",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "80",
+        "tagId": "73",
         "name": "Google Ads - Conversion Linker",
         "type": "gclidw",
         "parameter": [
@@ -1419,8 +1297,8 @@
           "2147479573"
         ],
         "blockingTriggerId": [
-          "55",
-          "52"
+          "51",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1443,7 +1321,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "81",
+        "tagId": "74",
         "name": "Google Ads - Conversion - Contact lead",
         "type": "awct",
         "parameter": [
@@ -1499,12 +1377,12 @@
           }
         ],
         "firingTriggerId": [
-          "50"
+          "47"
         ],
         "blockingTriggerId": [
-          "55",
-          "56",
-          "52"
+          "51",
+          "52",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1527,7 +1405,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "82",
+        "tagId": "75",
         "name": "Google Ads - Conversion - Waitlist signup",
         "type": "awct",
         "parameter": [
@@ -1583,12 +1461,12 @@
           }
         ],
         "firingTriggerId": [
-          "40"
+          "37"
         ],
         "blockingTriggerId": [
-          "55",
-          "57",
-          "52"
+          "51",
+          "53",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1611,7 +1489,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "83",
+        "tagId": "76",
         "name": "Google Ads - Conversion - Begin checkout",
         "type": "awct",
         "parameter": [
@@ -1672,12 +1550,12 @@
           }
         ],
         "firingTriggerId": [
-          "42"
+          "39"
         ],
         "blockingTriggerId": [
-          "55",
-          "58",
-          "52"
+          "51",
+          "54",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1700,7 +1578,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "84",
+        "tagId": "77",
         "name": "Google Ads - Conversion - Contact click",
         "type": "awct",
         "parameter": [
@@ -1751,12 +1629,12 @@
           }
         ],
         "firingTriggerId": [
-          "45"
+          "42"
         ],
         "blockingTriggerId": [
+          "51",
           "55",
-          "59",
-          "52"
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1779,7 +1657,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "85",
+        "tagId": "78",
         "name": "Google Ads - Remarketing",
         "type": "sp",
         "parameter": [
@@ -1810,11 +1688,11 @@
           }
         ],
         "firingTriggerId": [
-          "38"
+          "35"
         ],
         "blockingTriggerId": [
-          "55",
-          "52"
+          "51",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1837,7 +1715,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "tagId": "86",
+        "tagId": "79",
         "name": "Meta - PageView",
         "type": "html",
         "parameter": [
@@ -1853,12 +1731,315 @@
           }
         ],
         "firingTriggerId": [
-          "38",
-          "51"
+          "35",
+          "48"
         ],
         "blockingTriggerId": [
-          "60",
-          "52"
+          "56",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "80",
+        "name": "Meta - Lead",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','Lead',{}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "47"
+        ],
+        "blockingTriggerId": [
+          "56",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "81",
+        "name": "Meta - CompleteRegistration",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','CompleteRegistration',{}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "37"
+        ],
+        "blockingTriggerId": [
+          "56",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "82",
+        "name": "Meta - InitiateCheckout",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','InitiateCheckout',{value:Number('{{DLV - value}}')||0,currency:'{{DLV - currency}}'}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "39"
+        ],
+        "blockingTriggerId": [
+          "56",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "83",
+        "name": "Meta - ViewContent",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','ViewContent',{content_name:'pricing'}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "40"
+        ],
+        "blockingTriggerId": [
+          "56",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "84",
+        "name": "Meta - Contact",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','Contact',{}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "42"
+        ],
+        "blockingTriggerId": [
+          "56",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "85",
+        "name": "LinkedIn - Insight Tag",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.lintrk){\n    window._linkedin_partner_id='{{ID - linkedin_partner_id}}';\n    window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];\n    window._linkedin_data_partner_ids.push(window._linkedin_partner_id);\n    window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[];\n    var s=document.getElementsByTagName('script')[0],b=document.createElement('script');\n    b.type='text/javascript';b.async=true;b.src='https://snap.licdn.com/li.lms-analytics/insight.min.js';\n    s.parentNode.insertBefore(b,s);\n  }\n  \n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "35",
+          "48"
+        ],
+        "blockingTriggerId": [
+          "57",
+          "49"
+        ],
+        "tagFiringOption": "ONCE_PER_LOAD",
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "ad_storage"
+              }
+            ]
+          }
+        },
+        "monitoringMetadata": {
+          "type": "MAP"
+        }
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "fingerprint": "1794787200000",
+        "tagId": "86",
+        "name": "LinkedIn - Conversion - Contact lead",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function(){\n  if(!window.lintrk){\n    window._linkedin_partner_id='{{ID - linkedin_partner_id}}';\n    window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];\n    window._linkedin_data_partner_ids.push(window._linkedin_partner_id);\n    window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[];\n    var s=document.getElementsByTagName('script')[0],b=document.createElement('script');\n    b.type='text/javascript';b.async=true;b.src='https://snap.licdn.com/li.lms-analytics/insight.min.js';\n    s.parentNode.insertBefore(b,s);\n  }\n  window.lintrk('track',{conversion_id:Number('{{ID - linkedin_conversion_contact}}')});\n})();\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "firingTriggerId": [
+          "47"
+        ],
+        "blockingTriggerId": [
+          "57",
+          "58",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -1882,309 +2063,6 @@
         "containerId": "0",
         "fingerprint": "1794787200000",
         "tagId": "87",
-        "name": "Meta - Lead",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','Lead',{}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "50"
-        ],
-        "blockingTriggerId": [
-          "60",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "88",
-        "name": "Meta - CompleteRegistration",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','CompleteRegistration',{}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "40"
-        ],
-        "blockingTriggerId": [
-          "60",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "89",
-        "name": "Meta - InitiateCheckout",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','InitiateCheckout',{value:Number('{{DLV - value}}')||0,currency:'{{DLV - currency}}'}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "42"
-        ],
-        "blockingTriggerId": [
-          "60",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "90",
-        "name": "Meta - ViewContent",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','ViewContent',{content_name:'pricing'}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "43"
-        ],
-        "blockingTriggerId": [
-          "60",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "91",
-        "name": "Meta - Contact",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.fbq){\n    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;\n    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;\n    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,\n    document,'script','https://connect.facebook.net/en_US/fbevents.js');\n    window.fbq('init','{{ID - meta_pixel_id}}');\n  }\n  window.fbq('track','Contact',{}, {eventID:'{{DLV - event_id}}'});\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "45"
-        ],
-        "blockingTriggerId": [
-          "60",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "92",
-        "name": "LinkedIn - Insight Tag",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.lintrk){\n    window._linkedin_partner_id='{{ID - linkedin_partner_id}}';\n    window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];\n    window._linkedin_data_partner_ids.push(window._linkedin_partner_id);\n    window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[];\n    var s=document.getElementsByTagName('script')[0],b=document.createElement('script');\n    b.type='text/javascript';b.async=true;b.src='https://snap.licdn.com/li.lms-analytics/insight.min.js';\n    s.parentNode.insertBefore(b,s);\n  }\n  \n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "38",
-          "51"
-        ],
-        "blockingTriggerId": [
-          "61",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_LOAD",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "93",
-        "name": "LinkedIn - Conversion - Contact lead",
-        "type": "html",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "html",
-            "value": "<script>\n(function(){\n  if(!window.lintrk){\n    window._linkedin_partner_id='{{ID - linkedin_partner_id}}';\n    window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];\n    window._linkedin_data_partner_ids.push(window._linkedin_partner_id);\n    window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[];\n    var s=document.getElementsByTagName('script')[0],b=document.createElement('script');\n    b.type='text/javascript';b.async=true;b.src='https://snap.licdn.com/li.lms-analytics/insight.min.js';\n    s.parentNode.insertBefore(b,s);\n  }\n  window.lintrk('track',{conversion_id:Number('{{ID - linkedin_conversion_contact}}')});\n})();\n</script>"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "supportDocumentWrite",
-            "value": "false"
-          }
-        ],
-        "firingTriggerId": [
-          "50"
-        ],
-        "blockingTriggerId": [
-          "61",
-          "62",
-          "52"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "ad_storage"
-              }
-            ]
-          }
-        },
-        "monitoringMetadata": {
-          "type": "MAP"
-        }
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "tagId": "94",
         "name": "LinkedIn - Conversion - Waitlist signup",
         "type": "html",
         "parameter": [
@@ -2200,12 +2078,12 @@
           }
         ],
         "firingTriggerId": [
-          "40"
+          "37"
         ],
         "blockingTriggerId": [
-          "61",
-          "63",
-          "52"
+          "57",
+          "59",
+          "49"
         ],
         "tagFiringOption": "ONCE_PER_EVENT",
         "consentSettings": {
@@ -2230,7 +2108,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "38",
+        "triggerId": "35",
         "name": "CE - page_view",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2255,7 +2133,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "39",
+        "triggerId": "36",
         "name": "CE - generate_lead",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2280,7 +2158,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "40",
+        "triggerId": "37",
         "name": "CE - join_waitlist",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2305,7 +2183,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "41",
+        "triggerId": "38",
         "name": "CE - submit_application",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2330,7 +2208,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "42",
+        "triggerId": "39",
         "name": "CE - begin_checkout",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2355,7 +2233,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "43",
+        "triggerId": "40",
         "name": "CE - view_pricing",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2380,7 +2258,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "44",
+        "triggerId": "41",
         "name": "CE - cta_click",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2405,7 +2283,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "45",
+        "triggerId": "42",
         "name": "CE - contact_click",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2430,7 +2308,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "46",
+        "triggerId": "43",
         "name": "CE - outbound_click",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2455,7 +2333,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "47",
+        "triggerId": "44",
         "name": "CE - form_start",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2480,7 +2358,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "48",
+        "triggerId": "45",
         "name": "CE - form_error",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2505,7 +2383,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "49",
+        "triggerId": "46",
         "name": "CE - faq_open",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2530,7 +2408,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "50",
+        "triggerId": "47",
         "name": "CE - generate_lead - contact",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2572,7 +2450,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "51",
+        "triggerId": "48",
         "name": "CE - consent_update",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2597,7 +2475,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "52",
+        "triggerId": "49",
         "name": "Block - Consent tool missing",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2644,7 +2522,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "53",
+        "triggerId": "50",
         "name": "Block - GA4 ID missing",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2691,54 +2569,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "54",
-        "name": "Block - Clarity ID missing",
-        "type": "CUSTOM_EVENT",
-        "customEventFilter": [
-          {
-            "type": "MATCH_REGEX",
-            "parameter": [
-              {
-                "type": "TEMPLATE",
-                "key": "arg0",
-                "value": "{{_event}}"
-              },
-              {
-                "type": "TEMPLATE",
-                "key": "arg1",
-                "value": ".*"
-              }
-            ]
-          }
-        ],
-        "filter": [
-          {
-            "type": "MATCH_REGEX",
-            "parameter": [
-              {
-                "type": "TEMPLATE",
-                "key": "arg0",
-                "value": "{{ID - clarity_id}}"
-              },
-              {
-                "type": "TEMPLATE",
-                "key": "arg1",
-                "value": "^[a-z0-9]{6,}$"
-              },
-              {
-                "type": "BOOLEAN",
-                "key": "negate",
-                "value": "true"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "triggerId": "55",
+        "triggerId": "51",
         "name": "Block - Google Ads ID missing",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2785,7 +2616,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "56",
+        "triggerId": "52",
         "name": "Block - Ads label missing - contact",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2832,7 +2663,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "57",
+        "triggerId": "53",
         "name": "Block - Ads label missing - waitlist",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2879,7 +2710,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "58",
+        "triggerId": "54",
         "name": "Block - Ads label missing - checkout",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2926,7 +2757,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "59",
+        "triggerId": "55",
         "name": "Block - Ads label missing - contact click",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -2973,7 +2804,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "60",
+        "triggerId": "56",
         "name": "Block - Meta Pixel ID missing",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -3020,7 +2851,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "61",
+        "triggerId": "57",
         "name": "Block - LinkedIn Partner ID missing",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -3067,7 +2898,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "62",
+        "triggerId": "58",
         "name": "Block - LinkedIn conversion missing - contact",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -3114,7 +2945,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "triggerId": "63",
+        "triggerId": "59",
         "name": "Block - LinkedIn conversion missing - waitlist",
         "type": "CUSTOM_EVENT",
         "customEventFilter": [
@@ -3689,31 +3520,6 @@
         "containerId": "0",
         "fingerprint": "1794787200000",
         "variableId": "22",
-        "name": "ID - clarity_id",
-        "type": "v",
-        "parameter": [
-          {
-            "type": "INTEGER",
-            "key": "dataLayerVersion",
-            "value": "2"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "setDefaultValue",
-            "value": "false"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "name",
-            "value": "clarity_id"
-          }
-        ]
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "variableId": "23",
         "name": "ID - google_ads_id",
         "type": "v",
         "parameter": [
@@ -3738,7 +3544,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "24",
+        "variableId": "23",
         "name": "ID - google_ads_label_contact",
         "type": "v",
         "parameter": [
@@ -3763,7 +3569,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "25",
+        "variableId": "24",
         "name": "ID - google_ads_label_waitlist",
         "type": "v",
         "parameter": [
@@ -3788,7 +3594,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "26",
+        "variableId": "25",
         "name": "ID - google_ads_label_checkout",
         "type": "v",
         "parameter": [
@@ -3813,7 +3619,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "27",
+        "variableId": "26",
         "name": "ID - google_ads_label_contact_click",
         "type": "v",
         "parameter": [
@@ -3838,7 +3644,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "28",
+        "variableId": "27",
         "name": "ID - meta_pixel_id",
         "type": "v",
         "parameter": [
@@ -3863,7 +3669,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "29",
+        "variableId": "28",
         "name": "ID - linkedin_partner_id",
         "type": "v",
         "parameter": [
@@ -3888,7 +3694,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "30",
+        "variableId": "29",
         "name": "ID - linkedin_conversion_contact",
         "type": "v",
         "parameter": [
@@ -3913,7 +3719,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "31",
+        "variableId": "30",
         "name": "ID - linkedin_conversion_waitlist",
         "type": "v",
         "parameter": [
@@ -3938,7 +3744,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "32",
+        "variableId": "31",
         "name": "DLV - user_data.email",
         "type": "v",
         "parameter": [
@@ -3963,7 +3769,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "33",
+        "variableId": "32",
         "name": "DLV - user_data.phone_number",
         "type": "v",
         "parameter": [
@@ -3988,57 +3794,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "34",
-        "name": "DLV - consent_statistics",
-        "type": "v",
-        "parameter": [
-          {
-            "type": "INTEGER",
-            "key": "dataLayerVersion",
-            "value": "2"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "setDefaultValue",
-            "value": "false"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "name",
-            "value": "consent_statistics"
-          }
-        ]
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "variableId": "35",
-        "name": "DLV - consent_marketing",
-        "type": "v",
-        "parameter": [
-          {
-            "type": "INTEGER",
-            "key": "dataLayerVersion",
-            "value": "2"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "setDefaultValue",
-            "value": "false"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "name",
-            "value": "consent_marketing"
-          }
-        ]
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "fingerprint": "1794787200000",
-        "variableId": "36",
+        "variableId": "33",
         "name": "JS - Google Ads conversion ID",
         "type": "jsm",
         "parameter": [
@@ -4053,7 +3809,7 @@
         "accountId": "0",
         "containerId": "0",
         "fingerprint": "1794787200000",
-        "variableId": "37",
+        "variableId": "34",
         "name": "User-Provided Data - lead form",
         "type": "awec",
         "parameter": [

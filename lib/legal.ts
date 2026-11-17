@@ -102,7 +102,7 @@ const privacy: LegalDocument = {
   heading: "Privacy Policy",
   description:
     "How Jet collects, uses and protects personal data, including the cookies and analytics services used on this website.",
-  version: "1.6",
+  version: "1.7",
   date: "Nov 17, 2026",
   blocks: [
     p(
@@ -136,13 +136,13 @@ const privacy: LegalDocument = {
       "We use cookies and similar technologies only with your consent, except for the one cookie that is strictly necessary to remember your choice. When you first visit, a banner lets you choose in one click: \u201cAccept all\u201d or \u201cNecessary only\u201d. \u201cSettings\u201d lets you choose each category separately. Nothing in the statistics or marketing categories is loaded or stored on your device before you choose, and refusing is as easy as accepting.",
     ),
     p(
-      "We keep your choice for 180 days and then ask again. We also ask again if we add a service or a purpose. You can change or withdraw your consent at any time through the \u201cCookie settings\u201d link in the footer of every page. When you withdraw consent, we stop the services in that category, delete the cookies and stored data they set on our website, and reload the page. Cookies that partners set on their own domains, such as clarity.ms, linkedin.com or facebook.com, can only be removed in your browser settings.",
+      "We keep your choice for 180 days and then ask again. We also ask again if we add a service or a purpose. You can change or withdraw your consent at any time through the \u201cCookie settings\u201d link in the footer of every page. When you withdraw consent, we stop the services in that category, delete the cookies and stored data they set on our website, and reload the page. Cookies that partners set on their own domains, such as linkedin.com or facebook.com, can only be removed in your browser settings.",
     ),
     {
       kind: "list",
       items: [
         "Necessary: the wb_consent cookie remembers your choice. It holds only the categories you chose, the date and a random ID.",
-        "Statistics: Google Analytics 4, PostHog, Microsoft Clarity and Amplitude help us understand how the website is used, including session recordings in which form fields are masked, and Vercel Speed Insights measures how fast our pages load. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
+        "Statistics: Google Analytics 4, PostHog and Amplitude help us understand how the website is used, including session recordings in which form fields are masked, and Vercel Speed Insights measures how fast our pages load. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
         "Marketing: Google Ads, Meta and LinkedIn measure whether our advertising leads to enquiries. With your consent we may share a hashed version of the email address you submit in a form, together with advertising click identifiers, with Google and Meta for conversion measurement.",
       ],
     },

@@ -79,7 +79,6 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
       data-track-form="careers_apply"
       data-form-state={done ? "success" : pending ? "pending" : "idle"}
       data-private=""
-      data-clarity-mask="true"
       onSubmit={async (event) => {
         event.preventDefault();
         if (pending || done) {

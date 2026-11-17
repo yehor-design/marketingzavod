@@ -9,7 +9,6 @@
  відвідувач ──► сторінка │ track(event, params)   lib/tracking       │
                          │   ├─► dataLayer ──► GTM (лише після згоди; Consent Mode v2 за вибором)
                          │   │                    ├─► GA4
-                         │   │                    ├─► Microsoft Clarity
                          │   │                    ├─► Google Ads (конверсії, ремаркетинг)
                          │   │                    ├─► Meta Pixel
                          │   │                    └─► LinkedIn Insight Tag
@@ -35,13 +34,14 @@
 
 ## Роль кожного сервісу
 
+Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій і теплові карти вже є в PostHog і Amplitude.
+
 | Сервіс | Для чого | Як підключений | Згода |
 | --- | --- | --- | --- |
 | Власний банер згоди | Банер і панель налаштувань, сигнали Consent Mode v2, журнал згод | `components/consent/`, `lib/consent` | — |
-| Google Tag Manager | Єдина точка входу для тегів Google, Meta, Clarity, LinkedIn | `components/tracking/gtm.tsx`, `lib/tracking/gtm.ts` | вантажиться лише після згоди на статистику або маркетинг |
+| Google Tag Manager | Єдина точка входу для тегів Google, Meta, LinkedIn | `components/tracking/gtm.tsx`, `lib/tracking/gtm.ts` | вантажиться лише після згоди на статистику або маркетинг |
 | GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage` (Basic Consent Mode: без згоди запитів немає) |
 | PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | згода на статистику; без неї бібліотека не вантажиться |
-| Microsoft Clarity | Записи сесій і теплові карти | GTM | `analytics_storage` |
 | Amplitude | Продуктова аналітика, автозбір подій, записи сесій | Код: `lib/tracking/amplitude.ts`, викликається з `TrackingProvider` | згода на статистику; без неї SDK навіть не завантажується |
 | Google Ads | Конверсії, Enhanced Conversions, ремаркетинг | GTM | `ad_storage`, `ad_user_data` |
 | Meta | Піксель і Conversions API з дедуплікацією | GTM і сервер | `ad_storage` / згода на маркетинг |
@@ -83,7 +83,6 @@
 | Імпорт і публікація контейнера | `gtm/README.md` |
 | GA4 | `ga4-setup.md` |
 | PostHog і воронки | `posthog-setup.md` |
-| Clarity | `clarity-setup.md` |
 | Google Ads | `google-ads-setup.md` |
 | Meta | `meta-setup.md` |
 | LinkedIn | `linkedin-setup.md` |

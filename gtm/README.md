@@ -1,6 +1,6 @@
 # Контейнер Google Tag Manager
 
-`container.json` — файл імпорту веб-контейнера GTM. У ньому всі теги сайту: GA4, Clarity, Google Ads, Meta Pixel, LinkedIn.
+`container.json` — файл імпорту веб-контейнера GTM. У ньому всі теги сайту: GA4, Google Ads, Meta Pixel, LinkedIn. Microsoft Clarity прибрано 17.11.2026.
 
 Файл генерується. Не редагуй його руками.
 
@@ -44,7 +44,6 @@
 ## Налаштування згоди в тегах
 
 - **Теги Google (GA4, Google Ads)** мають явну вимогу згоди, як і решта: GA4 — `analytics_storage`, Google Ads — `ad_storage` (Basic Consent Mode). Сам контейнер сайт вантажить лише після згоди на статистику або маркетинг, тож запитів без cookies (`gcs=G100`) немає. Так вирішено у специфікації банера згоди.
-- **Clarity** вимагає `analytics_storage` і без нього не вантажиться взагалі.
 - **Meta Pixel і LinkedIn** вимагають `ad_storage` і без нього не вантажаться взагалі.
 - **Запобіжник `consent_ready`.** Сайт передає `consent_ready` = значення константи `CONSENT_TOOL_READY` у `lib/consent`. Поки вона `false`, тригер-виняток `Block - Consent tool missing` тримає всі теги. Зараз вона `true`: банер увімкнено на production, і теги працюють за згодою. Якщо щось піде не так, `false` вимикає банер і всі теги одним комітом.
 - Тега згоди в контейнері немає. Стан згоди за замовчуванням `denied` задає сам сайт у `components/tracking/gtm.tsx` до старту GTM, глобально, без переліку регіонів. Це покриває ЄЕЗ, Велику Британію і Швейцарію та будь-яку іншу країну.
