@@ -228,3 +228,23 @@ test("necessary only: the footer offers Cookie settings with the stored choice",
   await panel(page).getByRole("button", { name: "Close" }).click();
   await expect(panel(page)).toBeHidden();
 });
+
+test("Learn more leads to the cookie section, which describes what the site does", async ({ page }) => {
+  await prepare(page, { choice: "none" });
+  await page.goto("/");
+  await banner(page).getByRole("link", { name: "Learn more about cookies" }).click();
+  await expect(page).toHaveURL(/\/legal\/privacy-policy#cookies$/);
+
+  const heading = page.locator("h2#cookies");
+  await expect(heading).toHaveText("4. Cookies & Tracking");
+  await expect(heading).toBeInViewport();
+  // The banner stays until the visitor chooses.
+  await expect(banner(page)).toBeVisible();
+
+  const policy = page.locator("article, main").first();
+  for (const text of ["Necessary only", "180 days", "Cookie settings", "Amplitude", "Vercel Speed Insights", "wb_consent"]) {
+    await expect(policy).toContainText(text);
+  }
+  await expect(policy).not.toContainText("runs without consent");
+  await expect(policy).not.toContainText("preferences, statistics and marketing");
+});

@@ -16,7 +16,11 @@ function Rich({ content }: { content: RichText[] }) {
 function Blocks({ blocks }: { blocks: LegalBlock[] }) {
   return blocks.map((block, index) => {
     if (block.kind === "h2") {
-      return <h2 key={index}>{block.text}</h2>;
+      return (
+        <h2 key={index} id={block.id}>
+          {block.text}
+        </h2>
+      );
     }
     if (block.kind === "list") {
       return (

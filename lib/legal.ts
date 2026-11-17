@@ -6,7 +6,7 @@ export type RichText =
 
 export type LegalBlock =
   | { kind: "p"; content: RichText[] }
-  | { kind: "h2"; text: string }
+  | { kind: "h2"; text: string; id?: string }
   | { kind: "list"; items: string[] };
 
 export type LegalDocument = {
@@ -23,8 +23,9 @@ function p(text: string): LegalBlock {
   return { kind: "p", content: [{ text }] };
 }
 
-function h2(text: string): LegalBlock {
-  return { kind: "h2", text };
+/** An id makes the heading a link target, e.g. /legal/privacy-policy#cookies. */
+function h2(text: string, id?: string): LegalBlock {
+  return id ? { kind: "h2", text, id } : { kind: "h2", text };
 }
 
 const terms: LegalDocument = {
@@ -101,8 +102,8 @@ const privacy: LegalDocument = {
   heading: "Privacy Policy",
   description:
     "How Jet collects, uses and protects personal data, including the cookies and analytics services used on this website.",
-  version: "1.5",
-  date: "Nov 16, 2026",
+  version: "1.6",
+  date: "Nov 17, 2026",
   blocks: [
     p(
       "Jet respects your privacy. This Privacy Policy explains what information we collect, how we use it, and your rights.",
@@ -130,26 +131,26 @@ const privacy: LegalDocument = {
     p(
       "We do not sell your personal information. We may share data with trusted third-party service providers as needed to operate Jet, or if required by law.",
     ),
-    h2("4. Cookies & Tracking"),
+    h2("4. Cookies & Tracking", "cookies"),
     p(
-      "We use cookies and similar technologies only with your consent, except for those strictly necessary to run the website. When you first visit, a consent banner lets you accept or reject each category: preferences, statistics and marketing. Nothing in the statistics or marketing categories is stored on your device before you choose, and rejecting is as easy as accepting.",
+      "We use cookies and similar technologies only with your consent, except for the one cookie that is strictly necessary to remember your choice. When you first visit, a banner lets you choose in one click: \u201cAccept all\u201d or \u201cNecessary only\u201d. \u201cSettings\u201d lets you choose each category separately. Nothing in the statistics or marketing categories is loaded or stored on your device before you choose, and refusing is as easy as accepting.",
     ),
     p(
-      "You can change or withdraw your consent at any time through the \u201cCookie settings\u201d link in the footer of every page. Withdrawing consent stops further collection and removes the cookies we set for those categories.",
+      "We keep your choice for 180 days and then ask again. We also ask again if we add a service or a purpose. You can change or withdraw your consent at any time through the \u201cCookie settings\u201d link in the footer of every page. When you withdraw consent, we stop the services in that category, delete the cookies and stored data they set on our website, and reload the page. Cookies that partners set on their own domains, such as clarity.ms, linkedin.com or facebook.com, can only be removed in your browser settings.",
     ),
     {
       kind: "list",
       items: [
-        "Necessary: we store your consent choice so we do not ask again on every page.",
-        "Statistics: Google Analytics 4, PostHog and Microsoft Clarity help us understand how the website is used, including session recordings in which form fields are masked. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
+        "Necessary: the wb_consent cookie remembers your choice. It holds only the categories you chose, the date and a random ID.",
+        "Statistics: Google Analytics 4, PostHog, Microsoft Clarity and Amplitude help us understand how the website is used, including session recordings in which form fields are masked, and Vercel Speed Insights measures how fast our pages load. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
         "Marketing: Google Ads, Meta and LinkedIn measure whether our advertising leads to enquiries. With your consent we may share a hashed version of the email address you submit in a form, together with advertising click identifiers, with Google and Meta for conversion measurement.",
       ],
     },
     p(
-      "If you submit a form without consenting to statistics or marketing, we still receive your message and the campaign name from the link you followed, but no advertising identifiers and no cookies are used.",
+      "To be able to show that consent was given, we keep a record of each choice: the random ID from the wb_consent cookie, the categories you chose, whether you chose in the banner or in the settings, the version of this notice and the time. The record contains no IP address, browser details or other information that identifies you, and is stored with PostHog.",
     ),
     p(
-      "We measure page speed with Vercel Speed Insights. It does not use cookies and does not identify or follow individual visitors, so it runs without consent.",
+      "If you submit a form without consenting to statistics or marketing, we still receive your message and the campaign name from the link you followed, but no advertising identifiers and no cookies are used.",
     ),
     p(
       "Form submissions are stored in our customer relationship management system (HubSpot) so that we can reply to you.",
