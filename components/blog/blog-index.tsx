@@ -5,7 +5,7 @@ import { RollingText } from "@/components/motion";
 import { GrayRing } from "@/components/motion/gray-ring";
 import { blogCategories, posts } from "@/lib/blog";
 import { PostCard } from "@/components/blog/post-card";
-import styles from "@/components/blog/blog.module.css";
+import styles from "@/components/blog/blog-styles";
 
 const PAGE_SIZE = 2;
 const NBSP = "\u00A0";

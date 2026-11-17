@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SiteCta } from "@/components/site-cta";
 import { UpdateCover, VideoCover } from "@/components/updates/media";
 import { updates, type UpdateNote } from "@/lib/updates";
-import styles from "@/components/updates/updates.module.css";
+import styles from "@/components/updates/updates-styles";
 
 function Cover({ note }: { note: UpdateNote }) {
   if (note.videoId && note.poster) {

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ConsentButton } from "@/components/consent/consent-button";
-import styles from "@/components/consent/consent.module.css";
 import { openConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { useConsent } from "@/lib/consent/use-consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
@@ -37,7 +36,7 @@ function moveFocusOut(banner: HTMLElement | null) {
 export function ConsentBanner() {
   const consent = useConsent();
   const [hydrated, setHydrated] = useState(false);
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setHydrated(true);
@@ -53,23 +52,35 @@ export function ConsentBanner() {
   };
 
   return (
-    <section ref={ref} className={styles.banner} aria-labelledby="consent-banner-title" data-consent-banner="">
-      <h2 id="consent-banner-title" className="visually-hidden">
+    <div
+      ref={ref}
+      role="region"
+      className="fixed bottom-[16px] left-[16px] z-10 flex w-auto animate-consent-in flex-col gap-[10px] rounded-field border border-border bg-nav p-[12px] text-foreground backdrop-blur-[5px] motion-reduce:animate-none max-[809.98px]:right-[16px] min-[810px]:w-[360px]"
+      aria-labelledby="consent-banner-title"
+      data-consent-banner=""
+    >
+      <h2 id="consent-banner-title" className="sr-only">
         Cookie consent
       </h2>
-      <p className={styles.text}>
+      <p className="m-0 font-display text-[12px] leading-[1.6] font-[1000] tracking-normal text-muted-foreground [font-variation-settings:'opsz'_14,'wght'_450]">
         We use cookies for analytics and ads, some set by our partners.{" "}
-        <Link href={PRIVACY_COOKIES_HREF} className={styles.link} aria-label="Learn more about cookies">
+        <Link
+          href={PRIVACY_COOKIES_HREF}
+          className="text-foreground underline decoration-1 underline-offset-2"
+          aria-label="Learn more about cookies"
+        >
           Learn more
         </Link>
       </p>
-      <div className={styles.actions}>
+      <div className="flex flex-wrap items-center gap-[8px]">
         <ConsentButton text="Necessary only" onClick={() => choose({ statistics: false, marketing: false })} />
-        <ConsentButton text="Accept all" onClick={() => choose({ statistics: true, marketing: true })} />
-        <button type="button" className={styles.textButton} onClick={() => openConsentSettings()}>
-          Settings
-        </button>
+        <ConsentButton
+          text="Accept all"
+          variant="default"
+          onClick={() => choose({ statistics: true, marketing: true })}
+        />
+        <ConsentButton text="Settings" onClick={() => openConsentSettings()} />
       </div>
-    </section>
+    </div>
   );
 }

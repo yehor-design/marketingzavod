@@ -7,7 +7,7 @@ import { PulseGradient, RollingText } from "@/components/motion";
 import { GrayRing } from "@/components/motion/gray-ring";
 import { SiteCta } from "@/components/site-cta";
 import { TrackView } from "@/components/tracking/track-view";
-import styles from "@/components/pricing/pricing.module.css";
+import styles from "@/components/pricing/pricing-styles";
 
 const NBSP = "\u00A0";
 
@@ -412,14 +412,14 @@ function CellValue({ cell }: { cell: Cell }) {
     return (
       <span className={styles.cellIcon}>
         <Check tone="accent" />
-        <span className="visually-hidden">Included</span>
+        <span className="sr-only">Included</span>
       </span>
     );
   }
   return (
     <span className={styles.cellIcon}>
       <Cross />
-      <span className="visually-hidden">Not included</span>
+      <span className="sr-only">Not included</span>
     </span>
   );
 }

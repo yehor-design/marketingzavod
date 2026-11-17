@@ -1,8 +1,19 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { XIcon } from "lucide-react";
 import { ConsentButton } from "@/components/consent/consent-button";
-import styles from "@/components/consent/consent.module.css";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { getConsent, onOpenConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
 
@@ -36,38 +47,12 @@ const CATEGORIES: readonly Category[] = [
   },
 ];
 
-function Switch({
-  label,
-  describedBy,
-  checked,
-  disabled,
-  onChange,
-}: {
-  label: string;
-  describedBy: string;
-  checked: boolean;
-  disabled?: boolean;
-  onChange?: (next: boolean) => void;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-disabled={disabled || undefined}
-      aria-label={label}
-      aria-describedby={describedBy}
-      className={styles.switch}
-      onClick={() => {
-        if (!disabled) {
-          onChange?.(!checked);
-        }
-      }}
-    >
-      <span className={styles.thumb} aria-hidden="true" />
-    </button>
-  );
-}
+const titleType =
+  "font-display text-[14px] leading-[1.4] font-[1000] tracking-[-0.01em] [font-variation-settings:'opsz'_14,'wght'_550]";
+const labelType =
+  "font-display text-[12px] leading-[1.6] font-[1000] tracking-normal [font-variation-settings:'opsz'_14,'wght'_550]";
+const bodyType =
+  "font-display text-[12px] leading-[1.6] font-[1000] tracking-normal [font-variation-settings:'opsz'_14,'wght'_450]";
 
 /**
  * The second layer: one switch per category, the services behind it and the
@@ -76,7 +61,6 @@ function Switch({
  * choice as it was.
  */
 export function ConsentSettings() {
-  const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const [open, setOpen] = useState(false);
@@ -87,7 +71,7 @@ export function ConsentSettings() {
       return;
     }
     return onOpenConsentSettings(() => {
-      if (dialog.current?.open) {
+      if (open) {
         return;
       }
       const { statistics, marketing } = getConsent();
@@ -95,92 +79,90 @@ export function ConsentSettings() {
       opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       setOpen(true);
     });
-  }, []);
-
-  // The content mounts only while the panel is open: the rolling button
-  // labels measure their letters on mount, which needs a visible layout.
-  useEffect(() => {
-    const node = dialog.current;
-    if (!open || !node || node.open) {
-      return;
-    }
-    node.showModal();
-    node.querySelector<HTMLElement>('[role="switch"]:not([aria-disabled])')?.focus();
   }, [open]);
 
   if (!CONSENT_UI_ENABLED) {
     return null;
   }
 
-  const close = () => dialog.current?.close();
   const decide = (next: ConsentChoice) => {
-    close();
+    setOpen(false);
     saveConsent(next, "settings");
   };
 
   return (
-    <dialog
-      ref={dialog}
-      className={styles.dialog}
-      aria-labelledby={titleId}
-      data-consent-settings=""
-      onClose={() => {
-        setOpen(false);
-        // Back to where the panel was opened from, if that is still on the page.
-        if (opener.current?.isConnected) {
-          opener.current.focus();
+    <Dialog open={open} onOpenChange={setOpen} disablePointerDismissal>
+      <DialogContent
+        showCloseButton={false}
+        data-consent-settings=""
+        aria-labelledby={titleId}
+        overlayClassName="bg-shimmer backdrop-blur-[5px]"
+        className="max-h-[calc(100dvh-32px)] w-full max-w-[calc(100%-32px)] gap-[16px] overflow-auto rounded-field bg-background p-[16px] text-foreground ring-border motion-reduce:data-open:animate-none sm:max-w-[400px]"
+        initialFocus={() =>
+          document.querySelector<HTMLElement>(
+            '[data-consent-settings] [role="switch"]:not([aria-disabled="true"])',
+          )
         }
-        opener.current = null;
-      }}
-    >
-      {open ? (
-        <div className={styles.panel}>
-          <div className={styles.head}>
-            <h2 id={titleId} className={styles.title}>
+        finalFocus={() => opener.current}
+      >
+        <DialogHeader className="flex-row items-start justify-between gap-[12px]">
+          <div className="flex min-w-0 flex-col gap-[6px]">
+            <DialogTitle id={titleId} className={titleType}>
               Cookie settings
-            </h2>
-            <button type="button" className={styles.close} aria-label="Close" onClick={close}>
-              <span aria-hidden="true" />
-              <span aria-hidden="true" />
-            </button>
+            </DialogTitle>
+            <DialogDescription className={`${bodyType} text-muted-foreground`}>
+              Necessary cookies keep the site working and are always on. Everything else stays off until you turn it on.
+            </DialogDescription>
           </div>
-          <p className={styles.text}>
-            Necessary cookies keep the site working and are always on. Everything else stays off until you turn it on.
-          </p>
-          <ul className={styles.categories}>
-            {CATEGORIES.map((category) => {
-              const descriptionId = `${titleId}-${category.key}`;
-              const checked = category.key === "necessary" ? true : choice[category.key];
-              return (
-                <li key={category.key} className={styles.category}>
-                  <div className={styles.categoryHead}>
-                    <span className={styles.categoryName}>{category.name}</span>
-                    <Switch
-                      label={category.name}
-                      describedBy={descriptionId}
-                      checked={checked}
-                      disabled={category.key === "necessary"}
-                      onChange={(next) => {
-                        const key = category.key as keyof ConsentChoice;
-                        setChoice((current) => ({ ...current, [key]: next }));
-                      }}
-                    />
-                  </div>
-                  <p id={descriptionId} className={styles.purpose}>
+          <DialogClose
+            render={<Button variant="ghost" aria-label="Close" className="size-[30px] shrink-0 p-0" />}
+          >
+            <XIcon />
+          </DialogClose>
+        </DialogHeader>
+        <ul className="m-0 flex list-none flex-col gap-[12px] p-0">
+          {CATEGORIES.map((category) => {
+            const descriptionId = `${titleId}-${category.key}`;
+            const locked = category.key === "necessary";
+            const checked = category.key === "necessary" ? true : choice[category.key];
+            return (
+              <li
+                key={category.key}
+                className="flex items-start justify-between gap-[16px] border-t border-dashed border-rule pt-[12px] first:border-t-0 first:pt-0"
+              >
+                <div className="flex min-w-0 flex-col gap-[4px]">
+                  <span className={labelType}>{category.name}</span>
+                  <p id={descriptionId} className={`${bodyType} m-0 text-muted-foreground`}>
                     {category.purpose}
                   </p>
-                  <p className={styles.services}>{category.services}</p>
-                </li>
-              );
-            })}
-          </ul>
-          <div className={styles.actions}>
-            <ConsentButton text="Necessary only" onClick={() => decide({ statistics: false, marketing: false })} />
-            <ConsentButton text="Accept all" onClick={() => decide({ statistics: true, marketing: true })} />
-            <ConsentButton text="Save choices" onClick={() => decide(choice)} />
-          </div>
-        </div>
-      ) : null}
-    </dialog>
+                  <p className="m-0 font-mono text-[12px] leading-[1.6] font-medium tracking-[0.02em] text-muted-foreground">
+                    {category.services}
+                  </p>
+                </div>
+                <Switch
+                  aria-label={category.name}
+                  aria-describedby={descriptionId}
+                  checked={checked}
+                  disabled={locked}
+                  className="mt-[1px] shrink-0"
+                  onCheckedChange={(next) => {
+                    if (locked) {
+                      return;
+                    }
+                    const key = category.key as keyof ConsentChoice;
+                    setChoice((current) => ({ ...current, [key]: next }));
+                  }}
+                />
+              </li>
+            );
+          })}
+        </ul>
+        <DialogFooter className="mx-0 mb-0 flex-row flex-wrap items-center justify-start gap-[8px] rounded-none border-0 bg-transparent p-0 sm:justify-start">
+          <ConsentButton text="Necessary only" onClick={() => decide({ statistics: false, marketing: false })} />
+          <ConsentButton text="Accept all" variant="default" onClick={() => decide({ statistics: true, marketing: true })} />
+          <ConsentButton text="Save choices" onClick={() => decide(choice)} />
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

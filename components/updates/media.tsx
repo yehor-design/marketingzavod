@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Dither, orderedDither } from "@/components/motion";
-import styles from "@/components/updates/updates.module.css";
+import styles from "@/components/updates/updates-styles";
 
 /** Live update covers: ordered, pixel size 4, brightness 100, threshold 87, midtones 77. */
 const coverDither = {

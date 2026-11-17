@@ -5,7 +5,7 @@ import { ApplyForm } from "@/components/careers/apply-form";
 import { BenefitIcon, Chevron } from "@/components/careers/icons";
 import { RollLink } from "@/components/careers/roll-link";
 import { benefits, type CareerRole } from "@/lib/careers";
-import styles from "@/components/careers/careers.module.css";
+import styles from "@/components/careers/careers-styles";
 
 const NBSP = "\u00A0";
 
@@ -85,7 +85,7 @@ export function RolePage({ role }: { role: CareerRole }) {
       </section>
 
       <section
-        className={`${styles.frame} ${styles.section} ${styles.applySection}`}
+        className={`${styles.frame} ${styles.section} ${styles.applySection} scroll-mt-[80px]`}
         id="application"
         aria-labelledby="apply-title"
       >

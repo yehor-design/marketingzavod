@@ -62,6 +62,12 @@ export async function events(page: Page, name: string): Promise<Entry[]> {
   return (await dataLayer(page)).filter((entry) => entry.event === name);
 }
 
+/** Opens the contact reason list and chooses one option by its visible label. */
+export async function chooseContactReason(page: Page, label: string) {
+  await page.getByRole("combobox", { name: "Reason for contact" }).click();
+  await page.getByRole("option", { name: label, exact: true }).click();
+}
+
 /** Stops link clicks from leaving the page. The tracker listens earlier, in the capture phase. */
 export async function freezeNavigation(page: Page) {
   await page.evaluate(() => document.addEventListener("click", (event) => event.preventDefault()));

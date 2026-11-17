@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { loadMask, punchMask } from "./mask-composite";
-import styles from "./motion.module.css";
+import styles from "./motion-styles";
 
 /**
  * Animated gradient field. Homepage hero and footer use Radial: the Pulse

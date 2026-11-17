@@ -1,0 +1,20 @@
+const styles = {
+  "art": "art relative h-[300px] overflow-hidden [border-bottom:1px_dashed_var(--color-rule)] max-[809.98px]:h-[300px] min-[810px]:h-[359px] min-[1200px]:h-[351px]",
+  "lede": "lede max-w-[340px] m-0 text-muted-foreground [font-size:16px] [font-variation-settings:\"opsz\"_14,_\"wght\"_450] tracking-normal leading-[1.5] max-[809.98px]:whitespace-pre-wrap max-[809.98px]:break-words max-[809.98px]:[overflow-wrap:break-word]",
+  "form": "form [width:min(350px,_100%)] m-0",
+  "success": "success flex-none items-center justify-center m-0 border-0 rounded-button [font-size:14px] leading-[1.5] block w-full h-auto mt-[12px] p-0 bg-transparent text-brand [font-variation-settings:\"opsz\"_14,_\"wght\"_550]",
+  "artHighlight": "artHighlight absolute inset-0 [mask-image:url(/waitlist/art-mask.svg),_linear-gradient(rgba(0,_0,_0,_0.25),_rgba(0,_0,_0,_0.25))] [mask-repeat:no-repeat,_no-repeat] [mask-position:center,_0_0] [mask-size:cover,_100%_100%] [mask-composite:add,_add] [-webkit-mask-image:url(/waitlist/art-mask.svg),_linear-gradient(rgba(0,_0,_0,_0.25),_rgba(0,_0,_0,_0.25))] [-webkit-mask-repeat:no-repeat,_no-repeat] [-webkit-mask-position:center,_0_0] [-webkit-mask-size:cover,_100%_100%] [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:object-cover",
+  "hero": "hero [width:min(1200px,_calc(100%_-_32px))] mx-auto my-0 overflow-hidden [border:1px_dashed_var(--color-rule)] text-center [&_h1]:m-0 [&_h1]:[font-size:3.5rem] [&_h1]:font-[1000] [&_h1]:tracking-[-0.04em] [&_h1]:leading-[1.1] [&_h1]:whitespace-pre-wrap max-[809.98px]:[margin-top:calc(-1_*_var(--header-height)_+_3px)] max-[809.98px]:[margin-bottom:calc(-1_*_var(--header-height))]",
+  "text": "text flex flex-col items-center gap-[24px] w-full",
+  "row": "row flex gap-[10px] items-center w-full max-[809.98px]:gap-[10px]",
+  "submit": "submit inline-flex flex-none items-center justify-center h-[40px] m-0 [padding:0_18px] border-0 rounded-button [font-size:14px] leading-[1.5] bg-foreground text-background cursor-pointer",
+  "artBase": "artBase absolute inset-0 [mask-image:url(/waitlist/art-mask.svg),_linear-gradient(rgba(0,_0,_0,_0.25),_rgba(0,_0,_0,_0.25))] [mask-repeat:no-repeat,_no-repeat] [mask-position:center,_0_0] [mask-size:cover,_100%_100%] [mask-composite:add,_add] [-webkit-mask-image:url(/waitlist/art-mask.svg),_linear-gradient(rgba(0,_0,_0,_0.25),_rgba(0,_0,_0,_0.25))] [-webkit-mask-repeat:no-repeat,_no-repeat] [-webkit-mask-position:center,_0_0] [-webkit-mask-size:cover,_100%_100%] [opacity:0.7] [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:object-cover",
+  "badge": "badge",
+  "fieldError": "fieldError [margin:8px_0_0] text-destructive [font-size:12px] [font-variation-settings:\"opsz\"_14,_\"wght\"_450] leading-[1.4] text-left",
+  "copy": "copy flex flex-col items-center gap-[34px] [padding:60px_24px_100px] max-[809.98px]:pr-[23px] max-[809.98px]:pl-[23px] min-[810px]:[padding:60px_34px]",
+  "page": "page text-foreground font-display font-[1000] [font-variation-settings:\"opsz\"_14,_\"wght\"_550] [&_h1]:font-[inherit] [&_p]:font-[inherit] [&_button]:font-[inherit] [&_.badge]:inline-flex [&_.badge]:items-center [&_.badge]:h-[26px] [&_.badge]:m-0 [&_.badge]:[padding:0_10px] [&_.badge]:rounded-pill [&_.badge]:bg-accent-tint [&_.badge]:text-brand [&_.badge]:font-mono [&_.badge]:[font-size:12px] [&_.badge]:font-medium [&_.badge]:[font-variation-settings:normal] [&_.badge]:tracking-[0.02em] [&_.badge]:leading-[1.6] [&_.badge]:uppercase",
+  "field": "field flex-1 min-w-0 [&_input]:w-full [&_input]:min-w-0 [&_input]:h-[41px] [&_input]:[padding:12px_18px] [&_input]:border-0 [&_input]:[border-radius:38px] [&_input]:bg-secondary [&_input]:text-foreground [&_input]:font-sans [&_input]:[font-size:14px] [&_input]:font-normal [&_input]:[font-variation-settings:normal] [&_input]:leading-[1.2] [&_input::placeholder]:[color:rgba(255,_255,_255,_0.35)] [&_input[aria-invalid=\"true\"]]:[outline:1px_solid_var(--color-destructive)] [&_input[aria-invalid=\"true\"]]:[outline-offset:2px]",
+  "flashlight": "flashlight absolute inset-0 [mask-image:radial-gradient(circle_0px_at_50%_50%,_black_40%,_transparent_100%)]"
+};
+
+export default styles;

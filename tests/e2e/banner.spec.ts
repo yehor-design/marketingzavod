@@ -5,6 +5,51 @@ const banner = (page: Page) => page.locator("[data-consent-banner]");
 const panel = (page: Page) => page.locator("[data-consent-settings]");
 const LANDING = "/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST";
 
+function luminance([red, green, blue]: number[]) {
+  const channel = (value: number) => {
+    const srgb = value / 255;
+    return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(red) + 0.7152 * channel(green) + 0.0722 * channel(blue);
+}
+
+function contrast(first: number[], second: number[]) {
+  const lighter = Math.max(luminance(first), luminance(second));
+  const darker = Math.min(luminance(first), luminance(second));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/** Shell of a navbar or consent button, ignoring the label width. */
+async function buttonShell(locator: ReturnType<Page["locator"]>) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node);
+    const roll = node.querySelector(".roll");
+    const rollStyle = roll ? getComputedStyle(roll) : null;
+    return {
+      height: style.height,
+      backgroundColor: style.backgroundColor,
+      color: style.color,
+      fontSize: style.fontSize,
+      fontFamily: style.fontFamily,
+      fontWeight: style.fontWeight,
+      fontVariationSettings: style.fontVariationSettings,
+      lineHeight: style.lineHeight,
+      letterSpacing: style.letterSpacing,
+      padding: style.padding,
+      borderRadius: style.borderRadius,
+      borderTopWidth: style.borderTopWidth,
+      cursor: style.cursor,
+      rollFontSize: rollStyle?.fontSize ?? "",
+      rollLineHeight: rollStyle?.lineHeight ?? "",
+      rollFontFamily: rollStyle?.fontFamily ?? "",
+      rollFontWeight: rollStyle?.fontWeight ?? "",
+      rollFontVariation: rollStyle?.fontVariationSettings ?? "",
+      rollLetterSpacing: rollStyle?.letterSpacing ?? "",
+      hasRing: node.querySelector(".gray-pill-ring") !== null,
+    };
+  });
+}
+
 async function consentCookie(page: Page): Promise<string | undefined> {
   return (await page.context().cookies()).find((cookie) => cookie.name === "wb_consent")?.value;
 }
@@ -27,18 +72,24 @@ test("first visit: a small banner with two equal choices and a link to the detai
 
   const necessary = banner(page).getByRole("button", { name: "Necessary only" });
   const accept = banner(page).getByRole("button", { name: "Accept all" });
-  const [a, b] = [await necessary.boundingBox(), await accept.boundingBox()];
-  // Equal up to subpixel rounding.
-  expect(Math.abs((a?.width ?? 0) - (b?.width ?? 0))).toBeLessThan(0.5);
-  expect(a?.height).toBe(b?.height);
-  const look = (selector: string) =>
-    banner(page)
-      .getByRole("button", { name: selector })
-      .evaluate((node) => {
-        const style = getComputedStyle(node);
-        return [style.backgroundColor, style.color, style.fontSize, style.borderRadius].join(" ");
-      });
-  expect(await look("Necessary only")).toBe(await look("Accept all"));
+  const settings = banner(page).getByRole("button", { name: "Settings" });
+  const join = page.locator('.desktop-actions a[href="/waitlist"]');
+  const contact = page.locator('.desktop-actions a[href="/contact"]');
+  // Accept all matches Join waitlist. The other banner buttons match Contact.
+  // Labels keep their own width: the buttons are not stretched into columns.
+  expect(await buttonShell(accept)).toEqual(await buttonShell(join));
+  expect(await buttonShell(necessary)).toEqual(await buttonShell(contact));
+  expect(await buttonShell(settings)).toEqual(await buttonShell(contact));
+  const [necessaryBox, acceptBox, bannerBox] = [
+    await necessary.boundingBox(),
+    await accept.boundingBox(),
+    await banner(page).boundingBox(),
+  ];
+  expect(necessaryBox?.height).toBe(acceptBox?.height);
+  expect((necessaryBox?.width ?? 0) - (acceptBox?.width ?? 0)).toBeGreaterThan(8);
+  expect(acceptBox?.width ?? 0).toBeLessThan((bannerBox?.width ?? 0) - 24);
+  const copySize = await banner(page).locator("p").evaluate((node) => getComputedStyle(node).fontSize);
+  expect(copySize).toBe("12px");
 
   // Fixed in a corner: it does not push the page down.
   expect(await banner(page).evaluate((node) => getComputedStyle(node).position)).toBe("fixed");
@@ -144,6 +195,16 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
 
   await expect(panel(page)).toBeVisible();
   await expect(panel(page).getByRole("heading", { name: "Cookie settings" })).toBeVisible();
+  const titleSize = await panel(page)
+    .getByRole("heading", { name: "Cookie settings" })
+    .evaluate((node) => getComputedStyle(node).fontSize);
+  expect(titleSize).toBe("14px");
+  const join = page.locator('.desktop-actions a[href="/waitlist"]');
+  const contact = page.locator('.desktop-actions a[href="/contact"]');
+  expect(await buttonShell(panel(page).getByRole("button", { name: "Accept all" }))).toEqual(await buttonShell(join));
+  expect(await buttonShell(panel(page).getByRole("button", { name: "Save choices" }))).toEqual(
+    await buttonShell(contact),
+  );
   const necessary = panel(page).getByRole("switch", { name: "Necessary" });
   const statistics = panel(page).getByRole("switch", { name: "Statistics" });
   const marketing = panel(page).getByRole("switch", { name: "Marketing" });
@@ -152,9 +213,105 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
   await expect(statistics).toHaveAttribute("aria-checked", "false");
   await expect(marketing).toHaveAttribute("aria-checked", "false");
   await expect(statistics).toBeFocused();
+  const switchLook = (locator: ReturnType<Page["locator"]>) =>
+    locator.evaluate((node) => {
+      const style = getComputedStyle(node);
+      const thumb = node.querySelector("[data-slot=switch-thumb]");
+      const thumbStyle = thumb ? getComputedStyle(thumb) : null;
+      const overBlack = (color: string) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1;
+        canvas.height = 1;
+        const context = canvas.getContext("2d");
+        if (!context) {
+          return [0, 0, 0];
+        }
+        context.fillStyle = "#000";
+        context.fillRect(0, 0, 1, 1);
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+        return [red, green, blue];
+      };
+      const fade = (rgb: number[]) => {
+        const opacity = Number.parseFloat(style.opacity);
+        // Parent opacity composites the painted color over the black dialog.
+        return rgb.map((channel) => Math.round(channel * opacity));
+      };
+      const track = node.getBoundingClientRect();
+      const thumbBox = thumb?.getBoundingClientRect();
+      return {
+        opacity: style.opacity,
+        cursor: style.cursor,
+        width: Number.parseFloat(style.width),
+        height: Number.parseFloat(style.height),
+        radius: style.borderRadius,
+        border: style.borderTopWidth,
+        thumbWidth: thumbStyle ? Number.parseFloat(thumbStyle.width) : 0,
+        thumbHeight: thumbStyle ? Number.parseFloat(thumbStyle.height) : 0,
+        thumbRadius: thumbStyle?.borderRadius ?? "",
+        thumbX: thumbBox ? thumbBox.left - track.left : 0,
+        trackRgb: overBlack(style.backgroundColor),
+        thumbRgb: overBlack(thumbStyle?.backgroundColor ?? "rgba(0, 0, 0, 0)"),
+        visualTrack: fade(overBlack(style.backgroundColor)),
+        visualThumb: fade(overBlack(thumbStyle?.backgroundColor ?? "rgba(0, 0, 0, 0)")),
+      };
+    });
+  const geometry = (look: Awaited<ReturnType<typeof switchLook>>) => ({
+    width: look.width,
+    height: look.height,
+    radius: look.radius,
+    border: look.border,
+    thumbWidth: look.thumbWidth,
+    thumbHeight: look.thumbHeight,
+    thumbRadius: look.thumbRadius,
+  });
+  const necessaryLook = await switchLook(necessary);
+  const statisticsLook = await switchLook(statistics);
+  const marketingLook = await switchLook(marketing);
+  // Off, on, and disabled share one track size, radius, thumb size, and thumb color.
+  expect(geometry(necessaryLook)).toEqual(geometry(statisticsLook));
+  expect(geometry(necessaryLook)).toEqual(geometry(marketingLook));
+  expect(necessaryLook.thumbRgb).toEqual(statisticsLook.thumbRgb);
+  expect(necessaryLook.thumbRgb).toEqual(marketingLook.thumbRgb);
+  expect(statisticsLook.trackRgb).toEqual(marketingLook.trackRgb);
+  expect(necessaryLook.thumbX).toBeGreaterThan(statisticsLook.thumbX);
+  expect(necessaryLook.opacity).toBe("0.5");
+  expect(statisticsLook.opacity).toBe("1");
+  expect(marketingLook.opacity).toBe("1");
+  expect(necessaryLook.cursor).toBe("not-allowed");
+  expect(statisticsLook.cursor).not.toBe("not-allowed");
+  for (const look of [necessaryLook, statisticsLook, marketingLook]) {
+    expect(contrast(look.visualTrack, [0, 0, 0])).toBeGreaterThanOrEqual(3);
+    expect(contrast(look.visualThumb, look.visualTrack)).toBeGreaterThanOrEqual(3);
+  }
+  expect(luminance(necessaryLook.trackRgb)).toBeGreaterThan(luminance(statisticsLook.trackRgb));
+  expect(necessaryLook.width).toBeGreaterThan(24);
+  expect(necessaryLook.height).toBeGreaterThan(14);
+  // The knob stays a circle inside the pill. A rem thumb grows past the px track on this site.
+  expect(necessaryLook.thumbWidth).toBe(necessaryLook.thumbHeight);
+  expect(necessaryLook.thumbWidth).toBeLessThan(necessaryLook.height);
+  expect(necessaryLook.thumbWidth).toBeLessThan(necessaryLook.width);
+  const descriptionSize = await panel(page)
+    .getByText("Necessary cookies keep the site working and are always on.", { exact: false })
+    .evaluate((node) => getComputedStyle(node).fontSize);
+  expect(descriptionSize).toBe("12px");
   await expect(panel(page)).toContainText("Google Analytics, PostHog, Amplitude, Vercel Speed Insights");
 
   await statistics.click();
+  await expect.poll(async () => {
+    const statisticsOn = await switchLook(statistics);
+    return (
+      statisticsOn.opacity === "1" &&
+      JSON.stringify(geometry(statisticsOn)) === JSON.stringify(geometry(necessaryLook)) &&
+      statisticsOn.thumbRgb.join() === necessaryLook.thumbRgb.join() &&
+      statisticsOn.trackRgb.join() === necessaryLook.trackRgb.join() &&
+      statisticsOn.thumbX > statisticsLook.thumbX &&
+      contrast(statisticsOn.visualTrack, [0, 0, 0]) >= 3 &&
+      contrast(statisticsOn.visualThumb, statisticsOn.visualTrack) >= 3 &&
+      luminance(statisticsOn.trackRgb) > luminance(statisticsLook.trackRgb)
+    );
+  }).toBe(true);
   await panel(page).getByRole("button", { name: "Save choices" }).click();
 
   await expect(panel(page)).toBeHidden();

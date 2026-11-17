@@ -17,7 +17,7 @@ const organization = {
   "@id": `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
-  logo: absoluteUrl("/brand/logo-mark.svg"),
+  logo: absoluteUrl("/brand/logo.svg"),
   description: SITE_DESCRIPTION,
   sameAs: socialLinks.map((link) => link.href),
 };

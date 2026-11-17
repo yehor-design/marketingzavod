@@ -12,7 +12,7 @@ import {
   orderedDither,
   randomDither,
 } from "@/components/motion";
-import styles from "./lab.module.css";
+import styles from "./lab-styles";
 
 function useRamp() {
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);

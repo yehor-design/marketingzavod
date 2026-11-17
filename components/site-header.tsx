@@ -1,5 +1,6 @@
 "use client";
 
+import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -67,7 +68,7 @@ function NavItem({
       onBlur={() => setHot(false)}
     >
       <TextGlitch active={hot}>{label}</TextGlitch>
-      {badge ? <span className="count-badge">{badge}</span> : null}
+      {badge ? <span className={cx("count-badge")}>{badge}</span> : null}
     </Link>
   );
 }
@@ -140,12 +141,12 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className={open ? "site-header is-open" : "site-header"}>
-      <div className="header-bar">
-        <div className="header-inner">
+    <header className={open ? cx("site-header", "is-open") : cx("site-header")}>
+      <div className={cx("header-bar")}>
+        <div className={cx("header-inner")}>
           <Link
             href="/"
-            className="logo"
+            className={cx("logo")}
             aria-current={home ? "page" : undefined}
             data-framer-page-link-current={home ? "true" : undefined}
             onClick={() => {
@@ -155,13 +156,13 @@ export function SiteHeader() {
             }}
           >
             <img
-              src="/brand/logo-wordmark.svg"
-              alt="Jet"
-              width={62}
+              src="/brand/logo.svg"
+              alt="WOWboy"
+              width={100.31}
               height={24}
             />
           </Link>
-          <nav className="desktop-nav" aria-label="Primary">
+          <nav className={cx("desktop-nav")} aria-label="Primary">
             <ul>
               {navLinks.map((link) => (
                 <li key={link.href}>
@@ -175,23 +176,23 @@ export function SiteHeader() {
               ))}
             </ul>
           </nav>
-          <div className="desktop-actions">
+          <div className={cx("desktop-actions")}>
             <NavRoll
               href="/contact"
               text="Contact"
-              className="nav-button nav-button-secondary gray-pill"
+              className={cx("nav-button", "nav-button-secondary", "gray-pill")}
               lineHeightPx={21.6}
             />
             <NavRoll
               href="/waitlist"
               text={"Join\u00A0waitlist"}
-              className="nav-button nav-button-primary"
+              className={cx("nav-button", "nav-button-primary")}
               lineHeightPx={14.4}
             />
           </div>
           <button
             type="button"
-            className="menu-toggle"
+            className={cx("menu-toggle")}
             aria-label={open ? "Close menu" : "Menu"}
             aria-expanded={open}
             aria-controls="mobile-menu"
@@ -213,9 +214,9 @@ export function SiteHeader() {
         </div>
       </div>
       {open ? (
-        <div id="mobile-menu" className="mobile-panel">
+        <div id="mobile-menu" className={cx("mobile-panel")}>
           <nav aria-label="Primary">
-            <ul className="mobile-links">
+            <ul className={cx("mobile-links")}>
               {navLinks.map((link) => {
                 const current = isCurrent(pathname, link.href);
                 return (
@@ -228,7 +229,7 @@ export function SiteHeader() {
                     >
                       {link.label}
                       {"badge" in link ? (
-                        <span className="count-badge">{link.badge}</span>
+                        <span className={cx("count-badge")}>{link.badge}</span>
                       ) : null}
                     </Link>
                   </li>
@@ -237,7 +238,7 @@ export function SiteHeader() {
             </ul>
           </nav>
           <Link
-            className="mobile-cta"
+            className={cx("mobile-cta")}
             href="/waitlist"
             data-track="cta_click"
             data-track-cta-text="Join waitlist"
