@@ -177,17 +177,25 @@ test("withdrawal from the footer removes stored data and reloads the page", asyn
   await page.context().addCookies(
     ["_ga", "_ga_TEST", "_gcl_au", "_fbp", "_clck"].map((name) => ({ name, value: "1", url: "http://localhost:3100" })),
   );
-  await page.evaluate(() => localStorage.setItem("ph_phc_e2e_test_key_posthog", "{}"));
+  // Keys the real PostHog, Amplitude and Meta pixel leave on production.
+  await page.evaluate(() => {
+    localStorage.setItem("ph_phc_e2e_test_key_posthog", "{}");
+    localStorage.setItem("amplitude.engagement.e2e", "{}");
+    localStorage.setItem("lastExternalReferrer", "google");
+    localStorage.setItem("lastExternalReferrerTime", "1");
+  });
   expect((await page.context().cookies()).map((cookie) => cookie.name)).toContain("wb_attr");
 
   await page.locator(".site-footer").getByRole("button", { name: "Cookie settings" }).click();
   await expect(panel(page).getByRole("switch", { name: "Statistics" })).toHaveAttribute("aria-checked", "true");
   await expect(panel(page).getByRole("switch", { name: "Marketing" })).toHaveAttribute("aria-checked", "true");
 
-  requests.length = 0;
   const reloaded = page.waitForEvent("load");
   await panel(page).getByRole("button", { name: "Necessary only" }).click();
   await reloaded;
+  // Count only what the reloaded page asks for: the old page's lazy loaders
+  // may still have been running when the button was pressed.
+  requests.length = 0;
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
   await page.waitForTimeout(4500);
 

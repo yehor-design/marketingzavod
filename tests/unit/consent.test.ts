@@ -83,7 +83,15 @@ describe("consent cookie format", () => {
 
   it("clears only the categories that were turned off", () => {
     const all = { statistics: true, marketing: true };
-    expect(prefixesToClear(all, { statistics: true, marketing: false })).toEqual(["_gcl_", "_fbp", "_fbc", "li_fat_id", "li_gc"]);
+    expect(prefixesToClear(all, { statistics: true, marketing: false })).toEqual([
+      "_gcl_",
+      "_fbp",
+      "_fbc",
+      "lastExternalReferrer",
+      "li_fat_id",
+      "li_gc",
+    ]);
+    expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("amplitude.");
     expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("ph_");
     expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("AMP_");
     expect(prefixesToClear({ statistics: false, marketing: false }, all)).toEqual([]);

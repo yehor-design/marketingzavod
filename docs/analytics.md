@@ -7,7 +7,7 @@
 ```
                          ┌──────────────── браузер ─────────────────┐
  відвідувач ──► сторінка │ track(event, params)   lib/tracking       │
-                         │   ├─► dataLayer ──► GTM (Consent Mode v2, типово denied)
+                         │   ├─► dataLayer ──► GTM (лише після згоди; Consent Mode v2 за вибором)
                          │   │                    ├─► GA4
                          │   │                    ├─► Microsoft Clarity
                          │   │                    ├─► Google Ads (конверсії, ремаркетинг)

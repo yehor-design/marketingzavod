@@ -1,6 +1,6 @@
 # Наскрізна перевірка трекінгу
 
-Документ має дві частини: що вже перевірено і з яким результатом, та сценарій, який треба повторити на production, коли з'являться ідентифікатори сервісів.
+Документ має дві частини: що вже перевірено і з яким результатом, та сценарій, який треба повторювати на production після змін. Найсвіжіший результат — розділ «Production з реальними сервісами».
 
 ## Стан на 16 листопада 2026
 
@@ -68,6 +68,43 @@
 - **Preview-деплой.** Він закритий авторизацією Vercel (302), тому відсутність запитів до `googletagmanager.com` на preview агент не бачив. Це гарантує код: `TRACKING_ENABLED` дорівнює `false`, коли `VERCEL_ENV` не `production`.
 - **Rich Results Test** для JSON-LD не запускався.
 
+## Production з реальними сервісами, 17 листопада 2026
+
+Після запуску банера згоди (MAR-49). У Vercel задано GTM, GA4, Clarity, Meta (піксель, токен Conversions API, тестовий код), PostHog і Amplitude. Google Ads, LinkedIn і HubSpot ще не підключено. Перевірка — скриптом Playwright у чистому профілі, шлях `/?utm_source=qa…` → Pricing → About → Contact.
+
+**Згода по трьох сценаріях:**
+
+| Сценарій | Сторонні запити | Cookies | localStorage |
+| --- | --- | --- | --- |
+| Без вибору | жодного; немає й `/ingest` та Speed Insights | жодної | порожній |
+| «Necessary only» | жодного; один запис у журнал згод `/api/consent` | лише `wb_consent` | порожній |
+| «Accept all» | GTM, GA4 (`region1.google-analytics.com`), Meta (`connect.facebook.net`, `facebook.com/tr`), Clarity (`clarity.ms`, `c.bing.com`), Amplitude, PostHog через `/ingest`, Speed Insights | `wb_consent`, `wb_attr`, `_ga`, `_ga_FC7QKZ0DYD`, `_fbp`, `_clck`, `_clsk`, `ph_…_posthog`, `AMP_…`, `AMP_MKTG_…` (плюс cookies Clarity і Bing на їхніх доменах) | `ph_…`, `AMP_…`, `amplitude.engagement.…`, `lastExternalReferrer`, `lastExternalReferrerTime` |
+
+Ключі `amplitude.engagement.…` (Amplitude) і `lastExternalReferrer…` (піксель Meta) знайдено лише на production. Їх додано до очищення при відкликанні (`CATEGORY_STORAGE_PREFIXES`) і до e2e-тесту відкликання.
+
+Consent Mode: усі запити GA4 після «Accept all» мають `gcs=G111`. Помилок у консолі немає.
+
+**Звірка GA4 і PostHog**, 17 дій сайту в одній сесії зі згодою (4 розкриття FAQ, 2 зовнішні кліки, 2 кліки CTA, 3 перемикання періоду на Pricing, 5 переходів):
+
+| Подія сайту | `dataLayer` | GA4 | PostHog | Meta |
+| --- | --- | --- | --- | --- |
+| `page_view` | 5 | 6 | 5 (`$pageview`) | 5 (`PageView`) |
+| `faq_open` | 4 | 4 | 4 | — |
+| `outbound_click` | 2 | 2 | 2 | — |
+| `cta_click` | 2 | 2 | 2 | — |
+| `view_pricing` | 4 | 4 | 4 | 4 (`ViewContent`) |
+
+Власні події збігаються один до одного в усіх системах. Розбіжності і їх причини:
+
+- **GA4 `page_view` +1 на сесію.** На сторінці входу Google tag сам надсилає ще один перегляд, хоча в контейнері стоїть `send_page_view: false`. Наші переходи не дублюються. Виправляється переходом на Zaraz (проект «Перехід на Cloudflare Zaraz», критерій Z4), до того сесій у GA4 правильно, а переглядів трохи більше.
+- **GA4 `click` ×2 і `scroll` ×1** — розширені вимірювання GA4 (Enhanced measurement). `click` дублює наш `outbound_click`. Вимкнути «Outbound clicks» у GA4 → Admin → Data streams → Enhanced measurement.
+- **Meta `SubscribedButtonClick` ×7** — автоматичні події пікселя. Вимкнути в Events Manager → Settings → Automatic events.
+- **PostHog `$autocapture` ×13, `$web_vitals`, `$pageleave`** — автоматичні події PostHog, так задумано.
+
+**PostHog і автоматизовані браузери.** PostHog відкидає події з headless-браузера як ботів, а піксель Meta в браузері з прапорцем автоматизації не надсилає подій. Для перевірки цих двох сервісів скрипт треба запускати у звичайному вікні (`headless: false`, `--disable-blink-features=AutomationControlled`). Події доходять у PostHog із затримкою до 10 хвилин.
+
+**Ще не перевірено на production:** заявка з форми до CRM (HubSpot ще не підключено, заявки поки лише в логах Vercel) і дедуплікація події Meta `Lead` з браузера та сервера. Ці перевірки — частина підключення HubSpot.
+
 ## Сценарій для production з ідентифікаторами
 
 Виконати, коли закрито MAR-21 і опубліковано контейнер GTM. Для кожного з трьох сценаріїв: приватне вікно, GTM Preview увімкнено, шлях `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About → Contact → заявка з адресою виду `qa+дата@твій-домен`.
@@ -123,7 +160,8 @@ GTM Preview (вкладки Tags і Consent на події Consent Initializati
 | Перевірка | Як | Результат |
 | --- | --- | --- |
 | Секретів немає в клієнтському бандлі | `grep -rlE "META_CAPI_ACCESS_TOKEN\|HUBSPOT_ACCESS_TOKEN\|HUBSPOT_CLIENT_SECRET\|OFFLINE_CONVERSIONS_SECRET" .next/static` | нічого не знайдено |
-| Секретів немає в репозиторії | `.env*` в `.gitignore`, `.env.example` без значень | так |
+| Секретів немає в репозиторії | `.env*` в `.gitignore`, `.env.example` без значень; пошук токенів (`pat-…`, `EAA…`, `sk_…`, `ghp_…`, `AKIA…`, приватні ключі) по всій історії git 17.11.2026 | нічого не знайдено |
+| Клієнтський код не читає серверних секретів | жоден файл з `"use client"` не імпортує `lib/leads/hubspot`, `lib/meta/capi`, `lib/offline`, `lib/posthog-server` | так |
 | Персональних даних немає в `dataLayer` і URL | e2e-тест форми Contact і Waitlist | пройдено |
 | Персональних даних немає в логах помилок | Помилки Meta і PostHog логують лише `event_id` і тіло відповіді | так, за кодом |
 | Повна заявка в логах | Лише коли CRM не підключено або не відповіла. Це свідоме запасне сховище | так |
