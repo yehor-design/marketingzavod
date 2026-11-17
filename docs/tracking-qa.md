@@ -19,7 +19,8 @@
 | Без вибору | Жодної cookie з префіксами `ph_`, `_ga`, `_gcl`, `_fb`, `_clck`, `_clsk`, `li_`, немає `wb_attr` | пройдено |
 | | У запиті до `/api/lead` лише `utm_source`, `utm_medium`, `utm_campaign`; distinct ID немає | пройдено |
 | | Три сторінки дали рівно три `page_view` | пройдено |
-| Порядок старту GTM | У `dataLayer`: ідентифікатори → Consent Mode `default` (усе `denied`) → `gtm.js` → `page_view`. Контейнер запитано один раз | пройдено |
+| GTM без вибору | У `dataLayer` лише ідентифікатори і події, жодного `gtm.js` і жодного запиту до Google, PostHog чи Speed Insights | пройдено |
+| GTM зі збереженим вибором | У `dataLayer`: ідентифікатори → Consent Mode `default` за вибором → `consent_statistics`/`consent_marketing` → `gtm.js` → `page_view`. Контейнер запитано один раз | пройдено |
 | Футер | Кнопки «Cookie settings» немає, доки немає засобу згоди | пройдено |
 | Події | `page_view` один на маршрут, `cta_click`, `faq_open` (лише розкриття), `outbound_click`, `contact_click`, `view_pricing`, `begin_checkout`, `form_start`, `form_error`, `generate_lead`, `join_waitlist` | пройдено |
 | Персональні дані | У `dataLayer` і в URL після заявки немає email, імені, тексту повідомлення і ключа `user_data` | пройдено |
@@ -32,7 +33,7 @@
 
 - Що `gtm/container.json` імпортується в GTM без помилок.
 - Що теги в контейнері спрацьовують у правильному порядку в справжньому GTM.
-- Що запити Google мають `gcs=G100` до згоди: це поведінка тегів Google, а не коду сайту.
+- Що до згоди немає жодного запиту до Google: це перевіряє e2e (`tests/e2e/consent.spec.ts`), але на production варто подивитися в Network ще раз.
 - Що HubSpot, Meta і Google Ads приймають дані у форматі, який шле сайт.
 
 ## Production без ідентифікаторів
@@ -92,7 +93,7 @@
 | Де дивитися | Очікуване |
 | --- | --- |
 | Cookies | Лише cookie власного банера |
-| Network | `g/collect` з `gcs=G100` і без cookies; немає запитів до `clarity.ms`, `connect.facebook.net`, `facebook.com/tr`, `snap.licdn.com`; `/ingest/…` є, без cookie |
+| Network | немає запитів до `googletagmanager.com`, `google-analytics.com`, `clarity.ms`, `connect.facebook.net`, `facebook.com/tr`, `snap.licdn.com`, amplitude.com, `/ingest/…` і `/_vercel/speed-insights` |
 | GTM Preview | Теги Clarity, Meta, LinkedIn у стані «Blocked by consent» |
 | Meta Test Events | Жодної події, ні з браузера, ні з сервера |
 | HubSpot | Контакт і угода є; `wb_lt_utm_source=qa`; `wb_gclid` порожній; `wb_consent_marketing=false` |

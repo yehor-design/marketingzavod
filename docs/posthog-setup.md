@@ -18,7 +18,7 @@
 | --- | --- | --- |
 | Ініціалізація | `lib/tracking/posthog.ts`, викликається з `TrackingProvider` | Без ключа або поза production нічого не вантажиться. Бібліотека імпортується ліниво, у `requestIdleCallback` |
 | Проксі | `next.config.ts`, `rewrites` | `/ingest/*` → `eu.i.posthog.com`, `/ingest/static/*` і `/ingest/array/*` → `eu-assets.i.posthog.com` |
-| Згода | `applyPosthogConsent` | До згоди на статистику: `persistence: "memory"`, без cookie, без localStorage, без записів. Після згоди: `localStorage+cookie` і записи. Відкликання повертає режим пам'яті і видаляє `ph_*` |
+| Згода | `initPosthog`, `applyPosthogConsent` | До згоди на статистику бібліотека не вантажиться, нічого не надсилається. Події поточної сторінки чекають у черзі (до 100) і йдуть після згоди. Відкликання зупиняє збір і видаляє `ph_*`, потім сторінка перезавантажується |
 | Перегляди | `track("page_view")` | Автоматичні перегляди вимкнені (`capture_pageview: false`). Один перегляд на маршрут |
 | Події плану | `track()` | Кожна подія дублюється в PostHog з тією самою назвою і параметрами |
 | Ідентифікація | `posthogIdentifyLead` | Після заявки: `identify(lead_id)` і властивості first touch. Email як ідентифікатор не використовується. Лише за згоди на статистику |

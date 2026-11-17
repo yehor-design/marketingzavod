@@ -44,7 +44,7 @@ Goals → Conversions → Summary → New conversion action → Website → **Ad
 - `Google Ads - Conversion Linker` на всіх сторінках.
 - Чотири теги `Google Ads - Conversion - …`. **Transaction ID = `event_id`** заявки, тому повторне спрацювання з тим самим ID не дає другої конверсії.
 - `Google Ads - Remarketing` на кожен `page_view`.
-- Додаткової вимоги згоди немає: теги Google Ads мають вбудовану перевірку `ad_storage`. Без згоди вони надсилають запити без cookies для моделювання конверсій.
+- Теги Google Ads мають явну вимогу згоди `ad_storage` (Basic Consent Mode). Без згоди на маркетинг вони не спрацьовують, а без жодної згоди GTM не вантажиться зовсім. Моделювання конверсій для тих, хто відмовився, немає.
 
 ## Перевірка
 

@@ -1,69 +1,42 @@
-import Script from "next/script";
-import { gtmConfig, TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
-
-const GTM_ID = /^GTM-[A-Z0-9]+$/;
-
-function active(): boolean {
-  return TRACKING_ENABLED && GTM_ID.test(trackingIds.gtm);
-}
+import { CONSENT_READER_SOURCE } from "@/lib/consent/core";
+import { gtmConfig, trackingIds } from "@/lib/tracking/env";
+import { gtmActive, gtmScriptUrl } from "@/lib/tracking/gtm";
 
 /**
- * Loads the GTM container. The official snippet is split in two on purpose:
+ * The GTM bootstrap: an inline script that runs while the HTML is parsed,
+ * before any React effect can add page_view.
  *
- * 1. An inline script that runs while the HTML is parsed. It puts the service
- *    IDs, the Consent Mode v2 default (everything denied) and the gtm.js event
- *    in the dataLayer before any React effect can add page_view.
- * 2. The container itself, fetched after the page is interactive.
+ * It always puts the service IDs in the dataLayer and defines gtag(). GTM
+ * itself starts only when the visitor has already consented to statistics or
+ * marketing (the wb_consent cookie): then the script sets the Consent Mode v2
+ * default from that choice and requests gtm.js. Without consent nothing is
+ * requested from Google. A choice made on the page starts GTM through
+ * lib/tracking/gtm.ts.
  *
- * Consent is only ever granted by the site's consent tool, see lib/consent.
  * Without NEXT_PUBLIC_GTM_ID, or outside production, nothing is rendered.
+ * There is no <noscript> fallback: without JavaScript there is no consent.
  */
-const CONSENT_DEFAULT = {
-  ad_storage: "denied",
-  ad_user_data: "denied",
-  ad_personalization: "denied",
-  analytics_storage: "denied",
-  functionality_storage: "denied",
-  personalization_storage: "denied",
-  security_storage: "granted",
-};
-
 export function GoogleTagManager() {
-  if (!active()) {
+  if (!gtmActive()) {
     return null;
   }
   const bootstrap =
     "window.dataLayer=window.dataLayer||[];" +
     `window.dataLayer.push(${JSON.stringify(gtmConfig()).replace(/</g, "\\u003c")});` +
     "window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};" +
-    `window.gtag('consent','default',${JSON.stringify(CONSENT_DEFAULT)});` +
-    "window.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});";
+    "(function(){" +
+    `var c=(${CONSENT_READER_SOURCE})(document.cookie,Math.floor(Date.now()/1000));` +
+    "if(!c||!(c.s||c.m))return;" +
+    "var g='granted',d='denied',a=c.m?g:d;" +
+    "window.gtag('consent','default',{ad_storage:a,ad_user_data:a,ad_personalization:a," +
+    "analytics_storage:c.s?g:d,functionality_storage:d,personalization_storage:d,security_storage:g});" +
+    "window.dataLayer.push({consent_statistics:c.s,consent_marketing:c.m});" +
+    "window.__wbGtmStarted=true;" +
+    "window.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});" +
+    "var j=document.createElement('script');j.async=true;" +
+    `j.src=${JSON.stringify(gtmScriptUrl(trackingIds.gtm))};` +
+    "document.head.appendChild(j);" +
+    "})();";
 
-  return (
-    <>
-      <script id="gtm-bootstrap" dangerouslySetInnerHTML={{ __html: bootstrap }} />
-      <Script
-        id="gtm-container"
-        src={`https://www.googletagmanager.com/gtm.js?id=${trackingIds.gtm}`}
-        strategy="afterInteractive"
-      />
-    </>
-  );
-}
-
-export function GoogleTagManagerNoscript() {
-  if (!active()) {
-    return null;
-  }
-  return (
-    <noscript>
-      <iframe
-        src={`https://www.googletagmanager.com/ns.html?id=${trackingIds.gtm}`}
-        height="0"
-        width="0"
-        style={{ display: "none", visibility: "hidden" }}
-        title="Google Tag Manager"
-      />
-    </noscript>
-  );
+  return <script id="gtm-bootstrap" dangerouslySetInnerHTML={{ __html: bootstrap }} />;
 }

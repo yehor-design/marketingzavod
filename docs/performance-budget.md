@@ -12,7 +12,7 @@
 
 ## Як вимірюється
 
-- **Реальні користувачі:** Vercel Speed Insights (`@vercel/speed-insights`). Компонент стоїть у кореневому layout. Він не використовує cookies і не ідентифікує відвідувачів, тому працює без згоди. Це описано на сторінці Privacy. Щоб дані з'явилися, Speed Insights треба ввімкнути в панелі Vercel: Project → Speed Insights → Enable.
+- **Реальні користувачі:** Vercel Speed Insights (`@vercel/speed-insights`). Компонент `ConsentedSpeedInsights` стоїть у кореневому layout і додає скрипт лише за згоди на статистику (рішення специфікації банера згоди), тож дані йдуть лише від тих, хто погодився. Щоб дані з'явилися, Speed Insights треба ввімкнути в панелі Vercel: Project → Speed Insights → Enable.
 - **Лабораторно в CI:** GitHub Actions, job `lighthouse` у `.github/workflows/ci.yml`. На кожен pull request збирається production-збірка і Lighthouse CI тричі вимірює `/`, `/pricing`, `/contact`. Таблиця з'являється в Summary запуску. Перевищення бюджету дає попередження і не валить збірку.
 - **Локально:** `npm run build && npm run lighthouse`, потім `node scripts/lighthouse-summary.mjs`.
 

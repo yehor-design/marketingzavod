@@ -155,12 +155,11 @@ const BLOCK = {
 
 // --------------------------------------------------------------------- tags
 /**
- * Consent settings.
- * - Google tags (GA4, Google Ads) have built-in consent checks. They are not
- *   given an additional requirement: with consent denied they must still send
- *   cookieless pings (gcs=G100) so Consent Mode modelling works.
- * - Every other vendor has no built-in checks, so it gets an explicit
- *   requirement and does not load at all without it.
+ * Consent settings. The site follows the strict variant of its consent spec:
+ * nothing that needs consent runs before it, so Google tags run in Basic
+ * Consent Mode. Every tag, Google's included, gets an explicit requirement and
+ * does not fire at all without it: no cookieless pings (gcs=G100) either.
+ * The only exception is the tag that tells Clarity consent was withdrawn.
  */
 const builtInConsent = { consentStatus: "NOT_NEEDED" };
 const requires = (...types) => ({
@@ -203,7 +202,7 @@ addTag({
   ],
   firing: [BUILT_IN.init],
   blocking: [BLOCK.ga4],
-  consent: builtInConsent,
+  consent: requires("analytics_storage"),
 });
 
 for (const event of events) {
@@ -225,7 +224,7 @@ for (const event of events) {
     ],
     firing: [CE[event.name]],
     blocking: [BLOCK.ga4],
-    consent: builtInConsent,
+    consent: requires("analytics_storage"),
   });
 }
 
@@ -302,7 +301,7 @@ addTag({
   parameter: [bool("enableCrossDomain", false), bool("enableUrlPassthrough", false), bool("enableCookieOverrides", false)],
   firing: [BUILT_IN.init],
   blocking: [BLOCK.ads],
-  consent: builtInConsent,
+  consent: requires("ad_storage"),
 });
 
 const adsConversion = ({ name, label, firing, blocking, enhanced, value }) =>
@@ -326,7 +325,7 @@ const adsConversion = ({ name, label, firing, blocking, enhanced, value }) =>
     ],
     firing,
     blocking: [BLOCK.ads, blocking],
-    consent: builtInConsent,
+    consent: requires("ad_storage"),
   });
 
 adsConversion({ name: "Contact lead", label: ID.google_ads_label_contact, firing: [CE_LEAD_CONTACT], blocking: BLOCK.adsContact, enhanced: true });
@@ -346,7 +345,7 @@ addTag({
   ],
   firing: [CE.page_view],
   blocking: [BLOCK.ads],
-  consent: builtInConsent,
+  consent: requires("ad_storage"),
 });
 
 // Meta Pixel. Every tag carries the loader, so an event that follows a fresh
