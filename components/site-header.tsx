@@ -156,9 +156,9 @@ export function SiteHeader() {
             }}
           >
             <img
-              src="/brand/logo-wordmark.svg"
-              alt="Jet"
-              width={62}
+              src="/brand/logo.svg"
+              alt="WOWboy"
+              width={100.31}
               height={24}
             />
           </Link>
