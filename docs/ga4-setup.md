@@ -48,11 +48,11 @@ GA4 стоїть лише через GTM. Прямого `gtag.js` у коді �
 
 - `GA4 - Google tag` стоїть на Initialization з `send_page_view = false`.
 - На кожну подію плану є тег `GA4 - {event}` з усіма параметрами і `event_id`.
-- Додаткової вимоги згоди на тегах GA4 немає: вони мають вбудовану перевірку `analytics_storage`. Без згоди GA4 надсилає запити без cookies (`gcs=G100`), і це потрібно для моделювання.
+- Теги GA4 мають явну вимогу згоди `analytics_storage` (Basic Consent Mode). До згоди сайт не вантажить навіть GTM, тож запитів до GA4 немає зовсім і моделювання Consent Mode не працює. Так вирішено у специфікації банера згоди (суворий варіант).
 
 ## Перевірка
 
 1. **DebugView.** GTM → Preview → відкрий сайт. У GA4 → Admin → DebugView видно `page_view` на кожен перехід і події плану з параметрами.
 2. **Realtime.** Reports → Realtime: твій візит і події видно за кілька секунд.
 3. **Без дублів.** Перейди між трьома сторінками: у DebugView рівно три `page_view`.
-4. **Без згоди.** У приватному вікні натисни Deny. У Network запити до `google-analytics.com/g/collect` мають `gcs=G100`, а cookie `_ga` не створено.
+4. **Без згоди.** У приватному вікні натисни «Necessary only». У Network немає запитів до `googletagmanager.com` і `google-analytics.com`, cookie `_ga` не створено.

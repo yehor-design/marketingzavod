@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { dataLayer, events, prepare } from "./helpers";
+import { dataLayer, events, prepare, storeConsent } from "./helpers";
 
 const LANDING = "/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST";
 
@@ -24,36 +24,88 @@ async function submitContact(page: Page) {
   return body;
 }
 
-test("GTM starts with the IDs, then consent denied by default, then gtm.js, then page_view", async ({ page }) => {
+const DENIED = {
+  ad_storage: "denied",
+  ad_user_data: "denied",
+  ad_personalization: "denied",
+  analytics_storage: "denied",
+  functionality_storage: "denied",
+  personalization_storage: "denied",
+  security_storage: "granted",
+};
+const GRANTED_ALL = {
+  ...DENIED,
+  ad_storage: "granted",
+  ad_user_data: "granted",
+  ad_personalization: "granted",
+  analytics_storage: "granted",
+};
+
+/** Lets lazy loaders (PostHog waits for idle time, up to 4 s) have their chance. */
+async function settle(page: Page) {
+  await page.waitForTimeout(4500);
+}
+
+const thirdParty = (requests: string[]) =>
+  requests.filter((url) => /googletagmanager\.com|\/ingest\/|\/_vercel\/speed-insights|amplitude\.com|posthog\.com/.test(url));
+
+test("no choice: the IDs are in the dataLayer, but nothing reaches Google, PostHog or Vercel", async ({ page }) => {
   const requests = await prepare(page);
   await page.goto("/");
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+  await settle(page);
+
   const layer = await dataLayer(page);
-  const config = layer.findIndex((entry) => "ga4_id" in entry);
+  expect(layer[0].consent_ready).toBe("false");
+  expect(layer.filter((entry) => entry.event === "gtm.js")).toEqual([]);
+  expect(layer.filter((entry) => entry[0] === "consent")).toEqual([]);
+  expect(thirdParty(requests)).toEqual([]);
+  // No <noscript> GTM fallback: without JavaScript there is no consent.
+  expect(await page.content()).not.toContain("ns.html?id=");
+});
+
+test("stored choice to allow everything: GTM starts with that consent before page_view", async ({ page }) => {
+  const requests = await prepare(page);
+  await storeConsent(page, true, true);
+  await page.goto("/");
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+
+  const layer = await dataLayer(page);
   const start = layer.findIndex((entry) => entry.event === "gtm.js");
   const view = layer.findIndex((entry) => entry.event === "page_view");
-  expect(config).toBe(0);
-  // The site has no consent tool yet, so the container holds every tag back.
   expect(layer[0].consent_ready).toBe("false");
   // gtag() pushes its arguments object: consent, default, state.
-  expect(layer[1]).toEqual({
-    0: "consent",
-    1: "default",
-    2: {
-      ad_storage: "denied",
-      ad_user_data: "denied",
-      ad_personalization: "denied",
-      analytics_storage: "denied",
-      functionality_storage: "denied",
-      personalization_storage: "denied",
-      security_storage: "granted",
-    },
-  });
-  expect(start).toBe(2);
+  expect(layer[1]).toEqual({ 0: "consent", 1: "default", 2: GRANTED_ALL });
+  expect(layer[2]).toEqual({ consent_statistics: true, consent_marketing: true });
+  expect(start).toBe(3);
   expect(view).toBeGreaterThan(start);
   await expect.poll(() => requests.filter((url) => url.includes("gtm.js?id=GTM-E2ETEST")).length).toBe(1);
-  await expect(page.locator('noscript iframe[src*="ns.html?id=GTM-E2ETEST"]')).toHaveCount(0);
-  expect(await page.content()).toContain("ns.html?id=GTM-E2ETEST");
+  await expect.poll(() => requests.filter((url) => url.includes("/ingest/")).length, { timeout: 10_000 }).toBeGreaterThan(0);
+  await expect.poll(() => requests.filter((url) => url.includes("/_vercel/speed-insights")).length).toBeGreaterThan(0);
+});
+
+test("stored choice of statistics only: analytics granted, advertising denied", async ({ page }) => {
+  const requests = await prepare(page);
+  await storeConsent(page, true, false);
+  await page.goto("/");
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+
+  const layer = await dataLayer(page);
+  expect(layer[1]).toEqual({ 0: "consent", 1: "default", 2: { ...DENIED, analytics_storage: "granted" } });
+  expect(layer[2]).toEqual({ consent_statistics: true, consent_marketing: false });
+  await expect.poll(() => requests.filter((url) => url.includes("gtm.js?id=GTM-E2ETEST")).length).toBe(1);
+});
+
+test("stored choice of necessary only: the same as no choice", async ({ page }) => {
+  const requests = await prepare(page);
+  await storeConsent(page, false, false);
+  await page.goto("/");
+  await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+  await settle(page);
+
+  const layer = await dataLayer(page);
+  expect(layer.filter((entry) => entry.event === "gtm.js" || entry[0] === "consent")).toEqual([]);
+  expect(thirdParty(requests)).toEqual([]);
 });
 
 test("no choice: no analytics cookies, only UTM leaves with the form", async ({ page }) => {

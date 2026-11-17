@@ -70,6 +70,22 @@ export function parseConsent(
   };
 }
 
+/**
+ * The same rules as parseConsent() and readConsentCookie(), as plain
+ * JavaScript for the inline GTM bootstrap, which runs before any bundle.
+ * A function of (cookies, nowSeconds) returning {s, m} or null.
+ * tests/unit/consent.test.ts checks that both readers agree.
+ */
+export const CONSENT_READER_SOURCE =
+  "function(c,n){" +
+  `var v=(c.match(/(?:^|;\\s*)${CONSENT_COOKIE}=([^;]*)/)||[])[1];` +
+  `var r=${CONSENT_PATTERN.toString()}.exec(v||"");` +
+  `if(!r||+r[1]!==${CONSENT_VERSION})return null;` +
+  "var t=+r[4];" +
+  `if(t>n+${FUTURE_TOLERANCE_SECONDS}||n-t>=${CONSENT_MAX_AGE_SECONDS})return null;` +
+  'return{s:r[2]==="1",m:r[3]==="1"}' +
+  "}";
+
 /** Finds wb_consent in a Cookie header or in document.cookie. */
 export function readConsentCookie(
   cookies: string,

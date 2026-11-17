@@ -14,6 +14,7 @@ import {
   type TrackEvents,
 } from "@/lib/tracking";
 import { applyAmplitudeConsent, initAmplitude } from "@/lib/tracking/amplitude";
+import { applyGtmConsent } from "@/lib/tracking/gtm";
 import { applyPosthogConsent, initPosthog } from "@/lib/tracking/posthog";
 
 /** Survives React strict-mode remounts, so a route produces one page_view. */
@@ -116,6 +117,7 @@ export function TrackingProvider() {
     void initAmplitude();
 
     const stopConsent = onConsentChange((state) => {
+      applyGtmConsent(state);
       syncAttributionWithConsent(state);
       applyPosthogConsent(state);
       void applyAmplitudeConsent(state);

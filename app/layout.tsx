@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Fragment_Mono, Geist, Geist_Mono } from "next/font/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { MotionProvider } from "@/components/motion-provider";
 import { SiteShell } from "@/components/site-shell";
-import { GoogleTagManager, GoogleTagManagerNoscript } from "@/components/tracking/gtm";
+import { GoogleTagManager } from "@/components/tracking/gtm";
+import { ConsentedSpeedInsights } from "@/components/tracking/speed-insights";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { IS_PRODUCTION_DEPLOY, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -71,14 +71,12 @@ export default function RootLayout({
       className={`${geist.variable} ${geistMono.variable} ${fragmentMono.variable}`}
     >
       <body>
-        <GoogleTagManagerNoscript />
         <GoogleTagManager />
         <MotionProvider>
           <SiteShell>{children}</SiteShell>
         </MotionProvider>
         <TrackingProvider />
-        {/* Cookieless and anonymous, so it does not wait for consent. */}
-        <SpeedInsights />
+        <ConsentedSpeedInsights />
       </body>
     </html>
   );

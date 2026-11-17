@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CONSENT_MAX_AGE_SECONDS,
+  CONSENT_READER_SOURCE,
   CONSENT_VERSION,
   consentCookieAttributes,
   narrowsConsent,
@@ -86,6 +87,31 @@ describe("consent cookie format", () => {
     expect(narrowsConsent(all, { statistics: true, marketing: false })).toBe(true);
     expect(narrowsConsent(none, all)).toBe(false);
     expect(narrowsConsent(all, all)).toBe(false);
+  });
+});
+
+describe("the inline reader used by the GTM bootstrap", () => {
+  const inline = new Function(`return ${CONSENT_READER_SOURCE}`)() as (
+    cookies: string,
+    now: number,
+  ) => { s: boolean; m: boolean } | null;
+
+  it.each([
+    ["no cookie", "wb_attr=x"],
+    ["statistics only", `wb_consent=1.s1m0.${NOW}.${ID}`],
+    ["marketing only", `a=1; wb_consent=1.s0m1.${NOW}.${ID}; b=2`],
+    ["both", `wb_consent=1.s1m1.${NOW}.${ID}`],
+    ["neither", `wb_consent=1.s0m0.${NOW}.${ID}`],
+    ["another version", `wb_consent=2.s1m1.${NOW}.${ID}`],
+    ["garbage", "wb_consent=yes"],
+    ["prefix of another name", `xwb_consent=1.s1m1.${NOW}.${ID}`],
+    ["from the future", `wb_consent=1.s1m1.${NOW + 3600}.${ID}`],
+    ["expired", `wb_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS}.${ID}`],
+    ["just inside 180 days", `wb_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS + 1}.${ID}`],
+  ])("agrees with readConsentCookie: %s", (_, cookies) => {
+    const expected = readConsentCookie(cookies, NOW);
+    const actual = inline(cookies, NOW);
+    expect(actual).toEqual(expected ? { s: expected.statistics, m: expected.marketing } : null);
   });
 });
 

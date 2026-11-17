@@ -29,7 +29,8 @@
                          │ POST /api/crm/hubspot        webhook стадії угоди → Meta (офлайн)
                          │ GET  /api/offline-conversions/google-ads  файл для Google Ads
                          └───────────────────────────────────────────┘
- Vercel Speed Insights: окремо, без cookies і без згоди.
+ Vercel Speed Insights: окремо, лише за згоди на статистику.
+ До згоди не вантажиться нічого: ні GTM, ні PostHog, ні Amplitude, ні Speed Insights.
 ```
 
 ## Роль кожного сервісу
@@ -37,16 +38,16 @@
 | Сервіс | Для чого | Як підключений | Згода |
 | --- | --- | --- | --- |
 | Власний засіб згоди | Банер згоди, сигнали Consent Mode v2 | Ще не написаний. Точка входу: `lib/consent` | — |
-| Google Tag Manager | Єдина точка входу для тегів Google, Meta, Clarity, LinkedIn | `components/tracking/gtm.tsx` | вантажиться завжди, теги чекають згоди |
-| GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage`, без згоди запити без cookies |
-| PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | до згоди без cookies і без записів |
+| Google Tag Manager | Єдина точка входу для тегів Google, Meta, Clarity, LinkedIn | `components/tracking/gtm.tsx`, `lib/tracking/gtm.ts` | вантажиться лише після згоди на статистику або маркетинг |
+| GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage` (Basic Consent Mode: без згоди запитів немає) |
+| PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | згода на статистику; без неї бібліотека не вантажиться |
 | Microsoft Clarity | Записи сесій і теплові карти | GTM | `analytics_storage` |
 | Amplitude | Продуктова аналітика, автозбір подій, записи сесій | Код: `lib/tracking/amplitude.ts`, викликається з `TrackingProvider` | згода на статистику; без неї SDK навіть не завантажується |
 | Google Ads | Конверсії, Enhanced Conversions, ремаркетинг | GTM | `ad_storage`, `ad_user_data` |
 | Meta | Піксель і Conversions API з дедуплікацією | GTM і сервер | `ad_storage` / згода на маркетинг |
 | LinkedIn | Insight Tag і конверсії | GTM | `ad_storage` |
 | HubSpot | Зберігання заявок з атрибуцією, угоди | Сервер | не залежить від згоди, але click ID лише за згоди |
-| Vercel Speed Insights | Швидкість у реальних користувачів | Код | не потрібна |
+| Vercel Speed Insights | Швидкість у реальних користувачів | Код: `components/tracking/speed-insights.tsx` | згода на статистику |
 | Search Console | Органічний пошук | `sitemap.xml`, `robots.txt`, метадані | — |
 
 ## Де що лежить
@@ -107,7 +108,7 @@
 
 Стороннього банера згоди на сайті немає. Власний засіб ще не написаний, тому зараз згоди не може дати ніхто і все, що від неї залежить, вимкнено:
 
-- `lib/consent` завжди повертає відмову. PostHog працює без cookies і записів, cookie атрибуції не створюється, click ID не йдуть на сервер.
+- `lib/consent` повертає відмову, доки вибору немає. GTM, PostHog, Amplitude і Speed Insights не вантажаться, cookie атрибуції не створюється, click ID не йдуть на сервер.
 - `components/tracking/gtm.tsx` до старту GTM задає Consent Mode v2: усе `denied`.
 - Константа `CONSENT_TOOL_READY` у `lib/consent` дорівнює `false`. Сайт передає її в GTM як `consent_ready`, і тригер-виняток `Block - Consent tool missing` тримає всі теги контейнера. Кнопки «Cookie settings» у футері теж немає.
 

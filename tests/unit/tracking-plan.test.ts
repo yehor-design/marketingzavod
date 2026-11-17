@@ -86,15 +86,19 @@ describe("gtm/container.json", () => {
     }
   });
 
-  it("requires consent for every tag without built-in consent checks", () => {
+  it("requires consent for every tag, Google's included (Basic Consent Mode)", () => {
     const required = (item: Tag) => item.consentSettings.consentType?.list.map((entry) => entry.value) ?? [];
     for (const item of container.tag) {
-      if (item.name.startsWith("Meta - ") || item.name.startsWith("LinkedIn - ")) {
-        expect(required(item), item.name).toEqual(["ad_storage"]);
+      if (item.name === "Clarity - Consent update") {
+        // Tells Clarity that consent was withdrawn, so it must run without consent.
+        expect(item.consentSettings.consentStatus).toBe("NOT_NEEDED");
+        continue;
       }
+      expect(item.consentSettings.consentStatus, item.name).toBe("NEEDED");
+      const expected =
+        item.name.startsWith("GA4 - ") || item.name.startsWith("Clarity - ") ? ["analytics_storage"] : ["ad_storage"];
+      expect(required(item), item.name).toEqual(expected);
     }
-    expect(required(tag("Clarity - Base"))).toEqual(["analytics_storage"]);
-    expect(required(tag("Clarity - Form tag"))).toEqual(["analytics_storage"]);
   });
 
   it("turns off the automatic GA4 page_view", () => {

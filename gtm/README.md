@@ -29,12 +29,12 @@
 ## Як перевірити в Preview
 
 1. Додай у Vercel `NEXT_PUBLIC_GTM_ID`, зроби redeploy.
-2. GTM → **Preview**, введи `https://www.heywowboy.com`.
+2. GTM → **Preview**, введи `https://www.heywowboy.com`. Без згоди сайт GTM не вантажить, тож у вікні Preview спершу натисни в банері «Accept all».
 3. У Tag Assistant перевір по порядку:
-   - на події **Consent Initialization** не спрацював жоден тег, вкладка Consent показує `denied` для `ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`;
+   - на події **Consent Initialization** не спрацював жоден тег, вкладка Consent показує стан, який ти вибрав у банері (після «Accept all» — `granted` для `ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`);
    - далі йде `Initialization` (Google tag, Conversion Linker), потім один `page_view`;
    - при переході на іншу сторінку з'являється рівно один новий `page_view`;
-   - після згоди у власному банері з'являється `consent_update`, стан згоди стає `granted`, спрацьовують Clarity і Meta.
+   - якщо змінити вибір через «Cookie settings» без перезавантаження (розширити згоду), з'являється `consent_update`, і стан оновлюється.
 4. Вкладка **Variables** на будь-якій події: змінні `ID - …` мають значення з Vercel.
 
 ## Як опублікувати
@@ -43,7 +43,7 @@
 
 ## Налаштування згоди в тегах
 
-- **Теги Google (GA4, Google Ads)** мають вбудовані перевірки згоди. Додаткова вимога згоди для них не задана свідомо: без згоди вони мають надсилати запити без cookies (`gcs=G100`), інакше не працює моделювання Consent Mode.
+- **Теги Google (GA4, Google Ads)** мають явну вимогу згоди, як і решта: GA4 — `analytics_storage`, Google Ads — `ad_storage` (Basic Consent Mode). Сам контейнер сайт вантажить лише після згоди на статистику або маркетинг, тож запитів без cookies (`gcs=G100`) немає. Так вирішено у специфікації банера згоди.
 - **Clarity** вимагає `analytics_storage` і без нього не вантажиться взагалі.
 - **Meta Pixel і LinkedIn** вимагають `ad_storage` і без нього не вантажаться взагалі.
 - **Жоден тег не працює, доки на сайті немає власного засобу згоди.** Сайт передає `consent_ready = "false"` (константа `CONSENT_TOOL_READY` у `lib/consent`), і тригер-виняток `Block - Consent tool missing` тримає всі теги. Без банера згода не може бути отримана, тож усе вимкнено.

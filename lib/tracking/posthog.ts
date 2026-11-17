@@ -3,9 +3,10 @@
  * first-party /ingest proxy. The library is imported lazily, after the page is
  * interactive, so it never competes with rendering.
  *
- * Before analytics consent PostHog keeps everything in memory: no cookie, no
- * localStorage, no session recording. Consent switches on persistence and
- * recordings. Withdrawal switches them off again and removes what was stored.
+ * PostHog runs only with statistics consent: without it the library is not
+ * even downloaded and nothing is sent. Events from the current page wait in a
+ * short queue and go out once consent is given. Withdrawal stops collection
+ * and removes what PostHog stored.
  */
 import type { PostHog } from "posthog-js";
 import { getConsent, type ConsentState } from "@/lib/consent";
@@ -23,14 +24,22 @@ function uiHost(apiHost: string): string {
   return apiHost.includes("us.i.posthog.com") ? "https://us.posthog.com" : "https://eu.posthog.com";
 }
 
+/** Enough for one page before the visitor chooses. Older tasks are dropped. */
+const QUEUE_LIMIT = 100;
+
 function run(task: (posthog: PostHog) => void) {
   if (!posthogActive()) {
     return;
   }
   if (client) {
-    task(client);
-  } else {
-    queue.push(task);
+    if (getConsent().statistics) {
+      task(client);
+    }
+    return;
+  }
+  queue.push(task);
+  if (queue.length > QUEUE_LIMIT) {
+    queue.shift();
   }
 }
 
@@ -48,28 +57,35 @@ function clearStored(key: string) {
   }
 }
 
-/** Starts PostHog once. Safe to call repeatedly. Does nothing without a key. */
+/** Settings PostHog runs with when it may collect. */
+const COLLECTING = {
+  persistence: "localStorage+cookie",
+  autocapture: true,
+  capture_pageleave: true,
+  disable_session_recording: false,
+} as const;
+
+/** Starts PostHog once, with statistics consent only. Safe to call repeatedly. */
 export function initPosthog() {
   if (!posthogActive() || client || starting || typeof window === "undefined") {
+    return;
+  }
+  if (!getConsent().statistics) {
     return;
   }
   starting = true;
   const start = async () => {
     try {
       const { default: posthog } = await import("posthog-js");
-      const consent = getConsent().statistics;
       posthog.init(trackingIds.posthogKey, {
         api_host: POSTHOG_PROXY_PATH,
         ui_host: uiHost(trackingIds.posthogHost),
         defaults: "2026-08-30",
         // Page views come from track("page_view"), exactly one per route change.
         capture_pageview: false,
-        capture_pageleave: true,
-        autocapture: true,
         capture_exceptions: true,
         person_profiles: "identified_only",
-        persistence: consent ? "localStorage+cookie" : "memory",
-        disable_session_recording: !consent,
+        ...COLLECTING,
         session_recording: { maskAllInputs: true, maskTextSelector: "[data-private]" },
       });
       client = posthog;
@@ -100,18 +116,32 @@ export function posthogCaptureException(error: unknown) {
   run((posthog) => posthog.captureException(error));
 }
 
-/** Applies a consent change without reloading the page. */
+/**
+ * Applies a consent change without reloading the page. Withdrawal also
+ * reloads the page (lib/consent), so the stop here only has to hold until then,
+ * and it writes nothing new to the device.
+ */
 export function applyPosthogConsent(state: ConsentState) {
-  run((posthog) => {
-    if (state.statistics) {
-      posthog.set_config({ persistence: "localStorage+cookie", disable_session_recording: false });
-      posthog.startSessionRecording();
+  if (state.statistics) {
+    if (client) {
+      client.set_config(COLLECTING);
+      client.startSessionRecording();
     } else {
-      posthog.stopSessionRecording();
-      posthog.set_config({ persistence: "memory", disable_session_recording: true });
-      clearStored(trackingIds.posthogKey);
+      initPosthog();
     }
-  });
+    return;
+  }
+  queue.splice(0);
+  if (client) {
+    client.stopSessionRecording();
+    client.set_config({
+      persistence: "memory",
+      autocapture: false,
+      capture_pageleave: false,
+      disable_session_recording: true,
+    });
+    clearStored(trackingIds.posthogKey);
+  }
 }
 
 /**

@@ -28,10 +28,23 @@ export async function prepare(page: Page) {
     requests.push(route.request().url());
     return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
   });
-  await page.route(/\/_vercel\//, (route) =>
-    route.fulfill({ status: 200, contentType: "application/javascript", body: "" }),
-  );
+  await page.route(/\/_vercel\//, (route) => {
+    requests.push(route.request().url());
+    return route.fulfill({ status: 200, contentType: "application/javascript", body: "" });
+  });
   return requests;
+}
+
+/** Stores a consent choice the way the banner does, before the page loads. */
+export async function storeConsent(page: Page, statistics: boolean, marketing: boolean) {
+  const decidedAt = Math.floor(Date.now() / 1000) - 60;
+  await page.context().addCookies([
+    {
+      name: "wb_consent",
+      value: `1.s${statistics ? 1 : 0}m${marketing ? 1 : 0}.${decidedAt}.0f8c2b1d9e7a4c6b8d0e1f2a3b4c5d6e`,
+      url: "http://localhost:3100",
+    },
+  ]);
 }
 
 export async function dataLayer(page: Page): Promise<Entry[]> {

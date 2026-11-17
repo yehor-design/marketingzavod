@@ -1,6 +1,7 @@
 /**
  * The only way events leave the site. track() writes to the GTM dataLayer and
- * mirrors the same event to PostHog. Nothing else may call dataLayer.push.
+ * mirrors the same event to PostHog. Besides track(), only the GTM bootstrap
+ * and lib/tracking/gtm.ts (consent signals) write to the dataLayer.
  *
  * Parameters must never carry personal data: no email, name, phone or message.
  */
