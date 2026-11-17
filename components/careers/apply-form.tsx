@@ -2,14 +2,10 @@
 
 import { useState } from "react";
 import { RollSubmit } from "@/components/careers/roll-link";
-import posthog from "posthog-js";
-import { posthogLog } from "@/lib/posthog-logs";
+import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/careers/careers.module.css";
 
-const posthogEnabled = Boolean(
-  process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN && process.env.NEXT_PUBLIC_POSTHOG_HOST,
-);
 
 const FIELDS = [
   {
@@ -99,10 +95,8 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
         const result = await submitLead("careers_apply", fields, String(data.get("company_url") ?? ""));
         setPending(false);
         if (result.ok) {
-          if (posthogEnabled) {
-            posthog.capture("career_application_submitted", { role_slug: slug });
-            posthogLog.info("career_application_submitted", { role_slug: slug });
-          }
+          posthogCapture("career_application_submitted", { role_slug: slug });
+          posthogLogInfo("career_application_submitted", { role_slug: slug });
           setDone(true);
         } else if (result.error === "validation") {
           const next: Record<string, string> = {};

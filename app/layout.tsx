@@ -6,7 +6,6 @@ import { SiteShell } from "@/components/site-shell";
 import { GoogleTagManager, GoogleTagManagerNoscript } from "@/components/tracking/gtm";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { IS_PRODUCTION_DEPLOY, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
-import { Amplitude } from "./amplitude";
 import "./globals.css";
 
 const geist = Geist({
@@ -74,7 +73,6 @@ export default function RootLayout({
       <body>
         <GoogleTagManagerNoscript />
         <GoogleTagManager />
-        <Amplitude />
         <MotionProvider>
           <SiteShell>{children}</SiteShell>
         </MotionProvider>

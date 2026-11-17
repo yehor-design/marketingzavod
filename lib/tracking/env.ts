@@ -19,7 +19,10 @@ export const trackingIds = {
   linkedin: clean(process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID),
   linkedinConversionContact: clean(process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_CONTACT),
   linkedinConversionWaitlist: clean(process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_WAITLIST),
-  posthogKey: clean(process.env.NEXT_PUBLIC_POSTHOG_KEY),
+  // The PostHog wizard named the same public key NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN.
+  posthogKey:
+    clean(process.env.NEXT_PUBLIC_POSTHOG_KEY) || clean(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN),
+  amplitude: clean(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY),
   posthogHost: clean(process.env.NEXT_PUBLIC_POSTHOG_HOST) || "https://eu.i.posthog.com",
 } as const;
 

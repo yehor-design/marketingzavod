@@ -5,7 +5,7 @@ export type Entry = Record<string, unknown> & { event?: string };
 let ipCounter = 0;
 
 /**
- * Keeps the test offline: GTM and PostHog requests are answered locally and
+ * Keeps the test offline: GTM, PostHog and Amplitude requests are answered locally and
  * recorded. Each page also gets its own client address, so the lead API's
  * rate limit never couples one test to another.
  */
@@ -20,6 +20,11 @@ export async function prepare(page: Page) {
     return route.fulfill({ status: 200, contentType: "application/javascript", body: "" });
   });
   await page.route(/\/ingest\//, (route) => {
+    requests.push(route.request().url());
+    return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  // Amplitude and PostHog's own hosts. Nothing may reach them before consent.
+  await page.route(/amplitude\.com|posthog\.com/, (route) => {
     requests.push(route.request().url());
     return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
   });
