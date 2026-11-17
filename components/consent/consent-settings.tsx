@@ -134,7 +134,9 @@ export function ConsentSettings() {
                 <p id={descriptionId} className="text-sm leading-normal text-muted-foreground">
                   {category.purpose}
                 </p>
-                <p className="font-mono text-xs leading-relaxed tracking-[0.02em] text-faint">{category.services}</p>
+                <p className="font-mono text-xs font-medium leading-relaxed tracking-[0.02em] text-muted-foreground">
+                  {category.services}
+                </p>
               </li>
             );
           })}
