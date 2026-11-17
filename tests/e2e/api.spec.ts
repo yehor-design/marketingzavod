@@ -76,3 +76,23 @@ test("search files: sitemap, robots and noindex outside production", async ({ re
   expect(post).toContain('"@type":"Article"');
   expect(post).toContain('property="og:type" content="article"');
 });
+
+test("the consent log accepts a choice and nothing else", async ({ request }) => {
+  const record = {
+    id: "0f8c2b1d9e7a4c6b8d0e1f2a3b4c5d6e",
+    version: 1,
+    statistics: true,
+    marketing: false,
+    source: "banner",
+    decided_at: Math.floor(Date.now() / 1000),
+  };
+  const headers = { "x-forwarded-for": ip() };
+  expect((await request.post("/api/consent", { data: record, headers })).status()).toBe(204);
+  expect((await request.post("/api/consent", { data: { ...record, id: "nope" }, headers })).status()).toBe(400);
+  expect(
+    (await request.post("/api/consent", { data: { ...record, decided_at: record.decided_at + 86_400 }, headers })).status(),
+  ).toBe(400);
+  expect(
+    (await request.post("/api/consent", { data: record, headers: { ...headers, origin: "https://evil.example" } })).status(),
+  ).toBe(403);
+});

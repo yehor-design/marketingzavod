@@ -19,6 +19,7 @@ import {
   type ConsentChoice,
   type StoredConsent,
 } from "@/lib/consent/core";
+import { sendConsentRecord } from "@/lib/consent/log";
 import { clearStoredByPrefix } from "@/lib/consent/storage";
 
 export * from "@/lib/consent/core";
@@ -101,6 +102,7 @@ export function setConsent(next: Omit<ConsentState, "necessary">): void {
  * The entry point for the consent banner and settings panel: stores the
  * choice in wb_consent for 180 days, then applies it.
  *
+ * Every choice also goes to the consent log (lib/consent/log.ts).
  * A grant applies without a reload. A withdrawal also removes what the
  * withdrawn categories stored and reloads the page, because scripts that
  * already run cannot be unloaded.
@@ -126,6 +128,14 @@ export function saveConsent(
   }
   stored = next;
   setConsent({ preferences: false, statistics: next.statistics, marketing: next.marketing, answered: true });
+  sendConsentRecord({
+    id: next.id,
+    version: next.version,
+    statistics: next.statistics,
+    marketing: next.marketing,
+    source,
+    decided_at: next.decidedAt,
+  });
   const narrowed = narrowsConsent(previous, next);
   if (narrowed && typeof window !== "undefined") {
     clearStoredByPrefix(prefixesToClear(previous, next));

@@ -53,11 +53,35 @@ test("first visit: the banner is on every kind of page", async ({ page }) => {
   }
 });
 
+/** Bodies of the consent log requests the page sends. */
+function consentLog(page: Page): Array<Record<string, unknown>> {
+  const records: Array<Record<string, unknown>> = [];
+  page.on("request", (request) => {
+    if (request.url().endsWith("/api/consent") && request.method() === "POST") {
+      records.push(JSON.parse(request.postData() ?? "{}"));
+    }
+  });
+  return records;
+}
+
 test("accept all: one click stores the choice, starts GTM and the banner stays away", async ({ page }) => {
   const requests = await prepare(page, { choice: "none" });
+  const records = consentLog(page);
   await page.goto("/");
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
   await banner(page).getByRole("button", { name: "Accept all" }).click();
+
+  // A11: exactly one log record, with no personal data.
+  await expect.poll(() => records.length).toBe(1);
+  const id = (await consentCookie(page))?.split(".")[3];
+  expect(records[0]).toEqual({
+    id,
+    version: 1,
+    statistics: true,
+    marketing: true,
+    source: "banner",
+    decided_at: expect.any(Number),
+  });
 
   await expect(banner(page)).toHaveCount(0);
   expect(await consentCookie(page)).toMatch(/^1\.s1m1\.\d+\.[0-9a-f]{32}$/);
@@ -146,6 +170,7 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
 
 test("withdrawal from the footer removes stored data and reloads the page", async ({ page }) => {
   const requests = await prepare(page, { choice: "none" });
+  const records = consentLog(page);
   await storeConsent(page, true, true);
   await page.goto(LANDING);
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
@@ -168,6 +193,8 @@ test("withdrawal from the footer removes stored data and reloads the page", asyn
 
   expect((await page.context().cookies()).map((cookie) => cookie.name)).toEqual(["wb_consent"]);
   expect(await consentCookie(page)).toMatch(/^1\.s0m0\./);
+  // The record of the withdrawal survives the reload.
+  expect(records).toEqual([expect.objectContaining({ statistics: false, marketing: false, source: "settings" })]);
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
   expect(requests.filter((url) => /googletagmanager|\/ingest\/|speed-insights/.test(url))).toEqual([]);
   await expect(banner(page)).toHaveCount(0);
