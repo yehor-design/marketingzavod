@@ -1,14 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
+import { Button } from "@ui-sdk/react/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
+import { Input } from "@ui-sdk/react/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectItemIndicator,
+  SelectTrigger,
+  SelectValue,
+} from "@ui-sdk/react/select";
+import { Textarea } from "@ui-sdk/react/textarea";
+import { selectOptionClass, selectPopupClass, textAreaClass, textControlClass } from "@/components/forms/control-classes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { Textarea } from "@/components/ui/textarea";
+import { buttonVariants } from "@/components/ui/button";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
+import { cn } from "@/lib/utils";
 import styles from "@/components/contact/contact.module.css";
 
 
@@ -18,7 +29,7 @@ const REASONS = [
   { value: "sales", label: "Sales" },
   { value: "feedback", label: "Feedback" },
   { value: "other", label: "Other" },
-] as const;
+];
 
 type Errors = {
   name?: string;
@@ -83,6 +94,7 @@ export function ContactPage() {
               }
             }}
           >
+            {/* Spam trap: a native input so it is not a named control. */}
             <div className="visually-hidden" aria-hidden="true">
               <label htmlFor="contact-company-url">Company URL</label>
               <input
@@ -97,77 +109,63 @@ export function ContactPage() {
               <h2>Send us a message</h2>
               <p className="text-muted-foreground">We’d love to hear from you.</p>
             </div>
-            <FieldGroup className="w-full">
-              <FieldGroup className="sm:flex-row">
-                <Field data-invalid={errors.name ? true : undefined}>
-                  <FieldLabel htmlFor="contact-name">Full name</FieldLabel>
+            <FieldGroup className="flex w-full flex-col gap-5">
+              <FieldGroup className="flex w-full flex-col gap-5 sm:flex-row">
+                <Field className="min-w-0 flex-1" name="Full name" disabled={done || pending} invalid={errors.name ? true : undefined}>
+                  <FieldLabel className="text-sm text-muted-foreground">Full name</FieldLabel>
                   <Input
-                    id="contact-name"
-                    name="Full name"
+                    className={textControlClass}
                     type="text"
                     autoComplete="name"
                     placeholder="Jane Smith"
                     required
-                    disabled={done || pending}
-                    aria-invalid={errors.name ? true : undefined}
-                    aria-describedby={errors.name ? "contact-name-error" : undefined}
                   />
-                  {errors.name ? <FieldError id="contact-name-error">{errors.name}</FieldError> : null}
+                  {errors.name ? <FieldError match>{errors.name}</FieldError> : null}
                 </Field>
-                <Field data-invalid={errors.email ? true : undefined}>
-                  <FieldLabel htmlFor="contact-email">Email</FieldLabel>
+                <Field className="min-w-0 flex-1" name="Email" disabled={done || pending} invalid={errors.email ? true : undefined}>
+                  <FieldLabel className="text-sm text-muted-foreground">Email</FieldLabel>
                   <Input
-                    id="contact-email"
-                    name="Email"
+                    className={textControlClass}
                     type="email"
                     inputMode="email"
                     autoComplete="email"
                     placeholder="orin@framer.com"
                     required
-                    disabled={done || pending}
-                    aria-invalid={errors.email ? true : undefined}
-                    aria-describedby={errors.email ? "contact-email-error" : undefined}
                   />
-                  {errors.email ? <FieldError id="contact-email-error">{errors.email}</FieldError> : null}
+                  {errors.email ? <FieldError match>{errors.email}</FieldError> : null}
                 </Field>
               </FieldGroup>
-              <Field data-invalid={errors.reason ? true : undefined}>
-                <FieldLabel htmlFor="contact-reason">Reason for contact</FieldLabel>
-                <NativeSelect
-                  className="w-full"
-                  id="contact-reason"
+              <Field disabled={done || pending} invalid={errors.reason ? true : undefined}>
+                <FieldLabel className="text-sm text-muted-foreground">Reason for contact</FieldLabel>
+                <Select
                   name="Inquiry type"
                   required
-                  disabled={done || pending}
-                  value={reason}
-                  data-empty={reason ? undefined : "true"}
-                  aria-invalid={errors.reason ? true : undefined}
-                  aria-describedby={errors.reason ? "contact-reason-error" : undefined}
-                  onChange={(event) => setReason(event.target.value)}
+                  placeholder="Select…"
+                  items={REASONS}
+                  value={reason === "" ? null : reason}
+                  onValueChange={(next) => setReason(next ?? "")}
                 >
-                  <NativeSelectOption value="" disabled>
-                    Select…
-                  </NativeSelectOption>
-                  {REASONS.map((item) => (
-                    <NativeSelectOption key={item.value} value={item.value}>
-                      {item.label}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
-                {errors.reason ? <FieldError id="contact-reason-error">{errors.reason}</FieldError> : null}
+                  <SelectTrigger className={textControlClass}>
+                    <SelectValue />
+                    <ChevronDownIcon aria-hidden="true" />
+                  </SelectTrigger>
+                  <SelectContent className={selectPopupClass}>
+                    {REASONS.map((item) => (
+                      <SelectItem key={item.value} className={selectOptionClass} value={item.value}>
+                        {item.label}
+                        <SelectItemIndicator>
+                          <CheckIcon aria-hidden="true" />
+                        </SelectItemIndicator>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.reason ? <FieldError match>{errors.reason}</FieldError> : null}
               </Field>
-              <Field data-invalid={errors.message ? true : undefined}>
-                <FieldLabel htmlFor="contact-message">How can we help?</FieldLabel>
-                <Textarea
-                  id="contact-message"
-                  name="Message"
-                  placeholder="Tell us what you need help with…"
-                  required
-                  disabled={done || pending}
-                  aria-invalid={errors.message ? true : undefined}
-                  aria-describedby={errors.message ? "contact-message-error" : undefined}
-                />
-                {errors.message ? <FieldError id="contact-message-error">{errors.message}</FieldError> : null}
+              <Field name="Message" disabled={done || pending} invalid={errors.message ? true : undefined}>
+                <FieldLabel className="text-sm text-muted-foreground">How can we help?</FieldLabel>
+                <Textarea className={textAreaClass} placeholder="Tell us what you need help with…" required />
+                {errors.message ? <FieldError match>{errors.message}</FieldError> : null}
               </Field>
             </FieldGroup>
             {errors.form ? (
@@ -180,7 +178,7 @@ export function ContactPage() {
                 We&apos;ll get back to you soon!
               </p>
             ) : (
-              <Button type="submit" disabled={pending} aria-busy={pending}>
+              <Button className={cn(buttonVariants())} type="submit" disabled={pending} aria-busy={pending}>
                 Get in touch
               </Button>
             )}

@@ -33,17 +33,3 @@ export function RollLink({
     </Link>
   );
 }
-
-export function RollSubmit({
-  text,
-  className,
-}: {
-  text: string;
-  className: string;
-}) {
-  return (
-    <button type="submit" className={className}>
-      {text}
-    </button>
-  );
-}

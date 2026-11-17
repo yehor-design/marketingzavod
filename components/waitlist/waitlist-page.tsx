@@ -3,9 +3,12 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
-import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { Button } from "@ui-sdk/react/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
+import { Input } from "@ui-sdk/react/input";
+import { textControlClass } from "@/components/forms/control-classes";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { amplitudeTrack } from "@/lib/tracking/amplitude";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
@@ -196,6 +199,7 @@ export function WaitlistPage() {
               }
             }}
           >
+            {/* Spam trap: a native input so it is not a named control. */}
             <div className="visually-hidden" aria-hidden="true">
               <label htmlFor="waitlist-company-url">Company URL</label>
               <input
@@ -206,26 +210,20 @@ export function WaitlistPage() {
                 autoComplete="off"
               />
             </div>
-            <FieldGroup className="w-full flex-row items-end">
-              <Field className="min-w-0 flex-1" data-invalid={error ? true : undefined}>
-                <FieldLabel htmlFor="waitlist-email" className="sr-only">
-                  Email
-                </FieldLabel>
+            <FieldGroup className="flex w-full flex-row items-end gap-3">
+              <Field className="min-w-0 flex-1" name="Email" disabled={done || pending} invalid={error ? true : undefined}>
+                <FieldLabel className="sr-only">Email</FieldLabel>
                 <Input
-                  id="waitlist-email"
-                  name="Email"
+                  className={textControlClass}
                   type="email"
                   inputMode="email"
                   autoComplete="email"
                   placeholder="Enter your email"
                   required
-                  disabled={done || pending}
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? "waitlist-email-error" : undefined}
                 />
               </Field>
               {done ? null : (
-                <Button type="submit" disabled={pending} aria-busy={pending}>
+                <Button className={cn(buttonVariants())} type="submit" disabled={pending} aria-busy={pending}>
                   Join now
                 </Button>
               )}
@@ -235,7 +233,7 @@ export function WaitlistPage() {
                 You&apos;re on the waitlist!
               </p>
             ) : null}
-            {error ? <FieldError id="waitlist-email-error">{error}</FieldError> : null}
+            {error ? <FieldError match>{error}</FieldError> : null}
           </form>
         </div>
       </section>

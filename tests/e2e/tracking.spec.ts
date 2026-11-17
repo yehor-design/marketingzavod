@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { dataLayer, events, freezeNavigation, prepare, UUID } from "./helpers";
+import { chooseContactReason, dataLayer, events, freezeNavigation, prepare, UUID } from "./helpers";
 
 test.beforeEach(async ({ page }) => {
   await prepare(page);
@@ -84,7 +84,7 @@ test("contact: form_start, form_error, generate_lead and no personal data", asyn
 
   await page.getByLabel("Full name").fill("Quality Tester");
   await page.getByLabel("Email").fill("qa.tester@example.com");
-  await page.getByLabel("Reason for contact").selectOption("sales");
+  await chooseContactReason(page, "Sales");
   await page.getByLabel("How can we help?").fill("A private message that must not leak.");
   await page.getByRole("button", { name: "Get in touch" }).click();
 
