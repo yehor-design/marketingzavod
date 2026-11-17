@@ -5,6 +5,20 @@ const banner = (page: Page) => page.locator("[data-consent-banner]");
 const panel = (page: Page) => page.locator("[data-consent-settings]");
 const LANDING = "/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST";
 
+function luminance([red, green, blue]: number[]) {
+  const channel = (value: number) => {
+    const srgb = value / 255;
+    return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(red) + 0.7152 * channel(green) + 0.0722 * channel(blue);
+}
+
+function contrast(first: number[], second: number[]) {
+  const lighter = Math.max(luminance(first), luminance(second));
+  const darker = Math.min(luminance(first), luminance(second));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 /** Shell of a navbar or consent button, ignoring the label width. */
 async function buttonShell(locator: ReturnType<Page["locator"]>) {
   return locator.evaluate((node) => {
@@ -204,22 +218,42 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
       const style = getComputedStyle(node);
       const thumb = node.querySelector("[data-slot=switch-thumb]");
       const thumbStyle = thumb ? getComputedStyle(thumb) : null;
+      const overBlack = (color: string) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1;
+        canvas.height = 1;
+        const context = canvas.getContext("2d");
+        if (!context) {
+          return [0, 0, 0];
+        }
+        context.fillStyle = "#000";
+        context.fillRect(0, 0, 1, 1);
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+        return [red, green, blue];
+      };
       return {
         opacity: style.opacity,
-        backgroundColor: style.backgroundColor,
         width: Number.parseFloat(style.width),
         height: Number.parseFloat(style.height),
-        thumb: thumbStyle?.backgroundColor ?? "",
+        trackRgb: overBlack(style.backgroundColor),
+        thumbRgb: overBlack(thumbStyle?.backgroundColor ?? "rgba(0, 0, 0, 0)"),
       };
     });
   const necessaryLook = await switchLook(necessary);
   const statisticsLook = await switchLook(statistics);
-  expect(necessaryLook.opacity).toBe("0.5");
+  const marketingLook = await switchLook(marketing);
+  expect(necessaryLook.opacity).toBe("1");
   expect(statisticsLook.opacity).toBe("1");
-  expect(necessaryLook.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
-  expect(statisticsLook.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
-  expect(necessaryLook.thumb).not.toBe("rgba(0, 0, 0, 0)");
-  expect(statisticsLook.thumb).not.toBe("rgba(0, 0, 0, 0)");
+  expect(marketingLook.opacity).toBe("1");
+  expect(contrast(necessaryLook.trackRgb, [0, 0, 0])).toBeGreaterThanOrEqual(3);
+  expect(contrast(statisticsLook.trackRgb, [0, 0, 0])).toBeGreaterThanOrEqual(3);
+  expect(contrast(marketingLook.trackRgb, [0, 0, 0])).toBeGreaterThanOrEqual(3);
+  expect(contrast(necessaryLook.thumbRgb, necessaryLook.trackRgb)).toBeGreaterThanOrEqual(3);
+  expect(contrast(statisticsLook.thumbRgb, statisticsLook.trackRgb)).toBeGreaterThanOrEqual(3);
+  expect(contrast(marketingLook.thumbRgb, marketingLook.trackRgb)).toBeGreaterThanOrEqual(3);
+  expect(luminance(necessaryLook.trackRgb)).toBeGreaterThan(luminance(statisticsLook.trackRgb));
   expect(necessaryLook.width).toBeGreaterThan(24);
   expect(necessaryLook.height).toBeGreaterThan(14);
   const descriptionSize = await panel(page)
@@ -229,6 +263,15 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
   await expect(panel(page)).toContainText("Google Analytics, PostHog, Amplitude, Vercel Speed Insights");
 
   await statistics.click();
+  await expect.poll(async () => {
+    const statisticsOn = await switchLook(statistics);
+    return (
+      statisticsOn.opacity === "1" &&
+      contrast(statisticsOn.trackRgb, [0, 0, 0]) >= 3 &&
+      contrast(statisticsOn.thumbRgb, statisticsOn.trackRgb) >= 3 &&
+      luminance(statisticsOn.trackRgb) > luminance(necessaryLook.trackRgb)
+    );
+  }).toBe(true);
   await panel(page).getByRole("button", { name: "Save choices" }).click();
 
   await expect(panel(page)).toBeHidden();
