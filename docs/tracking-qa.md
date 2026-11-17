@@ -105,6 +105,24 @@ Consent Mode: усі запити GA4 після «Accept all» мають `gcs=
 
 **Ще не перевірено на production:** заявка з форми до CRM (HubSpot ще не підключено, заявки поки лише в логах Vercel) і дедуплікація події Meta `Lead` з браузера та сервера. Ці перевірки — частина підключення HubSpot.
 
+## Production через Cloudflare Zaraz, 17 листопада 2026
+
+`NEXT_PUBLIC_TAG_MANAGER=zaraz` на production, коміт `20ffd17`. Перевірено в Chromium зі звичайним профілем. Локальний DNS-кеш роутера ще віддавав для `z.heywowboy.com` старі адреси Vercel, тому хост примусово вказано на IP Cloudflare (`--host-resolver-rules`). Публічні резолвери 1.1.1.1 і 8.8.8.8 на той момент уже віддавали Cloudflare.
+
+| Перевірка | Результат |
+| --- | --- |
+| До згоди | жодного стороннього запиту, GTM-бутстрапа в HTML немає, `dataLayer` порожній (Z2) |
+| «Accept all» | `i.js` і `s.js` з `z.heywowboy.com`; `zaraz.consent.getAll()` = `{ MwUo: true }` (Statistics); cookie `wb_zaraz_consent`, `cf_zaraz_client` |
+| Події | `page_view`, `view_pricing` → `z.heywowboy.com/cdn-cgi/zaraz/t` 200, з параметрами і `google_consent_default` (Z3). У моніторингу Zaraz дія GA4 «Site events» має активність |
+| Meta | `/api/meta/event` 204 на `page_view` і `view_pricing`, `_fbp` ставить сервер. Прямих запитів до `facebook.com` немає |
+| Прямі запити | жодного до `google-analytics.com`, `googletagmanager.com`, `connect.facebook.net`, `facebook.com/tr` |
+| Відкликання | після «Necessary only» лишається лише `wb_consent`; Zaraz і `/api/meta/event` більше не викликаються |
+| Privacy Policy | `/legal/privacy-policy`, версія 1.8, згадує Cloudflare Zaraz (Z8) |
+
+Знайдено й виправлено (PR #27): `zaraz.consent.set()` відкидав увесь виклик через мету Marketing, яка ще не прив'язана до жодного інструмента. Через це Statistics лишалася вимкненою, і GA4 не отримав би жодної події. Тепер кожну мету передано окремо.
+
+Не перевірено агентом: параметр `gcd` у запитах Google (Z5) — вони йдуть із серверів Cloudflare, браузер їх не бачить. Порівняння GA4 за тиждень (Z9) — MAR-58, 24.11.2026.
+
 ## Сценарій для production з ідентифікаторами
 
 Виконати, коли закрито MAR-21 і опубліковано контейнер GTM. Для кожного з трьох сценаріїв: приватне вікно, GTM Preview увімкнено, шлях `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About → Contact → заявка з адресою виду `qa+дата@твій-домен`.
