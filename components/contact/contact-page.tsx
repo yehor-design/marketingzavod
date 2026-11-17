@@ -174,7 +174,7 @@ export function ContactPage() {
               </Alert>
             ) : null}
             {done ? (
-              <p className="text-brand" role="status" data-form-success="contact">
+              <p className="font-strong text-brand" role="status" data-form-success="contact">
                 We&apos;ll get back to you soon!
               </p>
             ) : (

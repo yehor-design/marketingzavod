@@ -48,11 +48,11 @@ const CATEGORIES: readonly Category[] = [
 ];
 
 const titleType =
-  "font-display text-[14px] leading-[1.4] font-[1000] tracking-[-0.01em] [font-variation-settings:'opsz'_14,'wght'_550]";
+  "font-display text-[14px] leading-[1.4] font-strong tracking-[-0.01em] [font-variation-settings:'opsz'_14,'wght'_550]";
 const labelType =
-  "font-display text-[12px] leading-[1.6] font-[1000] tracking-normal [font-variation-settings:'opsz'_14,'wght'_550]";
+  "font-display text-[12px] leading-[1.6] font-strong tracking-normal [font-variation-settings:'opsz'_14,'wght'_550]";
 const bodyType =
-  "font-display text-[12px] leading-[1.6] font-[1000] tracking-normal [font-variation-settings:'opsz'_14,'wght'_450]";
+  "font-display text-[12px] leading-[1.6] font-copy tracking-normal [font-variation-settings:'opsz'_14,'wght'_450]";
 
 /**
  * The second layer: one switch per category, the services behind it and the

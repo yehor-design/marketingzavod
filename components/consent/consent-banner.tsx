@@ -62,7 +62,7 @@ export function ConsentBanner() {
       <h2 id="consent-banner-title" className="sr-only">
         Cookie consent
       </h2>
-      <p className="m-0 font-display text-[12px] leading-[1.6] font-[1000] tracking-normal text-muted-foreground [font-variation-settings:'opsz'_14,'wght'_450]">
+      <p className="m-0 font-display text-[12px] leading-[1.6] font-copy tracking-normal text-muted-foreground [font-variation-settings:'opsz'_14,'wght'_450]">
         We use cookies for analytics and ads, some set by our partners.{" "}
         <Link
           href={PRIVACY_COOKIES_HREF}
