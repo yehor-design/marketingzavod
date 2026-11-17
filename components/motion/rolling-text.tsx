@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { useLayoutEffect, useRef, useState } from "react";
-import styles from "./motion.module.css";
+import styles from "./motion-styles";
 import { usePrefersReducedMotion } from "./use-reduced-motion";
 
 export const ROLLING_TEXT_FONT_SIZE_PX = 14;
@@ -111,7 +111,7 @@ export function RollingText({
       <span className={styles.sizer} ref={sizerRef} aria-hidden="true">
         {text}
       </span>
-      <span className="visually-hidden">{text}</span>
+      <span className="sr-only">{text}</span>
       {letters.map((letter, index) => (
         <span
           className={styles.clip}

@@ -1,5 +1,6 @@
 "use client";
 
+import { cx } from "@/components/chrome-styles";
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
@@ -12,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { amplitudeTrack } from "@/lib/tracking/amplitude";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
-import styles from "@/components/waitlist/waitlist.module.css";
+import styles from "@/components/waitlist/waitlist-styles";
 
 
 const artBase = {
@@ -156,9 +157,9 @@ export function WaitlistPage() {
         <div className={styles.copy}>
           <div className={styles.text}>
             <p className={styles.badge}>
-              <span className="shimmer-text">
+              <span className={cx("shimmer-text")}>
                 WAITLIST IS NOW OPEN
-                <span className="shimmer-text-glow" aria-hidden="true">
+                <span className={cx("shimmer-text-glow")} aria-hidden="true">
                   WAITLIST IS NOW OPEN
                 </span>
               </span>
@@ -200,7 +201,7 @@ export function WaitlistPage() {
             }}
           >
             {/* Spam trap: a native input so it is not a named control. */}
-            <div className="visually-hidden" aria-hidden="true">
+            <div className="sr-only" aria-hidden="true">
               <label htmlFor="waitlist-company-url">Company URL</label>
               <input
                 id="waitlist-company-url"

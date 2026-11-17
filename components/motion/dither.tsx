@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import styles from "./motion.module.css";
+import styles from "./motion-styles";
 
 const BAYER_4 = [
   [0, 8, 2, 10],

@@ -6,7 +6,7 @@ import { GodRays } from "@/components/motion";
 import { BenefitIcon, Chevron } from "@/components/careers/icons";
 import { RollLink } from "@/components/careers/roll-link";
 import { benefits, careers } from "@/lib/careers";
-import styles from "@/components/careers/careers.module.css";
+import styles from "@/components/careers/careers-styles";
 
 const NBSP = "\u00A0";
 
@@ -66,7 +66,7 @@ export function CareersPage() {
       </section>
 
       <section
-        className={`${styles.frame} ${styles.benefits}`}
+        className={`${styles.frame} ${styles.benefits} scroll-mt-[80px]`}
         id="benefits"
         aria-labelledby="benefits-title"
       >
@@ -97,7 +97,7 @@ export function CareersPage() {
         </ul>
       </section>
 
-      <section className={styles.frame} id="open-roles" aria-labelledby="roles-title">
+      <section className={`${styles.frame} scroll-mt-[80px]`} id="open-roles" aria-labelledby="roles-title">
         <div className={styles.roles}>
           <div className={styles.rolesIntro}>
             <h2 id="roles-title">Open roles.</h2>

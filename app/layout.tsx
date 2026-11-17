@@ -70,7 +70,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${geist.variable} ${geistMono.variable} ${fragmentMono.variable}`}
+      className={`dark bg-background text-[125%] scheme-dark max-[809.98px]:text-[87.5%] min-[810px]:max-[1199.98px]:text-[112.5%] ${geist.variable} ${geistMono.variable} ${fragmentMono.variable}`}
     >
       <body>
         <GoogleTagManager />

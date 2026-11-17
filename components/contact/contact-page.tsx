@@ -20,7 +20,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import { cn } from "@/lib/utils";
-import styles from "@/components/contact/contact.module.css";
+import styles from "@/components/contact/contact-styles";
 
 
 const REASONS = [
@@ -95,7 +95,7 @@ export function ContactPage() {
             }}
           >
             {/* Spam trap: a native input so it is not a named control. */}
-            <div className="visually-hidden" aria-hidden="true">
+            <div className="sr-only" aria-hidden="true">
               <label htmlFor="contact-company-url">Company URL</label>
               <input
                 id="contact-company-url"

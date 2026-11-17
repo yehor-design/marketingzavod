@@ -1,5 +1,6 @@
 "use client";
 
+import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
 import {
@@ -15,9 +16,9 @@ import { RollLink } from "@/components/careers/roll-link";
 import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
 import { PhosphorIcon } from "@/components/home/phosphor-icon";
-import home from "@/components/home/home.module.css";
-import contact from "@/components/contact/contact.module.css";
-import styles from "./styleguide.module.css";
+import home from "@/components/home/home-styles";
+import contact from "@/components/contact/contact-styles";
+import styles from "./styleguide-styles";
 
 const NBSP = " ";
 
@@ -182,7 +183,7 @@ function GlitchLink({ label, badge }: { label: string; badge?: string }) {
       onBlur={() => setHot(false)}
     >
       <TextGlitch active={hot}>{label}</TextGlitch>
-      {badge ? <span className="count-badge">{badge}</span> : null}
+      {badge ? <span className={cx("count-badge")}>{badge}</span> : null}
     </Link>
   );
 }
@@ -263,10 +264,10 @@ export function StyleGuide() {
             text="Learn more"
             className={`${home.buttonSecondary} gray-pill`}
           />
-          <Link className="nav-button nav-button-secondary" href="/dev/styleguide">
+          <Link className={cx("nav-button", "nav-button-secondary")} href="/dev/styleguide">
             <RollingText text="Contact" fontSize={12} lineHeightPx={21.6} />
           </Link>
-          <Link className="nav-button nav-button-primary" href="/dev/styleguide">
+          <Link className={cx("nav-button", "nav-button-primary")} href="/dev/styleguide">
             <RollingText text={`Join${NBSP}waitlist`} fontSize={12} lineHeightPx={14.4} />
           </Link>
         </div>
@@ -282,14 +283,14 @@ export function StyleGuide() {
           <GlitchLink label="Pricing" />
           <GlitchLink label="Careers" badge="8" />
           <TextShimmer>HIRING</TextShimmer>
-          <Link className="announcement" href="/updates/june-jetstream-update">
-            <span className="shimmer-text">
+          <Link className={cx("announcement")} href="/updates/june-jetstream-update">
+            <span className={cx("shimmer-text")}>
               NEW: 2025 JUNE UPDATE
-              <span className="shimmer-text-glow" aria-hidden="true">
+              <span className={cx("shimmer-text-glow")} aria-hidden="true">
                 NEW: 2025 JUNE UPDATE
               </span>
             </span>
-            <span className="announcement-icon">
+            <span className={cx("announcement-icon")}>
               <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
                 <g
                   transform="translate(8 8)"

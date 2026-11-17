@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import styles from "./motion.module.css";
+import styles from "./motion-styles";
 import { usePrefersReducedMotion } from "./use-reduced-motion";
 
 /**

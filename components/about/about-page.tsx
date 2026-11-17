@@ -6,7 +6,7 @@ import { DitherImage } from "@/components/home/dither-image";
 import { GodRays, RollingText, orderedDither } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
 import { SiteCta } from "@/components/site-cta";
-import styles from "@/components/about/about.module.css";
+import styles from "@/components/about/about-styles";
 
 const NBSP = "\u00A0";
 
