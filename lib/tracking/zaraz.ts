@@ -113,10 +113,12 @@ export function purposeIds(zaraz: ZarazApi): Record<keyof ZarazPurposes, string>
 
 function sendConsent(choice: ZarazPurposes, key: "google_consent_default" | "google_consent_update") {
   call((zaraz) => zaraz.set(key, consentModeState(choice.statistics, choice.marketing)));
-  call((zaraz) => {
-    const ids = purposeIds(zaraz);
-    zaraz.consent?.set({ [ids.statistics]: choice.statistics, [ids.marketing]: choice.marketing });
-  });
+  // One call per purpose: Zaraz rejects the whole call when it does not know
+  // one of the IDs, which is the case for a purpose no tool uses yet
+  // (Marketing, until Google Ads or LinkedIn are added).
+  const ids = (zaraz: ZarazApi) => purposeIds(zaraz);
+  call((zaraz) => zaraz.consent?.set({ [ids(zaraz).statistics]: choice.statistics }));
+  call((zaraz) => zaraz.consent?.set({ [ids(zaraz).marketing]: choice.marketing }));
 }
 
 function becomeReady() {
