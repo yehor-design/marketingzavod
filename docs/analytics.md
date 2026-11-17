@@ -37,7 +37,7 @@
 
 | Сервіс | Для чого | Як підключений | Згода |
 | --- | --- | --- | --- |
-| Власний засіб згоди | Банер згоди, сигнали Consent Mode v2 | Ще не написаний. Точка входу: `lib/consent` | — |
+| Власний банер згоди | Банер і панель налаштувань, сигнали Consent Mode v2, журнал згод | `components/consent/`, `lib/consent` | — |
 | Google Tag Manager | Єдина точка входу для тегів Google, Meta, Clarity, LinkedIn | `components/tracking/gtm.tsx`, `lib/tracking/gtm.ts` | вантажиться лише після згоди на статистику або маркетинг |
 | GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage` (Basic Consent Mode: без згоди запитів немає) |
 | PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | згода на статистику; без неї бібліотека не вантажиться |
@@ -107,17 +107,22 @@
 
 ## Згода
 
-Стороннього банера згоди на сайті немає. Власний засіб ще не написаний, тому зараз згоди не може дати ніхто і все, що від неї залежить, вимкнено:
+Власний банер згоди. Вимоги й рішення — у документі «Специфікація банера згоди» в Linear-проекті «Власний банер згоди». Код: `components/consent/` (банер і панель), `lib/consent` (стан, cookie, очищення, журнал).
 
-- `lib/consent` повертає відмову, доки вибору немає. GTM, PostHog, Amplitude і Speed Insights не вантажаться, cookie атрибуції не створюється, click ID не йдуть на сервер.
-- `components/tracking/gtm.tsx` до старту GTM задає Consent Mode v2: усе `denied`.
-- Константа `CONSENT_TOOL_READY` у `lib/consent` дорівнює `false`. Сайт передає її в GTM як `consent_ready`, і тригер-виняток `Block - Consent tool missing` тримає всі теги контейнера. Кнопки «Cookie settings» у футері теж немає.
+**Що бачить відвідувач.** Унизу ліворуч (на телефоні — на всю ширину) картка з одним реченням, посиланням «Learn more» на розділ `#cookies` у Privacy Policy і двома однаковими кнопками: «Necessary only» і «Accept all». «Settings» відкриває панель із перемикачами Statistics і Marketing. Сайт працює і без вибору, хрестика немає.
 
-Що має зробити власний засіб згоди:
+**Що відбувається після вибору.**
 
-1. Після вибору відвідувача (і при відновленні збереженого вибору) викликати `setConsent()` з `lib/consent`. Атрибуція і PostHog підхоплять зміну самі.
-2. Надіслати в GTM `gtag('consent', 'update', …)` і подію `consent_update` з булевими `consent_statistics` та `consent_marketing`. На неї підписані теги Clarity, Meta і LinkedIn.
-3. Реалізувати `openConsentSettings()` і перемкнути `CONSENT_TOOL_READY` на `true`.
+- Вибір записується в cookie `wb_consent` на 180 днів (`<версія>.s<0|1>m<0|1>.<час>.<ID згоди>`). Після 180 днів або при новій `CONSENT_VERSION` у `lib/consent/core.ts` банер з'являється знову.
+- Розширення згоди діє одразу: стартують GTM (з Consent Mode `default` за вибором), PostHog, Amplitude і Speed Insights. Якщо GTM уже працює, він отримує `gtag('consent','update')` і подію `consent_update` з `consent_statistics` і `consent_marketing`.
+- Звуження згоди видаляє cookies і сховище відкликаних категорій і перезавантажує сторінку. На наступному завантаженні відхилені категорії чистяться ще раз.
+- Кожен вибір іде в журнал згод (нижче).
+
+**Повторний візит.** Inline-скрипт у `components/tracking/gtm.tsx` читає `wb_consent` ще до будь-якого бандла і, якщо згода є, запускає GTM з потрібним станом уже на першому перегляді.
+
+**Де банер видно.** Лише там, де працює трекінг (`TRACKING_ENABLED`), і на production — лише коли `CONSENT_TOOL_READY = true` у `lib/consent`. На preview і в e2e з `NEXT_PUBLIC_TRACKING_DEBUG=true` банер видно завжди. Та сама константа передається в GTM як `consent_ready`: поки вона `false`, тригер-виняток `Block - Consent tool missing` тримає всі теги.
+
+**Змінити тексти.** Банер — `components/consent/consent-banner.tsx`, панель — `components/consent/consent-settings.tsx`. Якщо змінюється перелік сервісів чи мет, онови Privacy Policy (`lib/legal.ts`) і підніми `CONSENT_VERSION`, щоб усі відвідувачі погодилися заново.
 
 Відповідність категорій сигналам Consent Mode — у `tracking-plan.md`.
 

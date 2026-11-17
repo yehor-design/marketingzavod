@@ -103,10 +103,10 @@
 
 | Категорія згоди | Сигнали Consent Mode | Що вмикає поза GTM |
 | --- | --- | --- |
-| Necessary | `security_storage` | збережений вибір відвідувача |
-| Preferences | `functionality_storage`, `personalization_storage` | нічого |
-| Statistics | `analytics_storage` | постійне сховище і записи PostHog, Amplitude, cookie атрибуції, серверна подія PostHog |
-| Marketing | `ad_storage`, `ad_user_data`, `ad_personalization` | click ID, Meta Conversions API, передача email у Enhanced Conversions |
+| Necessary | `security_storage` (завжди `granted`) | cookie `wb_consent` із вибором відвідувача |
+| Preferences (у банері не показується) | `functionality_storage`, `personalization_storage` (завжди `denied`) | нічого |
+| Statistics | `analytics_storage` | GTM (якщо дано лише цю згоду), PostHog з записами, Amplitude, Vercel Speed Insights, cookie атрибуції, серверна подія PostHog |
+| Marketing | `ad_storage`, `ad_user_data`, `ad_personalization` | GTM (якщо дано лише цю згоду), click ID, Meta Conversions API, передача email у Enhanced Conversions |
 
 ## Змінні середовища
 

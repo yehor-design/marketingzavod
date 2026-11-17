@@ -12,7 +12,7 @@
 
 ## Автоматичні сценарії (`npm run test:e2e`)
 
-Збірка: `next build` з `NEXT_PUBLIC_TRACKING_DEBUG=true`, `GTM-E2ETEST` і підставний ключ PostHog. Запити до GTM і PostHog перехоплюються. Засобу згоди на сайті ще немає, тому автоматично перевіряється лише стан «без вибору»; сценарії з прийнятою, відхиленою і зміненою згодою треба написати разом із власним банером. Шлях у кожному сценарії: захід на `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → Contact → заявка.
+Збірка: `next build` з `NEXT_PUBLIC_TRACKING_DEBUG=true`, `GTM-E2ETEST` і підставний ключ PostHog. Запити до GTM і PostHog перехоплюються. Банер згоди в цій збірці видно. Сценарії першого візиту, «Accept all», «Necessary only», «Settings», відкликання через футер і клавіатури — у `tests/e2e/banner.spec.ts`; решта тестів стартує зі збереженого «Necessary only», що для трекінгу те саме, що «без вибору». Шлях у кожному сценарії: захід на `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → Contact → заявка.
 
 | Сценарій | Перевірка | Результат |
 | --- | --- | --- |
@@ -21,7 +21,7 @@
 | | Три сторінки дали рівно три `page_view` | пройдено |
 | GTM без вибору | У `dataLayer` лише ідентифікатори і події, жодного `gtm.js` і жодного запиту до Google, PostHog чи Speed Insights | пройдено |
 | GTM зі збереженим вибором | У `dataLayer`: ідентифікатори → Consent Mode `default` за вибором → `consent_statistics`/`consent_marketing` → `gtm.js` → `page_view`. Контейнер запитано один раз | пройдено |
-| Футер | Кнопки «Cookie settings» немає, доки немає засобу згоди | пройдено |
+| Футер | «Cookie settings» відкриває панель із поточним вибором | пройдено |
 | Події | `page_view` один на маршрут, `cta_click`, `faq_open` (лише розкриття), `outbound_click`, `contact_click`, `view_pricing`, `begin_checkout`, `form_start`, `form_error`, `generate_lead`, `join_waitlist` | пройдено |
 | Персональні дані | У `dataLayer` і в URL після заявки немає email, імені, тексту повідомлення і ключа `user_data` | пройдено |
 | API заявок | Валідація (400 з назвами полів), поле-пастка, чужий origin (403), ліміт 5 на хвилину (429) | пройдено |
@@ -72,13 +72,13 @@
 
 Виконати, коли закрито MAR-21 і опубліковано контейнер GTM. Для кожного з трьох сценаріїв: приватне вікно, GTM Preview увімкнено, шлях `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About → Contact → заявка з адресою виду `qa+дата@твій-домен`.
 
-### А. Згода прийнята («Allow all»)
+### А. Згода прийнята («Accept all»)
 
 | Де дивитися | Очікуване |
 | --- | --- |
-| DevTools → Cookies | cookie власного банера, `wb_attr`, `ph_*`, `_ga`, `_ga_*`, `_gcl_au`, `_gcl_aw`, `_fbp`, `_clck`, `_clsk` |
+| DevTools → Cookies | `wb_consent` зі значенням `1.s1m1.…`, `wb_attr`, `ph_*`, `_ga`, `_ga_*`, `_gcl_au`, `_gcl_aw`, `_fbp`, `_clck`, `_clsk`. Звір з префіксами в `CATEGORY_STORAGE_PREFIXES` (`lib/consent/core.ts`): кожен cookie сервісу має підпадати під свою категорію |
 | Network | `google-analytics.com/g/collect` з `gcs=G111`; `clarity.ms`; `facebook.com/tr` з `ev=Lead` і `eid`; `/ingest/…`; `/api/lead` → 200 |
-| GTM Preview | `consent_update` після вибору; чотири `page_view`; `generate_lead`; спрацювали теги GA4, Google Ads Contact lead, Meta Lead |
+| GTM Preview | `consent_update` після вибору; Consent Mode `default` = `granted` до першого `page_view`; чотири `page_view`; `generate_lead`; спрацювали теги GA4, Google Ads Contact lead, Meta Lead |
 | GA4 DebugView | Чотири `page_view`, один `generate_lead` з `form_name=contact` і `lead_id` |
 | PostHog Live events | Чотири `$pageview`, один `generate_lead`, один `lead_saved`; особа ідентифікована за `lead_id` |
 | Clarity | Запис сесії, поля форми замасковані, теги `utm_source=qa`, `form_name=contact` |
@@ -88,19 +88,27 @@
 
 Підсумок: одна заявка = один контакт у CRM з атрибуцією, один `generate_lead` у GA4 і PostHog, одна конверсія Google Ads, одна дедуплікована подія Meta.
 
-### Б. Згода відхилена («Deny»)
+### Б. Лише необхідне («Necessary only»)
 
 | Де дивитися | Очікуване |
 | --- | --- |
-| Cookies | Лише cookie власного банера |
+| Cookies | Лише `wb_consent` зі значенням `1.s0m0.…` |
 | Network | немає запитів до `googletagmanager.com`, `google-analytics.com`, `clarity.ms`, `connect.facebook.net`, `facebook.com/tr`, `snap.licdn.com`, amplitude.com, `/ingest/…` і `/_vercel/speed-insights` |
-| GTM Preview | Теги Clarity, Meta, LinkedIn у стані «Blocked by consent» |
+| GTM Preview | GTM не вантажиться зовсім, тож Preview не підключиться. Це очікувано |
 | Meta Test Events | Жодної події, ні з браузера, ні з сервера |
 | HubSpot | Контакт і угода є; `wb_lt_utm_source=qa`; `wb_gclid` порожній; `wb_consent_marketing=false` |
 
 ### В. Без вибору (банер не чіпати)
 
-Те саме, що в сценарії Б. Додатково: банер видно на кожній сторінці, він не зсуває верстку.
+Те саме, що в сценарії Б, але й `wb_consent` немає. Додатково: банер видно на кожній сторінці, включно з checkout і 404, він не зсуває верстку, а з клавіатури до нього можна дістатися першим Tab.
+
+### Г. Відкликання
+
+Після сценарію А: футер → «Cookie settings» → «Necessary only». Сторінка перезавантажується, лишається тільки `wb_consent` (`1.s0m0.…`), cookies `_ga`, `_gcl_*`, `_fbp`, `_clck`, `ph_*`, `AMP_*` і `wb_attr` зникли. Cookies на доменах clarity.ms, linkedin.com і facebook.com сайт не видаляє, так і має бути.
+
+### Ґ. Журнал згод
+
+PostHog → SQL: `SELECT timestamp, distinct_id, properties.statistics, properties.marketing, properties.source FROM events WHERE event = 'consent_recorded' ORDER BY timestamp DESC LIMIT 20`. На кожен вибір із попередніх сценаріїв — рівно один запис, `distinct_id` дорівнює ID з `wb_consent`, особи (person) немає.
 
 ### Звірка GA4 і PostHog
 

@@ -46,7 +46,7 @@
 - **Теги Google (GA4, Google Ads)** мають явну вимогу згоди, як і решта: GA4 — `analytics_storage`, Google Ads — `ad_storage` (Basic Consent Mode). Сам контейнер сайт вантажить лише після згоди на статистику або маркетинг, тож запитів без cookies (`gcs=G100`) немає. Так вирішено у специфікації банера згоди.
 - **Clarity** вимагає `analytics_storage` і без нього не вантажиться взагалі.
 - **Meta Pixel і LinkedIn** вимагають `ad_storage` і без нього не вантажаться взагалі.
-- **Жоден тег не працює, доки на сайті немає власного засобу згоди.** Сайт передає `consent_ready = "false"` (константа `CONSENT_TOOL_READY` у `lib/consent`), і тригер-виняток `Block - Consent tool missing` тримає всі теги. Без банера згода не може бути отримана, тож усе вимкнено.
+- **Запобіжник `consent_ready`.** Сайт передає `consent_ready` = значення константи `CONSENT_TOOL_READY` у `lib/consent`. Поки вона `false`, тригер-виняток `Block - Consent tool missing` тримає всі теги. Коли банер увімкнено на production, вона `true`, і теги працюють за згодою.
 - Тега згоди в контейнері немає. Стан згоди за замовчуванням `denied` задає сам сайт у `components/tracking/gtm.tsx` до старту GTM, глобально, без переліку регіонів. Це покриває ЄЕЗ, Велику Британію і Швейцарію та будь-яку іншу країну.
 - Оновлення згоди має надсилати власний засіб: `gtag('consent', 'update', …)` і подія `consent_update` з `consent_statistics` та `consent_marketing`. Деталі — у `docs/analytics.md`, розділ «Згода».
 

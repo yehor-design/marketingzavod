@@ -180,3 +180,8 @@
     gap: 8px;
   }
 }
+
+/* A heading reached by its anchor (the consent banner links to #cookies) clears the fixed header. */
+.body h2[id] {
+  scroll-margin-top: calc(var(--header-height) + 24px);
+}
