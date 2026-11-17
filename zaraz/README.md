@@ -14,12 +14,22 @@
 
 | Файл | Що в ньому |
 | --- | --- |
-| `build-config.mjs` | Будує `config.json` з плану подій `gtm/events.json`. Один тригер на подію, дії GA4 і Meta такі самі, як теги контейнера GTM |
+| `build-config.mjs` | Описує опублікований конфіг Zaraz і будує з нього `config.json`. GA4 має одну дію «Site events»: кожен виклик `zaraz.track()` іде в GA4 під тією самою назвою з усіма параметрами, без позначки конверсії. ID (`INqM`, `JTJn`, `MwUo`, `vMnc`) призначив Zaraz |
 | `config.json` | Згенерований конфіг. Не редагуй руками: `npm run zaraz:build` |
 | `ids.json` | Публічні ID: GA4. Google Ads і LinkedIn додаються, коли з'являться акаунти |
 | `publish.mjs` | Публікація і перевірка синхронізації через API Cloudflare |
 
-`tests/unit/zaraz-config.test.ts` перевіряє, що `config.json` збігається з білдером, кожна подія має тригер, кожен інструмент прив'язаний до мети згоди, події Meta (ретранслятор і `/api/lead`) ті самі, що в GTM, і в конфігу немає секретів. `tests/unit/meta-relay.test.ts` перевіряє ретранслятор Meta.
+`tests/unit/zaraz-config.test.ts` перевіряє, що `config.json` збігається з білдером, кожна подія з плану доходить до GA4, GA4 прив'язаний до мети Statistics і не шле нічого з браузера, події Meta (ретранслятор і `/api/lead`) ті самі, що в GTM, а в конфігу немає секретів. `tests/unit/meta-relay.test.ts` перевіряє ретранслятор Meta.
+
+## Як налаштовано (17.11.2026)
+
+Конфіг налаштовано в панелі Cloudflare (Web tag management → Zaraz) і прочитано назад через API. Відповідно до `config.json`:
+
+- **Tools → Google Analytics 4**: дозволи лише «Server network requests» і «Access client key-value store»; автоматичні дії вимкнено; одна власна дія «Site events» (Event, назва `{{ client.__zarazTrack }}`, Include Event Properties увімкнено, Mark as conversion вимкнено) на тригері «All Tracks».
+- **Consent**: Consent Management увімкнено, модальне вікно вимкнено, мети Statistics (`MwUo`, GA4) і Marketing (`vMnc`), cookie `wb_zaraz_consent`. Сайт знаходить мети за назвою (`purposeIds()` у `lib/tracking/zaraz.ts`).
+- **Settings**: Auto-inject script, Data layer compatibility і Single Page Application support вимкнено.
+
+Якщо щось міняєш у панелі, онови `build-config.mjs`, `npm run zaraz:build` і закоміть: тест звіряє `config.json` з білдером, а `npm run zaraz:check` — з опублікованим.
 
 ## Публікація
 

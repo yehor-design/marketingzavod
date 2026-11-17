@@ -25,6 +25,8 @@ type ZarazApi = {
   set: (key: string, value: unknown, options?: { scope?: "page" | "session" | "persist" }) => void;
   consent?: {
     APIReady?: boolean;
+    /** Keyed by the purpose ID Zaraz assigned. Names may be plain or per language. */
+    purposes?: Record<string, { name?: string | Record<string, string> }>;
     set: (purposes: Record<string, boolean>) => void;
   };
 };
@@ -91,9 +93,30 @@ export function zarazTrack(event: string, properties: Record<string, unknown>) {
   }
 }
 
+/**
+ * Zaraz gives each purpose a random ID. The purposes are named Statistics and
+ * Marketing like the consent categories, so they are matched by name.
+ */
+export function purposeIds(zaraz: ZarazApi): Record<keyof ZarazPurposes, string> {
+  const ids: Record<keyof ZarazPurposes, string> = { statistics: "statistics", marketing: "marketing" };
+  for (const [id, purpose] of Object.entries(zaraz.consent?.purposes ?? {})) {
+    const raw = purpose?.name;
+    const name = (typeof raw === "string" ? raw : (raw?.en ?? Object.values(raw ?? {})[0] ?? ""))
+      .trim()
+      .toLowerCase();
+    if (name === "statistics" || name === "marketing") {
+      ids[name] = id;
+    }
+  }
+  return ids;
+}
+
 function sendConsent(choice: ZarazPurposes, key: "google_consent_default" | "google_consent_update") {
   call((zaraz) => zaraz.set(key, consentModeState(choice.statistics, choice.marketing)));
-  call((zaraz) => zaraz.consent?.set({ statistics: choice.statistics, marketing: choice.marketing }));
+  call((zaraz) => {
+    const ids = purposeIds(zaraz);
+    zaraz.consent?.set({ [ids.statistics]: choice.statistics, [ids.marketing]: choice.marketing });
+  });
 }
 
 function becomeReady() {

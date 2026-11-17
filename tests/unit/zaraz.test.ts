@@ -46,6 +46,7 @@ function browser() {
       set: (...args: unknown[]) => calls.push(["set", ...args]),
       consent: {
         APIReady: consentReady,
+        purposes: { MwUo: { name: { en: "Statistics" } }, vMnc: { name: "Marketing" } },
         set: (...args: unknown[]) => calls.push(["consent.set", ...args]),
       },
     };
@@ -104,7 +105,7 @@ describe("lib/tracking/zaraz", () => {
     loadZaraz({ consentReady: true });
     expect(calls).toEqual([
       ["set", "google_consent_default", expect.objectContaining({ analytics_storage: "granted", ad_storage: "denied" })],
-      ["consent.set", { statistics: true, marketing: false }],
+      ["consent.set", { MwUo: true, vMnc: false }],
       ["track", "page_view", { page_path: "/", event_id: "a" }],
     ]);
 
@@ -114,7 +115,7 @@ describe("lib/tracking/zaraz", () => {
     expect(calls.slice(3)).toEqual([
       ["track", "faq_open", { question: "q" }],
       ["set", "google_consent_update", expect.objectContaining({ ad_storage: "granted", ad_user_data: "granted" })],
-      ["consent.set", { statistics: true, marketing: true }],
+      ["consent.set", { MwUo: true, vMnc: true }],
     ]);
     expect(scripts).toHaveLength(1);
   });
@@ -149,7 +150,18 @@ describe("lib/tracking/zaraz", () => {
     zaraz.applyZarazConsent(state(true, false));
     loadZaraz({ consentReady: true });
     expect(calls[0]).toEqual(["set", "google_consent_default", expect.objectContaining({ ad_storage: "denied" })]);
-    expect(calls[1]).toEqual(["consent.set", { statistics: true, marketing: false }]);
+    expect(calls[1]).toEqual(["consent.set", { MwUo: true, vMnc: false }]);
+  });
+
+  it("matches the Zaraz purposes by name, whatever IDs Zaraz gave them", async () => {
+    const { purposeIds } = await load();
+    const zaraz = { track: () => undefined, set: () => undefined };
+    expect(purposeIds({ ...zaraz, consent: { set: () => undefined, purposes: { a1: { name: { en: " Marketing" } }, b2: { name: "STATISTICS" } } } })).toEqual({
+      statistics: "b2",
+      marketing: "a1",
+    });
+    // Without purposes the names themselves are used.
+    expect(purposeIds(zaraz)).toEqual({ statistics: "statistics", marketing: "marketing" });
   });
 
   it("keeps at most 100 queued events", async () => {
