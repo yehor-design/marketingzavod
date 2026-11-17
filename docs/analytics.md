@@ -59,7 +59,8 @@
 | Умови ввімкнення, ідентифікатори | `lib/tracking/env.ts` |
 | PostHog у браузері / на сервері | `lib/tracking/posthog.ts` / `lib/posthog-server.ts` |
 | Amplitude | `lib/tracking/amplitude.ts` |
-| Згода | `lib/consent/index.ts` |
+| Згода | `lib/consent/index.ts` (стан), `lib/consent/core.ts` (cookie `wb_consent`), `components/consent/` (банер і панель) |
+| Журнал згод | `app/api/consent/route.ts`, `lib/consent/record.ts`, `lib/consent/log.ts` |
 | Атрибуція | `lib/attribution/core.ts` (логіка), `lib/attribution/index.ts` (cookie) |
 | Перегляди, делеговані слухачі | `components/tracking/tracking-provider.tsx` |
 | Події показу сторінки | `components/tracking/track-view.tsx` |
@@ -119,6 +120,25 @@
 3. Реалізувати `openConsentSettings()` і перемкнути `CONSENT_TOOL_READY` на `true`.
 
 Відповідність категорій сигналам Consent Mode — у `tracking-plan.md`.
+
+## Журнал згод
+
+Кожен вибір у банері чи панелі браузер надсилає на `POST /api/consent` (`navigator.sendBeacon`). Сервер перевіряє origin, формат і частоту запитів і записує в PostHog подію `consent_recorded`:
+
+- `distinct_id` — випадковий ID згоди з cookie `wb_consent`. Одна й та сама людина зберігає його між змінами вибору, тож видно всю історію;
+- властивості: `version`, `statistics`, `marketing`, `source` (`banner` або `settings`), `decided_at`;
+- профіль людини не створюється (`$process_person_profile: false`), GeoIP вимкнено, IP і user agent не записуються.
+
+Журнал ведеться й при «Necessary only»: правова підстава — обов'язок довести згоду (GDPR, ст. 7(1)), а не сама згода. Події PostHog зберігаються рік на безкоштовному плані і 7 років на платному.
+
+Знайти записи за ID згоди (PostHog → SQL):
+
+```sql
+SELECT timestamp, properties.statistics, properties.marketing, properties.source, properties.version
+FROM events
+WHERE event = 'consent_recorded' AND distinct_id = '<ID згоди з cookie wb_consent>'
+ORDER BY timestamp
+```
 
 ## Розмітка подій у верстці
 

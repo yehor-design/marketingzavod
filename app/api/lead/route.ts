@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { after, NextResponse, type NextRequest } from "next/server";
 import { attributionForConsent } from "@/lib/attribution/core";
+import { clientIp, sameOrigin } from "@/lib/http/request";
 import { createRateLimiter } from "@/lib/leads/rate-limit";
 import { cleanPageUrl, fieldErrors, leadRequestSchema } from "@/lib/leads/schema";
 import { saveLead } from "@/lib/leads/store";
@@ -23,22 +24,6 @@ const META_EVENTS: Record<string, string | undefined> = {
 
 const TRACKING_ALLOWED =
   process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_TRACKING_DEBUG === "true";
-
-function clientIp(request: NextRequest): string {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-}
-
-function sameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) {
-    return true;
-  }
-  try {
-    return new URL(origin).host === request.headers.get("host");
-  } catch {
-    return false;
-  }
-}
 
 export async function POST(request: NextRequest) {
   if (!sameOrigin(request)) {

@@ -175,7 +175,9 @@ describe("lib/consent in the browser", () => {
   it("saves a choice to the cookie, applies it and notifies listeners", () => {
     const { document, writes } = cookieJar();
     const reload = vi.fn();
+    const sendBeacon = vi.fn(() => true);
     vi.stubGlobal("window", { location: { protocol: "https:", hostname: "www.heywowboy.com", reload } });
+    vi.stubGlobal("navigator", { sendBeacon });
     vi.stubGlobal("document", document);
 
     const seen: Array<[boolean, boolean]> = [];
@@ -188,6 +190,8 @@ describe("lib/consent in the browser", () => {
     expect(getConsent()).toMatchObject({ statistics: true, marketing: true, answered: true });
     expect(consentSnapshot()).toEqual({ statistics: true, marketing: true, preferences: false });
     expect(seen).toEqual([[false, true]]);
+    // One consent log record per choice.
+    expect(sendBeacon).toHaveBeenCalledTimes(1);
 
     expect(reload).not.toHaveBeenCalled();
 
