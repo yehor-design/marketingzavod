@@ -50,10 +50,15 @@ const thirdParty = (requests: string[]) =>
   requests.filter((url) => /googletagmanager\.com|\/ingest\/|\/_vercel\/speed-insights|amplitude\.com|posthog\.com/.test(url));
 
 test("no choice: the IDs are in the dataLayer, but nothing reaches Google, PostHog or Vercel", async ({ page }) => {
-  const requests = await prepare(page);
+  const requests = await prepare(page, { choice: "none" });
   await page.goto("/");
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
+  await expect(page.locator("[data-consent-banner]")).toBeVisible();
   await settle(page);
+
+  // A1: before a choice nothing at all is stored on the device.
+  expect(await page.context().cookies()).toEqual([]);
+  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 
   const layer = await dataLayer(page);
   expect(layer[0].consent_ready).toBe("false");
@@ -108,7 +113,7 @@ test("stored choice of necessary only: the same as no choice", async ({ page }) 
   expect(thirdParty(requests)).toEqual([]);
 });
 
-test("no choice: no analytics cookies, only UTM leaves with the form", async ({ page }) => {
+test("necessary only: no analytics cookies, only UTM leaves with the form", async ({ page }) => {
   await prepare(page);
   await page.goto(LANDING);
   const body = await submitContact(page);
@@ -122,6 +127,7 @@ test("no choice: no analytics cookies, only UTM leaves with the form", async ({ 
   expect(body.posthog_distinct_id).toBeUndefined();
 
   const names = await cookieNames(page);
+  expect(names).toContain("wb_consent");
   expect(names).not.toContain("wb_attr");
   expect(names.filter((name) => /^(ph_|_ga|_gcl|_fb|_clck|_clsk|li_)/.test(name))).toEqual([]);
   expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith("ph_")))).toEqual([]);
@@ -135,7 +141,7 @@ test("the footer has no cookie settings control while there is no consent tool",
   await expect(page.getByRole("button", { name: "Cookie settings" })).toHaveCount(0);
 });
 
-test("no choice: Amplitude and PostHog's own hosts are never contacted", async ({ page }) => {
+test("necessary only: Amplitude and PostHog's own hosts are never contacted", async ({ page }) => {
   const requests = await prepare(page);
   await page.goto("/waitlist");
   await page.getByPlaceholder("Enter your email").fill("amplitude.tester@example.com");

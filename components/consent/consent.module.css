@@ -1,0 +1,79 @@
+/*
+  Consent banner, first layer. Spec «Специфікація банера згоди», section 6.
+  Only tokens from app/globals.css: the header's surface and blur, the
+  hairline border, muted body text and the secondary nav button.
+*/
+.banner {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--nav-background);
+  -webkit-backdrop-filter: blur(var(--nav-blur));
+  backdrop-filter: blur(var(--nav-blur));
+  color: var(--text);
+  animation: consent-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.text {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.link {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Both choices are the same width, so neither reads as the default. */
+.actions :global(.consent-button) {
+  flex: 1 1 0;
+  min-width: max-content;
+  border: 0;
+  cursor: pointer;
+}
+
+@keyframes consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 810px) {
+  .banner {
+    right: auto;
+    width: 360px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none;
+  }
+}

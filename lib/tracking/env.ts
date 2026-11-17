@@ -35,6 +35,13 @@ export const TRACKING_DEBUG = process.env.NEXT_PUBLIC_TRACKING_DEBUG === "true";
 export const TRACKING_ENABLED =
   process.env.NEXT_PUBLIC_SITE_ENV === "production" || TRACKING_DEBUG;
 
+/**
+ * Where the consent banner and the "Cookie settings" control appear: wherever
+ * tracking runs, once the consent tool ships. Debug builds (preview, tests)
+ * show them before that, so they can be checked.
+ */
+export const CONSENT_UI_ENABLED = TRACKING_ENABLED && (CONSENT_TOOL_READY || TRACKING_DEBUG);
+
 /** Path of the first-party reverse proxy to PostHog. See next.config.ts. */
 export const POSTHOG_PROXY_PATH = "/ingest";
 

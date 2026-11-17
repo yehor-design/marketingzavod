@@ -8,9 +8,16 @@ let ipCounter = 0;
  * Keeps the test offline: GTM, PostHog and Amplitude requests are answered locally and
  * recorded. Each page also gets its own client address, so the lead API's
  * rate limit never couples one test to another.
+ *
+ * Test builds show the consent banner. Unless a test is about the first visit
+ * (choice "none"), the visitor has already chosen "Necessary only": tracking
+ * then behaves exactly as with no choice, and the banner stays out of the way.
  */
-export async function prepare(page: Page) {
+export async function prepare(page: Page, { choice = "necessary" }: { choice?: "none" | "necessary" } = {}) {
   const requests: string[] = [];
+  if (choice === "necessary") {
+    await storeConsent(page, false, false);
+  }
   ipCounter += 1;
   await page.setExtraHTTPHeaders({
     "x-forwarded-for": `198.51.${Math.floor(Math.random() * 250)}.${(ipCounter % 250) + 1}`,
