@@ -46,7 +46,6 @@ export function ContactPage() {
             data-track-form="contact"
             data-form-state={done ? "success" : pending ? "pending" : "idle"}
             data-private=""
-            data-clarity-mask="true"
             onSubmit={async (event) => {
               event.preventDefault();
               if (pending || done) {

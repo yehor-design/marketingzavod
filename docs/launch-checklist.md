@@ -58,4 +58,4 @@
 ## Швидкість
 
 - [ ] Таблиця «до і після» в `performance-budget.md` заповнена для всіх увімкнених сервісів.
-- [ ] Жоден скрипт не вивів сторінку за бюджет. Зараз після згоди TBT перевищено через GTM, Meta, Clarity і Amplitude: є проект переходу на Zaraz і задача про Amplitude (див. `performance-budget.md`).
+- [ ] Жоден скрипт не вивів сторінку за бюджет. Зараз після згоди TBT перевищено через GTM, Meta і Amplitude (Clarity прибрано): є проект переходу на Zaraz і задача про Amplitude (див. `performance-budget.md`).

@@ -152,7 +152,7 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
   await expect(statistics).toHaveAttribute("aria-checked", "false");
   await expect(marketing).toHaveAttribute("aria-checked", "false");
   await expect(statistics).toBeFocused();
-  await expect(panel(page)).toContainText("Google Analytics, PostHog, Microsoft Clarity, Amplitude, Vercel Speed Insights");
+  await expect(panel(page)).toContainText("Google Analytics, PostHog, Amplitude, Vercel Speed Insights");
 
   await statistics.click();
   await panel(page).getByRole("button", { name: "Save choices" }).click();

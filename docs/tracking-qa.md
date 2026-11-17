@@ -70,7 +70,7 @@
 
 ## Production з реальними сервісами, 17 листопада 2026
 
-Після запуску банера згоди (MAR-49). У Vercel задано GTM, GA4, Clarity, Meta (піксель, токен Conversions API, тестовий код), PostHog і Amplitude. Google Ads, LinkedIn і HubSpot ще не підключено. Перевірка — скриптом Playwright у чистому профілі, шлях `/?utm_source=qa…` → Pricing → About → Contact.
+Після запуску банера згоди (MAR-49), ще до видалення Clarity (MAR-54). У Vercel задано GTM, GA4, Clarity, Meta (піксель, токен Conversions API, тестовий код), PostHog і Amplitude. Google Ads, LinkedIn і HubSpot ще не підключено. Перевірка — скриптом Playwright у чистому профілі, шлях `/?utm_source=qa…` → Pricing → About → Contact.
 
 **Згода по трьох сценаріях:**
 
@@ -113,12 +113,12 @@ Consent Mode: усі запити GA4 після «Accept all» мають `gcs=
 
 | Де дивитися | Очікуване |
 | --- | --- |
-| DevTools → Cookies | `wb_consent` зі значенням `1.s1m1.…`, `wb_attr`, `ph_*`, `_ga`, `_ga_*`, `_gcl_au`, `_gcl_aw`, `_fbp`, `_clck`, `_clsk`. Звір з префіксами в `CATEGORY_STORAGE_PREFIXES` (`lib/consent/core.ts`): кожен cookie сервісу має підпадати під свою категорію |
-| Network | `google-analytics.com/g/collect` з `gcs=G111`; `clarity.ms`; `facebook.com/tr` з `ev=Lead` і `eid`; `/ingest/…`; `/api/lead` → 200 |
+| DevTools → Cookies | `wb_consent` зі значенням `1.s1m1.…`, `wb_attr`, `ph_*`, `_ga`, `_ga_*`, `_gcl_au`, `_gcl_aw`, `_fbp`. Звір з префіксами в `CATEGORY_STORAGE_PREFIXES` (`lib/consent/core.ts`): кожен cookie сервісу має підпадати під свою категорію |
+| Network | `google-analytics.com/g/collect` з `gcs=G111`; `facebook.com/tr` з `ev=Lead` і `eid`; `/ingest/…`; `/api/lead` → 200; жодного запиту до `clarity.ms` (Clarity прибрано) |
 | GTM Preview | `consent_update` після вибору; Consent Mode `default` = `granted` до першого `page_view`; чотири `page_view`; `generate_lead`; спрацювали теги GA4, Google Ads Contact lead, Meta Lead |
 | GA4 DebugView | Чотири `page_view`, один `generate_lead` з `form_name=contact` і `lead_id` |
 | PostHog Live events | Чотири `$pageview`, один `generate_lead`, один `lead_saved`; особа ідентифікована за `lead_id` |
-| Clarity | Запис сесії, поля форми замасковані, теги `utm_source=qa`, `form_name=contact` |
+| PostHog Replay | Запис сесії, поля форми замасковані |
 | Google Ads Tag Assistant | Одна конверсія Contact lead, `transaction_id` = `event_id`, є хешований email |
 | Meta Test Events | `Lead` з Browser і з Server, позначка Deduplicated |
 | HubSpot | Один контакт, одна угода; `wb_ft_utm_source=qa`, `wb_gclid=TEST`, `wb_consent_marketing=true` |
@@ -153,7 +153,7 @@ PostHog → SQL: `SELECT timestamp, distinct_id, properties.statistics, properti
 
 ### Скриншоти, якщо агент не має доступу
 
-GTM Preview (вкладки Tags і Consent на події Consent Initialization та `generate_lead`), GA4 DebugView, PostHog Live events, Clarity (кадр запису з формою), Tag Assistant з конверсією Google Ads, Meta Test events, картка контакту HubSpot з групою властивостей «Lead attribution (website)».
+GTM Preview (вкладки Tags і Consent на події Consent Initialization та `generate_lead`), GA4 DebugView, PostHog Live events, Tag Assistant з конверсією Google Ads, Meta Test events, картка контакту HubSpot з групою властивостей «Lead attribution (website)».
 
 ## Безпека
 

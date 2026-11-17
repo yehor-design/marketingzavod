@@ -121,7 +121,6 @@
 | `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | публічна | Той самий ключ під назвою з майстра PostHog. Ним користуються серверні логи (`instrumentation.ts`) |
 | `NEXT_PUBLIC_AMPLITUDE_API_KEY` | публічна | Ключ проєкту Amplitude. Amplitude вантажиться лише за згоди на статистику |
 | `NEXT_PUBLIC_POSTHOG_HOST` | публічна | Хост PostHog. Типово `https://eu.i.posthog.com` |
-| `NEXT_PUBLIC_CLARITY_ID` | публічна | ID проєкту Clarity |
 | `NEXT_PUBLIC_GOOGLE_ADS_ID` | публічна | ID акаунта Google Ads (`AW-…`) |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_CONTACT` | публічна | Мітка конверсії «заявка з Contact» |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_WAITLIST` | публічна | Мітка конверсії «запис у Waitlist» |
