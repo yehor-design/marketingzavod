@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { dataLayer, events, prepare, storeConsent } from "./helpers";
+import { chooseContactReason, dataLayer, events, prepare, storeConsent } from "./helpers";
 
 const LANDING = "/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST";
 
@@ -16,7 +16,7 @@ async function submitContact(page: Page) {
   const request = page.waitForRequest((item) => item.url().endsWith("/api/lead"));
   await page.getByLabel("Full name").fill("Consent Tester");
   await page.getByLabel("Email").fill("consent.tester@example.com");
-  await page.getByLabel("Reason for contact").selectOption("general");
+  await chooseContactReason(page, "General");
   await page.getByLabel("How can we help?").fill("Testing consent.");
   await page.getByRole("button", { name: "Get in touch" }).click();
   const body = (await request).postDataJSON();

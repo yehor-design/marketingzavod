@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither } from "@/components/motion";
+import { Badge } from "@/components/ui/badge";
 import type { Post } from "@/lib/blog";
 import styles from "@/components/blog/blog.module.css";
 
@@ -74,7 +75,7 @@ export function PostCard({
       />
       <span className={styles.copy}>
         <span className={styles.tagRow}>
-          <span className={styles.tag}>{post.category}</span>
+          <Badge variant="secondary">{post.category}</Badge>
         </span>
         <span className={styles.text}>
           <h3>{post.title}</h3>

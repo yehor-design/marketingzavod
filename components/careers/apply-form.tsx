@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { RollSubmit } from "@/components/careers/roll-link";
+import { Button } from "@ui-sdk/react/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
+import { Input } from "@ui-sdk/react/input";
+import { Textarea } from "@ui-sdk/react/textarea";
+import { textAreaClass, textControlClass } from "@/components/forms/control-classes";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/careers/careers.module.css";
@@ -110,67 +115,58 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
         }
       }}
     >
+      {/* Spam trap: a native input so it is not a named control. */}
       <div className="visually-hidden" aria-hidden="true">
         <label htmlFor={`${slug}-company-url`}>Company URL</label>
         <input id={`${slug}-company-url`} name="company_url" type="text" tabIndex={-1} autoComplete="off" />
       </div>
-      <div className={styles.fields}>
+      <FieldGroup className="flex w-full flex-col gap-5 sm:flex-row sm:flex-wrap">
         {FIELDS.map((field) => {
           const error = errors[field.name];
-          const errorId = error ? `${slug}-${field.name}-error` : undefined;
-          const controlId = `${slug}-${field.name}`;
           return (
-            <label
+            <Field
               key={field.name}
-              className={field.wide ? styles.fieldWide : styles.field}
-              htmlFor={controlId}
+              className={field.wide ? "w-full sm:basis-full" : "w-full sm:min-w-0 sm:flex-1"}
+              name={field.name}
+              disabled={done || pending}
+              invalid={error ? true : undefined}
             >
-              <span>{field.label}</span>
+              <FieldLabel className="text-sm text-muted-foreground">{field.label}</FieldLabel>
               {field.type === "textarea" ? (
-                <textarea
-                  id={controlId}
-                  name={field.name}
+                <Textarea
+                  className={textAreaClass}
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
                   required
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={errorId}
-                  disabled={done || pending}
                 />
               ) : (
-                <input
-                  id={controlId}
-                  name={field.name}
+                <Input
+                  className={textControlClass}
                   type={field.type}
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
                   required
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={errorId}
-                  disabled={done || pending}
                 />
               )}
-              {error ? (
-                <span className={styles.fieldError} id={errorId} role="alert">
-                  {error}
-                </span>
-              ) : null}
-            </label>
+              {error ? <FieldError match>{error}</FieldError> : null}
+            </Field>
           );
         })}
-      </div>
+      </FieldGroup>
       <input type="hidden" name="Role" value={slug} />
       {errors.form ? (
-        <p className={styles.fieldError} role="alert">
-          {errors.form}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription>{errors.form}</AlertDescription>
+        </Alert>
       ) : null}
       {done ? (
         <p className={styles.success} role="status" data-form-success="careers_apply">
           Thanks for your application!
         </p>
       ) : (
-        <RollSubmit className={styles.submit} text={`Apply for ${title}`} />
+        <Button className={styles.submit} type="submit" disabled={pending}>
+          {`Apply for ${title}`}
+        </Button>
       )}
     </form>
   );
