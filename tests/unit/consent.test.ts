@@ -7,6 +7,7 @@ import {
   narrowsConsent,
   newConsentId,
   parseConsent,
+  prefixesToClear,
   readConsentCookie,
   serializeConsent,
   type StoredConsent,
@@ -78,6 +79,14 @@ describe("consent cookie format", () => {
     const a = newConsentId();
     expect(a).toMatch(/^[0-9a-f]{32}$/);
     expect(newConsentId()).not.toBe(a);
+  });
+
+  it("clears only the categories that were turned off", () => {
+    const all = { statistics: true, marketing: true };
+    expect(prefixesToClear(all, { statistics: true, marketing: false })).toEqual(["_gcl_", "_fbp", "_fbc", "li_fat_id", "li_gc"]);
+    expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("ph_");
+    expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("AMP_");
+    expect(prefixesToClear({ statistics: false, marketing: false }, all)).toEqual([]);
   });
 
   it("knows when a choice narrows consent", () => {
@@ -165,7 +174,8 @@ describe("lib/consent in the browser", () => {
 
   it("saves a choice to the cookie, applies it and notifies listeners", () => {
     const { document, writes } = cookieJar();
-    vi.stubGlobal("window", { location: { protocol: "https:" } });
+    const reload = vi.fn();
+    vi.stubGlobal("window", { location: { protocol: "https:", hostname: "www.heywowboy.com", reload } });
     vi.stubGlobal("document", document);
 
     const seen: Array<[boolean, boolean]> = [];
@@ -179,10 +189,17 @@ describe("lib/consent in the browser", () => {
     expect(consentSnapshot()).toEqual({ statistics: true, marketing: true, preferences: false });
     expect(seen).toEqual([[false, true]]);
 
+    expect(reload).not.toHaveBeenCalled();
+
+    // Withdrawal clears what the category stored and reloads the page.
     // The same browser keeps its consent ID across changes.
+    document.cookie = "_ga=GA1.1.1";
+    document.cookie = "_fbp=fb.1";
     const next = saveConsent({ statistics: false, marketing: false }, "settings");
     expect(next.narrowed).toBe(true);
     expect(next.stored.id).toBe(result.stored.id);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(writes.filter((line) => /^(_ga|_fbp)=; Max-Age=0; Path=\//.test(line))).toHaveLength(6);
 
     stop();
     saveConsent({ statistics: true, marketing: false }, "settings");

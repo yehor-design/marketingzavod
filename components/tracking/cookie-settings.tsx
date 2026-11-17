@@ -1,14 +1,14 @@
 "use client";
 
-import { CONSENT_TOOL_READY, openConsentSettings } from "@/lib/consent";
-import { TRACKING_ENABLED } from "@/lib/tracking/env";
+import { openConsentSettings } from "@/lib/consent";
+import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
 
 /**
- * Reopens the consent dialog. Shown only once the site has a consent tool, so
- * the footer never carries a control that does nothing.
+ * Reopens the consent settings panel. Shown wherever the consent banner can
+ * appear, so the footer never carries a control that does nothing.
  */
 export function CookieSettingsButton({ className }: { className?: string }) {
-  if (!TRACKING_ENABLED || !CONSENT_TOOL_READY) {
+  if (!CONSENT_UI_ENABLED) {
     return null;
   }
   return (

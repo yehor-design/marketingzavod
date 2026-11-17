@@ -13,11 +13,13 @@ import {
   consentCookieAttributes,
   narrowsConsent,
   newConsentId,
+  prefixesToClear,
   readConsentCookie,
   serializeConsent,
   type ConsentChoice,
   type StoredConsent,
 } from "@/lib/consent/core";
+import { clearStoredByPrefix } from "@/lib/consent/storage";
 
 export * from "@/lib/consent/core";
 
@@ -97,7 +99,12 @@ export function setConsent(next: Omit<ConsentState, "necessary">): void {
 
 /**
  * The entry point for the consent banner and settings panel: stores the
- * choice in wb_consent for 180 days, then applies it without a reload.
+ * choice in wb_consent for 180 days, then applies it.
+ *
+ * A grant applies without a reload. A withdrawal also removes what the
+ * withdrawn categories stored and reloads the page, because scripts that
+ * already run cannot be unloaded.
+ *
  * The consent ID survives later changes, so each record of this browser's
  * choices carries the same ID.
  */
@@ -119,7 +126,25 @@ export function saveConsent(
   }
   stored = next;
   setConsent({ preferences: false, statistics: next.statistics, marketing: next.marketing, answered: true });
-  return { stored: next, narrowed: narrowsConsent(previous, next), source };
+  const narrowed = narrowsConsent(previous, next);
+  if (narrowed && typeof window !== "undefined") {
+    clearStoredByPrefix(prefixesToClear(previous, next));
+    window.location.reload();
+  }
+  return { stored: next, narrowed, source };
+}
+
+/**
+ * Removes what refused categories left on the device. saveConsent() does this
+ * on withdrawal, but a script that is still running can write its cookie once
+ * more before the page unloads, so it runs again on the next page load.
+ */
+export function clearRefusedStorage(): string[] {
+  const state = getConsent();
+  if (!state.answered) {
+    return [];
+  }
+  return clearStoredByPrefix(prefixesToClear({ statistics: true, marketing: true }, state));
 }
 
 /** Analytics outside GTM: PostHog, Amplitude, Speed Insights, the attribution cookie. */
@@ -140,9 +165,20 @@ export function onConsentChange(listener: Listener): () => void {
   };
 }
 
-/** Reopens the consent dialog. Returns false while there is no dialog to open. */
+const settingsOpeners = new Set<() => void>();
+
+/** The settings panel registers here while it is mounted. Returns the unregister function. */
+export function onOpenConsentSettings(open: () => void): () => void {
+  settingsOpeners.add(open);
+  return () => {
+    settingsOpeners.delete(open);
+  };
+}
+
+/** Opens the consent settings panel. Returns false while there is no panel to open. */
 export function openConsentSettings(): boolean {
-  return false;
+  settingsOpeners.forEach((open) => open());
+  return settingsOpeners.size > 0;
 }
 
 /** The compact form sent with a lead, so the server knows what it may do with it. */
