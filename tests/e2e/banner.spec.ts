@@ -233,29 +233,65 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
         const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
         return [red, green, blue];
       };
+      const fade = (rgb: number[]) => {
+        const opacity = Number.parseFloat(style.opacity);
+        // Parent opacity composites the painted color over the black dialog.
+        return rgb.map((channel) => Math.round(channel * opacity));
+      };
+      const track = node.getBoundingClientRect();
+      const thumbBox = thumb?.getBoundingClientRect();
       return {
         opacity: style.opacity,
+        cursor: style.cursor,
         width: Number.parseFloat(style.width),
         height: Number.parseFloat(style.height),
+        radius: style.borderRadius,
+        border: style.borderTopWidth,
+        thumbWidth: thumbStyle ? Number.parseFloat(thumbStyle.width) : 0,
+        thumbHeight: thumbStyle ? Number.parseFloat(thumbStyle.height) : 0,
+        thumbRadius: thumbStyle?.borderRadius ?? "",
+        thumbX: thumbBox ? thumbBox.left - track.left : 0,
         trackRgb: overBlack(style.backgroundColor),
         thumbRgb: overBlack(thumbStyle?.backgroundColor ?? "rgba(0, 0, 0, 0)"),
+        visualTrack: fade(overBlack(style.backgroundColor)),
+        visualThumb: fade(overBlack(thumbStyle?.backgroundColor ?? "rgba(0, 0, 0, 0)")),
       };
     });
+  const geometry = (look: Awaited<ReturnType<typeof switchLook>>) => ({
+    width: look.width,
+    height: look.height,
+    radius: look.radius,
+    border: look.border,
+    thumbWidth: look.thumbWidth,
+    thumbHeight: look.thumbHeight,
+    thumbRadius: look.thumbRadius,
+  });
   const necessaryLook = await switchLook(necessary);
   const statisticsLook = await switchLook(statistics);
   const marketingLook = await switchLook(marketing);
-  expect(necessaryLook.opacity).toBe("1");
+  // Off, on, and disabled share one track size, radius, thumb size, and thumb color.
+  expect(geometry(necessaryLook)).toEqual(geometry(statisticsLook));
+  expect(geometry(necessaryLook)).toEqual(geometry(marketingLook));
+  expect(necessaryLook.thumbRgb).toEqual(statisticsLook.thumbRgb);
+  expect(necessaryLook.thumbRgb).toEqual(marketingLook.thumbRgb);
+  expect(statisticsLook.trackRgb).toEqual(marketingLook.trackRgb);
+  expect(necessaryLook.thumbX).toBeGreaterThan(statisticsLook.thumbX);
+  expect(necessaryLook.opacity).toBe("0.5");
   expect(statisticsLook.opacity).toBe("1");
   expect(marketingLook.opacity).toBe("1");
-  expect(contrast(necessaryLook.trackRgb, [0, 0, 0])).toBeGreaterThanOrEqual(3);
-  expect(contrast(statisticsLook.trackRgb, [0, 0, 0])).toBeGreaterThanOrEqual(3);
-  expect(contrast(marketingLook.trackRgb, [0, 0, 0])).toBeGreaterThanOrEqual(3);
-  expect(contrast(necessaryLook.thumbRgb, necessaryLook.trackRgb)).toBeGreaterThanOrEqual(3);
-  expect(contrast(statisticsLook.thumbRgb, statisticsLook.trackRgb)).toBeGreaterThanOrEqual(3);
-  expect(contrast(marketingLook.thumbRgb, marketingLook.trackRgb)).toBeGreaterThanOrEqual(3);
+  expect(necessaryLook.cursor).toBe("not-allowed");
+  expect(statisticsLook.cursor).not.toBe("not-allowed");
+  for (const look of [necessaryLook, statisticsLook, marketingLook]) {
+    expect(contrast(look.visualTrack, [0, 0, 0])).toBeGreaterThanOrEqual(3);
+    expect(contrast(look.visualThumb, look.visualTrack)).toBeGreaterThanOrEqual(3);
+  }
   expect(luminance(necessaryLook.trackRgb)).toBeGreaterThan(luminance(statisticsLook.trackRgb));
   expect(necessaryLook.width).toBeGreaterThan(24);
   expect(necessaryLook.height).toBeGreaterThan(14);
+  // The knob stays a circle inside the pill. A rem thumb grows past the px track on this site.
+  expect(necessaryLook.thumbWidth).toBe(necessaryLook.thumbHeight);
+  expect(necessaryLook.thumbWidth).toBeLessThan(necessaryLook.height);
+  expect(necessaryLook.thumbWidth).toBeLessThan(necessaryLook.width);
   const descriptionSize = await panel(page)
     .getByText("Necessary cookies keep the site working and are always on.", { exact: false })
     .evaluate((node) => getComputedStyle(node).fontSize);
@@ -267,9 +303,13 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
     const statisticsOn = await switchLook(statistics);
     return (
       statisticsOn.opacity === "1" &&
-      contrast(statisticsOn.trackRgb, [0, 0, 0]) >= 3 &&
-      contrast(statisticsOn.thumbRgb, statisticsOn.trackRgb) >= 3 &&
-      luminance(statisticsOn.trackRgb) > luminance(necessaryLook.trackRgb)
+      JSON.stringify(geometry(statisticsOn)) === JSON.stringify(geometry(necessaryLook)) &&
+      statisticsOn.thumbRgb.join() === necessaryLook.thumbRgb.join() &&
+      statisticsOn.trackRgb.join() === necessaryLook.trackRgb.join() &&
+      statisticsOn.thumbX > statisticsLook.thumbX &&
+      contrast(statisticsOn.visualTrack, [0, 0, 0]) >= 3 &&
+      contrast(statisticsOn.visualThumb, statisticsOn.visualTrack) >= 3 &&
+      luminance(statisticsOn.trackRgb) > luminance(statisticsLook.trackRgb)
     );
   }).toBe(true);
   await panel(page).getByRole("button", { name: "Save choices" }).click();
