@@ -6,7 +6,7 @@ const styles = {
   "cell": "cell relative grid place-items-center h-[160px] [&_+_.cell]:[border-left:1px_dashed_var(--color-rule)]",
   "chip": "chip h-[64px] mb-[8px] [box-shadow:inset_0_0_0_1px_var(--color-border)]",
   "tokenUse": "tokenUse text-muted-foreground font-mono [font-size:12px] font-medium [font-variation-settings:normal] tracking-[0.02em] leading-[1.5]",
-  "note": "note [max-width:68ch] [margin:0_0_24px] text-muted-foreground [font-size:14px] [font-variation-settings:\"opsz\"_14,_\"wght\"_450] leading-[1.5] [&_a]:text-foreground [&_a:hover]:underline [&_code]:text-foreground [&_code]:font-fragment [&_code]:[font-size:12px] [&_code]:font-normal [&_code]:[font-variation-settings:normal]",
+  "note": "note [max-width:68ch] [margin:0_0_24px] text-muted-foreground [font-size:14px] [font-variation-settings:\"opsz\"_14,_\"wght\"_450] leading-[1.5] [&_a]:text-foreground [&_a:hover]:underline [&_code]:text-foreground [&_code]:font-mono [&_code]:[font-size:12px] [&_code]:font-normal [&_code]:[font-variation-settings:normal]",
   "tokenValue": "tokenValue text-muted-foreground font-mono [font-size:12px] font-medium [font-variation-settings:normal] tracking-[0.02em] leading-[1.5]",
   "portrait": "portrait relative [aspect-ratio:1] overflow-hidden",
   "caption": "caption text-muted-foreground font-mono [font-size:12px] font-medium [font-variation-settings:normal] tracking-[0.02em] leading-[1.5] [max-width:76ch] [margin:16px_0_0]",

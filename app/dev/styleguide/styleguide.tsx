@@ -105,7 +105,7 @@ const type: { name: string; spec: string; sample: string; style: CSSProperties }
   },
   {
     name: "label",
-    spec: "Geist Mono 12px / 1.6 / 0.02em / 500 / uppercase",
+    spec: "Google Sans Code 12px / 1.6 / 0.02em / 500 / uppercase",
     sample: "Image Optimization",
     style: {
       fontFamily: "var(--font-mono)",
@@ -119,15 +119,15 @@ const type: { name: string; spec: string; sample: string; style: CSSProperties }
   },
   {
     name: "input",
-    spec: "Geist 14px / 1.2 / 400",
+    spec: "Google Sans 14px / 1.2 / 400",
     sample: "orin@framer.com",
     style: { fontFamily: "var(--font-sans)", fontSize: 14, fontWeight: 400, lineHeight: 1.2 },
   },
   {
     name: "code",
-    spec: "Fragment Mono 14px / 1.5 / 400",
+    spec: "Google Sans Code 14px / 1.5 / 400",
     sample: '<img loading="lazy">',
-    style: { fontFamily: "var(--font-fragment)", fontSize: 14, fontWeight: 400, lineHeight: 1.5 },
+    style: { fontFamily: "var(--font-mono)", fontSize: 14, fontWeight: 400, lineHeight: 1.5 },
   },
 ];
 
@@ -215,9 +215,8 @@ export function StyleGuide() {
 
       <Section id="type" title="TYPE">
         <p className={styles.note}>
-          Raveo Variable is always set with <code>font-weight: 1000</code> and{" "}
-          <code>font-variation-settings: &quot;opsz&quot; 14, &quot;wght&quot; N</code>. Sizes in rem
-          follow the root: 20px from 1200px, 18px from 810px, 14px below.
+          Google Sans is the face for text and headings. Google Sans Code is the mono face.
+          Sizes in rem follow the root: 20px from 1200px, 18px from 810px, 14px below.
         </p>
         <dl className={styles.typeList}>
           {type.map((row) => (
@@ -322,7 +321,7 @@ export function StyleGuide() {
           </label>
         </div>
         <p className={styles.caption}>
-          Field #171717, radius 8px, padding 12px, Geist 14px. Invalid: 1px #db2c2c outline with a
+          Field #171717, radius 8px, padding 12px, Google Sans 14px. Invalid: 1px #db2c2c outline with a
           message. Focus everywhere: 1px white outline, 3px offset.
         </p>
       </Section>
