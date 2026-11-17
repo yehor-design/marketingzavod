@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { getConsent, onOpenConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
@@ -47,6 +46,13 @@ const CATEGORIES: readonly Category[] = [
     services: "Google Ads, Meta, LinkedIn",
   },
 ];
+
+const titleType =
+  "font-display text-[14px] leading-[1.4] font-[1000] tracking-[-0.01em] [font-variation-settings:'opsz'_14,'wght'_550]";
+const labelType =
+  "font-display text-[12px] leading-[1.6] font-[1000] tracking-normal [font-variation-settings:'opsz'_14,'wght'_550]";
+const bodyType =
+  "font-display text-[12px] leading-[1.6] font-[1000] tracking-normal [font-variation-settings:'opsz'_14,'wght'_450]";
 
 /**
  * The second layer: one switch per category, the services behind it and the
@@ -91,7 +97,7 @@ export function ConsentSettings() {
         data-consent-settings=""
         aria-labelledby={titleId}
         overlayClassName="bg-shimmer backdrop-blur-[5px]"
-        className="max-h-[calc(100dvh-2rem)] overflow-auto bg-background text-foreground ring-border motion-reduce:data-open:animate-none sm:max-w-[440px]"
+        className="max-h-[calc(100dvh-32px)] w-full max-w-[calc(100%-32px)] gap-[16px] overflow-auto rounded-field bg-background p-[16px] text-foreground ring-border motion-reduce:data-open:animate-none sm:max-w-[400px]"
         initialFocus={() =>
           document.querySelector<HTMLElement>(
             '[data-consent-settings] [role="switch"]:not([aria-disabled="true"])',
@@ -99,49 +105,59 @@ export function ConsentSettings() {
         }
         finalFocus={() => opener.current}
       >
-        <DialogHeader className="flex-row items-center justify-between gap-3">
-          <DialogTitle id={titleId} className="font-display text-base tracking-[-0.01em]">
-            Cookie settings
-          </DialogTitle>
-          <DialogClose render={<Button variant="secondary" size="icon-sm" aria-label="Close" />}>
+        <DialogHeader className="flex-row items-start justify-between gap-[12px]">
+          <div className="flex min-w-0 flex-col gap-[6px]">
+            <DialogTitle id={titleId} className={titleType}>
+              Cookie settings
+            </DialogTitle>
+            <DialogDescription className={`${bodyType} text-muted-foreground`}>
+              Necessary cookies keep the site working and are always on. Everything else stays off until you turn it on.
+            </DialogDescription>
+          </div>
+          <DialogClose
+            render={<Button variant="ghost" aria-label="Close" className="size-[30px] shrink-0 p-0" />}
+          >
             <XIcon />
           </DialogClose>
         </DialogHeader>
-        <DialogDescription className="text-sm leading-normal">
-          Necessary cookies keep the site working and are always on. Everything else stays off until you turn it on.
-        </DialogDescription>
-        <ul className="flex flex-col">
+        <ul className="m-0 flex list-none flex-col gap-[12px] p-0">
           {CATEGORIES.map((category) => {
             const descriptionId = `${titleId}-${category.key}`;
+            const locked = category.key === "necessary";
             const checked = category.key === "necessary" ? true : choice[category.key];
             return (
-              <li key={category.key} className="flex flex-col gap-1 py-3">
-                <Separator />
-                <div className="flex items-center justify-between gap-3 pt-3">
-                  <span className="font-display text-sm leading-normal">{category.name}</span>
-                  <Switch
-                    aria-label={category.name}
-                    aria-describedby={descriptionId}
-                    checked={checked}
-                    disabled={category.key === "necessary"}
-                    className="motion-reduce:transition-none data-checked:bg-brand! data-unchecked:bg-stroke! motion-reduce:[&_[data-slot=switch-thumb]]:transition-none"
-                    onCheckedChange={(next) => {
-                      const key = category.key as keyof ConsentChoice;
-                      setChoice((current) => ({ ...current, [key]: next }));
-                    }}
-                  />
+              <li
+                key={category.key}
+                className="flex items-start justify-between gap-[16px] border-t border-dashed border-rule pt-[12px] first:border-t-0 first:pt-0"
+              >
+                <div className="flex min-w-0 flex-col gap-[4px]">
+                  <span className={labelType}>{category.name}</span>
+                  <p id={descriptionId} className={`${bodyType} m-0 text-muted-foreground`}>
+                    {category.purpose}
+                  </p>
+                  <p className="m-0 font-mono text-[12px] leading-[1.6] font-medium tracking-[0.02em] text-muted-foreground">
+                    {category.services}
+                  </p>
                 </div>
-                <p id={descriptionId} className="text-sm leading-normal text-muted-foreground">
-                  {category.purpose}
-                </p>
-                <p className="font-mono text-xs font-medium leading-relaxed tracking-[0.02em] text-muted-foreground">
-                  {category.services}
-                </p>
+                <Switch
+                  aria-label={category.name}
+                  aria-describedby={descriptionId}
+                  checked={checked}
+                  disabled={locked}
+                  className="mt-[1px] shrink-0"
+                  onCheckedChange={(next) => {
+                    if (locked) {
+                      return;
+                    }
+                    const key = category.key as keyof ConsentChoice;
+                    setChoice((current) => ({ ...current, [key]: next }));
+                  }}
+                />
               </li>
             );
           })}
         </ul>
-        <DialogFooter className="grid grid-cols-3 gap-2 bg-transparent sm:grid-cols-3 max-[479.98px]:grid-cols-1">
+        <DialogFooter className="mx-0 mb-0 flex-row flex-wrap items-center justify-start gap-[8px] rounded-none border-0 bg-transparent p-0 sm:justify-start">
           <ConsentButton text="Necessary only" onClick={() => decide({ statistics: false, marketing: false })} />
           <ConsentButton text="Accept all" variant="default" onClick={() => decide({ statistics: true, marketing: true })} />
           <ConsentButton text="Save choices" onClick={() => decide(choice)} />

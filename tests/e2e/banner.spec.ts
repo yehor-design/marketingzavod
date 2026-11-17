@@ -5,6 +5,37 @@ const banner = (page: Page) => page.locator("[data-consent-banner]");
 const panel = (page: Page) => page.locator("[data-consent-settings]");
 const LANDING = "/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST";
 
+/** Shell of a navbar or consent button, ignoring the label width. */
+async function buttonShell(locator: ReturnType<Page["locator"]>) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node);
+    const roll = node.querySelector(".roll");
+    const rollStyle = roll ? getComputedStyle(roll) : null;
+    return {
+      height: style.height,
+      backgroundColor: style.backgroundColor,
+      color: style.color,
+      fontSize: style.fontSize,
+      fontFamily: style.fontFamily,
+      fontWeight: style.fontWeight,
+      fontVariationSettings: style.fontVariationSettings,
+      lineHeight: style.lineHeight,
+      letterSpacing: style.letterSpacing,
+      padding: style.padding,
+      borderRadius: style.borderRadius,
+      borderTopWidth: style.borderTopWidth,
+      cursor: style.cursor,
+      rollFontSize: rollStyle?.fontSize ?? "",
+      rollLineHeight: rollStyle?.lineHeight ?? "",
+      rollFontFamily: rollStyle?.fontFamily ?? "",
+      rollFontWeight: rollStyle?.fontWeight ?? "",
+      rollFontVariation: rollStyle?.fontVariationSettings ?? "",
+      rollLetterSpacing: rollStyle?.letterSpacing ?? "",
+      hasRing: node.querySelector(".gray-pill-ring") !== null,
+    };
+  });
+}
+
 async function consentCookie(page: Page): Promise<string | undefined> {
   return (await page.context().cookies()).find((cookie) => cookie.name === "wb_consent")?.value;
 }
@@ -27,30 +58,24 @@ test("first visit: a small banner with two equal choices and a link to the detai
 
   const necessary = banner(page).getByRole("button", { name: "Necessary only" });
   const accept = banner(page).getByRole("button", { name: "Accept all" });
-  const [a, b] = [await necessary.boundingBox(), await accept.boundingBox()];
-  // Equal columns, up to subpixel rounding. Accept all is the white primary button.
-  expect(Math.abs((a?.width ?? 0) - (b?.width ?? 0))).toBeLessThan(0.5);
-  expect(a?.height).toBe(b?.height);
-  const look = (selector: string) =>
-    banner(page)
-      .getByRole("button", { name: selector })
-      .evaluate((node) => {
-        const style = getComputedStyle(node);
-        return {
-          backgroundColor: style.backgroundColor,
-          color: style.color,
-          fontSize: style.fontSize,
-          borderRadius: style.borderRadius,
-        };
-      });
-  const necessaryLook = await look("Necessary only");
-  const acceptLook = await look("Accept all");
-  expect(necessaryLook.fontSize).toBe(acceptLook.fontSize);
-  expect(necessaryLook.borderRadius).toBe(acceptLook.borderRadius);
-  expect(acceptLook.backgroundColor).toBe("rgb(255, 255, 255)");
-  expect(acceptLook.color).toBe("rgb(0, 0, 0)");
-  expect(necessaryLook.backgroundColor).toBe("rgb(23, 23, 23)");
-  expect(necessaryLook.color).toBe("rgb(255, 255, 255)");
+  const settings = banner(page).getByRole("button", { name: "Settings" });
+  const join = page.locator('.desktop-actions a[href="/waitlist"]');
+  const contact = page.locator('.desktop-actions a[href="/contact"]');
+  // Accept all matches Join waitlist. The other banner buttons match Contact.
+  // Labels keep their own width: the buttons are not stretched into columns.
+  expect(await buttonShell(accept)).toEqual(await buttonShell(join));
+  expect(await buttonShell(necessary)).toEqual(await buttonShell(contact));
+  expect(await buttonShell(settings)).toEqual(await buttonShell(contact));
+  const [necessaryBox, acceptBox, bannerBox] = [
+    await necessary.boundingBox(),
+    await accept.boundingBox(),
+    await banner(page).boundingBox(),
+  ];
+  expect(necessaryBox?.height).toBe(acceptBox?.height);
+  expect((necessaryBox?.width ?? 0) - (acceptBox?.width ?? 0)).toBeGreaterThan(8);
+  expect(acceptBox?.width ?? 0).toBeLessThan((bannerBox?.width ?? 0) - 24);
+  const copySize = await banner(page).locator("p").evaluate((node) => getComputedStyle(node).fontSize);
+  expect(copySize).toBe("12px");
 
   // Fixed in a corner: it does not push the page down.
   expect(await banner(page).evaluate((node) => getComputedStyle(node).position)).toBe("fixed");
@@ -156,6 +181,16 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
 
   await expect(panel(page)).toBeVisible();
   await expect(panel(page).getByRole("heading", { name: "Cookie settings" })).toBeVisible();
+  const titleSize = await panel(page)
+    .getByRole("heading", { name: "Cookie settings" })
+    .evaluate((node) => getComputedStyle(node).fontSize);
+  expect(titleSize).toBe("14px");
+  const join = page.locator('.desktop-actions a[href="/waitlist"]');
+  const contact = page.locator('.desktop-actions a[href="/contact"]');
+  expect(await buttonShell(panel(page).getByRole("button", { name: "Accept all" }))).toEqual(await buttonShell(join));
+  expect(await buttonShell(panel(page).getByRole("button", { name: "Save choices" }))).toEqual(
+    await buttonShell(contact),
+  );
   const necessary = panel(page).getByRole("switch", { name: "Necessary" });
   const statistics = panel(page).getByRole("switch", { name: "Statistics" });
   const marketing = panel(page).getByRole("switch", { name: "Marketing" });
@@ -164,6 +199,33 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
   await expect(statistics).toHaveAttribute("aria-checked", "false");
   await expect(marketing).toHaveAttribute("aria-checked", "false");
   await expect(statistics).toBeFocused();
+  const switchLook = (locator: ReturnType<Page["locator"]>) =>
+    locator.evaluate((node) => {
+      const style = getComputedStyle(node);
+      const thumb = node.querySelector("[data-slot=switch-thumb]");
+      const thumbStyle = thumb ? getComputedStyle(thumb) : null;
+      return {
+        opacity: style.opacity,
+        backgroundColor: style.backgroundColor,
+        width: Number.parseFloat(style.width),
+        height: Number.parseFloat(style.height),
+        thumb: thumbStyle?.backgroundColor ?? "",
+      };
+    });
+  const necessaryLook = await switchLook(necessary);
+  const statisticsLook = await switchLook(statistics);
+  expect(necessaryLook.opacity).toBe("0.5");
+  expect(statisticsLook.opacity).toBe("1");
+  expect(necessaryLook.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(statisticsLook.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(necessaryLook.thumb).not.toBe("rgba(0, 0, 0, 0)");
+  expect(statisticsLook.thumb).not.toBe("rgba(0, 0, 0, 0)");
+  expect(necessaryLook.width).toBeGreaterThan(24);
+  expect(necessaryLook.height).toBeGreaterThan(14);
+  const descriptionSize = await panel(page)
+    .getByText("Necessary cookies keep the site working and are always on.", { exact: false })
+    .evaluate((node) => getComputedStyle(node).fontSize);
+  expect(descriptionSize).toBe("12px");
   await expect(panel(page)).toContainText("Google Analytics, PostHog, Amplitude, Vercel Speed Insights");
 
   await statistics.click();
