@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { amplitudeTrack } from "@/lib/tracking/amplitude";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
@@ -203,10 +206,12 @@ export function WaitlistPage() {
                 autoComplete="off"
               />
             </div>
-            <div className={styles.row}>
-              <label className={styles.field} htmlFor="waitlist-email">
-                <span className="visually-hidden">Email</span>
-                <input
+            <FieldGroup className="w-full flex-row items-end">
+              <Field className="min-w-0 flex-1" data-invalid={error ? true : undefined}>
+                <FieldLabel htmlFor="waitlist-email" className="sr-only">
+                  Email
+                </FieldLabel>
+                <Input
                   id="waitlist-email"
                   name="Email"
                   type="email"
@@ -218,23 +223,19 @@ export function WaitlistPage() {
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? "waitlist-email-error" : undefined}
                 />
-              </label>
+              </Field>
               {done ? null : (
-                <button className={styles.submit} type="submit" disabled={pending} aria-busy={pending}>
+                <Button type="submit" disabled={pending} aria-busy={pending}>
                   Join now
-                </button>
+                </Button>
               )}
-            </div>
+            </FieldGroup>
             {done ? (
-              <p className={styles.success} role="status" data-form-success="waitlist">
+              <p className="text-brand" role="status" data-form-success="waitlist">
                 You&apos;re on the waitlist!
               </p>
             ) : null}
-            {error ? (
-              <p className={styles.fieldError} id="waitlist-email-error" role="alert">
-                {error}
-              </p>
-            ) : null}
+            {error ? <FieldError id="waitlist-email-error">{error}</FieldError> : null}
           </form>
         </div>
       </section>

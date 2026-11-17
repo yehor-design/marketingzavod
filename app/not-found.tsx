@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from "./not-found.module.css";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "404 Page Not Found – Jet",
@@ -7,15 +7,15 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <div className={styles.page}>
-      <p>Sorry, we can&apos;t find the page you&apos;re looking for.</p>
-      <div className={styles.actions}>
-        <Link className={styles.home} href="/">
+    <div className="flex min-h-[50rem] flex-col items-center justify-end gap-6 px-4 pb-11 text-center text-foreground">
+      <p className="w-60 text-muted-foreground">Sorry, we can&apos;t find the page you&apos;re looking for.</p>
+      <div className="flex items-center justify-center gap-3">
+        <Button variant="ghost" nativeButton={false} render={<Link href="/" />}>
           Back to home
-        </Link>
-        <Link className={styles.let} href="/contact">
+        </Button>
+        <Button variant="secondary" nativeButton={false} render={<Link href="/contact" />}>
           Let us know
-        </Link>
+        </Button>
       </div>
     </div>
   );

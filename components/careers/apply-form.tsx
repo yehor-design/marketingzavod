@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { RollSubmit } from "@/components/careers/roll-link";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/careers/careers.module.css";
@@ -114,56 +118,54 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
         <label htmlFor={`${slug}-company-url`}>Company URL</label>
         <input id={`${slug}-company-url`} name="company_url" type="text" tabIndex={-1} autoComplete="off" />
       </div>
-      <div className={styles.fields}>
+      <FieldGroup className="w-full sm:flex-row sm:flex-wrap">
         {FIELDS.map((field) => {
           const error = errors[field.name];
           const errorId = error ? `${slug}-${field.name}-error` : undefined;
           const controlId = `${slug}-${field.name}`;
+          const invalid = error ? true : undefined;
           return (
-            <label
+            <Field
               key={field.name}
-              className={field.wide ? styles.fieldWide : styles.field}
-              htmlFor={controlId}
+              className={field.wide ? "sm:basis-full" : "sm:min-w-0 sm:flex-1"}
+              data-invalid={invalid}
+              data-disabled={done || pending ? true : undefined}
             >
-              <span>{field.label}</span>
+              <FieldLabel htmlFor={controlId}>{field.label}</FieldLabel>
               {field.type === "textarea" ? (
-                <textarea
+                <Textarea
                   id={controlId}
                   name={field.name}
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
                   required
-                  aria-invalid={error ? true : undefined}
+                  aria-invalid={invalid}
                   aria-describedby={errorId}
                   disabled={done || pending}
                 />
               ) : (
-                <input
+                <Input
                   id={controlId}
                   name={field.name}
                   type={field.type}
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
                   required
-                  aria-invalid={error ? true : undefined}
+                  aria-invalid={invalid}
                   aria-describedby={errorId}
                   disabled={done || pending}
                 />
               )}
-              {error ? (
-                <span className={styles.fieldError} id={errorId} role="alert">
-                  {error}
-                </span>
-              ) : null}
-            </label>
+              {error ? <FieldError id={errorId}>{error}</FieldError> : null}
+            </Field>
           );
         })}
-      </div>
+      </FieldGroup>
       <input type="hidden" name="Role" value={slug} />
       {errors.form ? (
-        <p className={styles.fieldError} role="alert">
-          {errors.form}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription>{errors.form}</AlertDescription>
+        </Alert>
       ) : null}
       {done ? (
         <p className={styles.success} role="status" data-form-success="careers_apply">
