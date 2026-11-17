@@ -55,7 +55,7 @@ Workflow з дією «Send webhook» потребує платного Operatio
 
 Доступ до API: service key «heywowboy.com website» (HubSpot → Development → Keys → Service Keys) з правами `crm.objects.contacts.read`/`write` і `crm.objects.deals.read`/`write`. Його значення зберігається лише у Vercel як `HUBSPOT_ACCESS_TOKEN`.
 
-- [ ] Запусти `npm run hubspot:setup` (створює властивості `wb_lead_id`, `wb_offline_sent` та інші).
+- [x] Властивості `wb_*` створено 17.11.2026 через HubSpot MCP: 36 у контактів, 3 в угод (група «Custom information»). Для нового акаунта: `npm run hubspot:setup`. Назва `wb_message` — «Website message», бо «Message» уже зайнята стандартною властивістю HubSpot.
 - [x] Service key створено 17.11.2026.
 - [ ] Значення service key у Vercel як `HUBSPOT_ACCESS_TOKEN` (Production, Sensitive), потім redeploy.
 - [ ] Необов'язково, для миттєвих подій: project-based app з webhook **Deal → Property changed → `dealstage`** на `https://www.heywowboy.com/api/crm/hubspot` і його Client secret у Vercel як `HUBSPOT_CLIENT_SECRET`. Endpoint приймає запит, лише якщо підпис v3 збігається і мітка часу не старша за 5 хвилин.
