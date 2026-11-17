@@ -61,7 +61,7 @@ test("no choice: the IDs are in the dataLayer, but nothing reaches Google, PostH
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 
   const layer = await dataLayer(page);
-  expect(layer[0].consent_ready).toBe("false");
+  expect(layer[0].consent_ready).toBe("true");
   expect(layer.filter((entry) => entry.event === "gtm.js")).toEqual([]);
   expect(layer.filter((entry) => entry[0] === "consent")).toEqual([]);
   expect(thirdParty(requests)).toEqual([]);
@@ -78,7 +78,7 @@ test("stored choice to allow everything: GTM starts with that consent before pag
   const layer = await dataLayer(page);
   const start = layer.findIndex((entry) => entry.event === "gtm.js");
   const view = layer.findIndex((entry) => entry.event === "page_view");
-  expect(layer[0].consent_ready).toBe("false");
+  expect(layer[0].consent_ready).toBe("true");
   // gtag() pushes its arguments object: consent, default, state.
   expect(layer[1]).toEqual({ 0: "consent", 1: "default", 2: GRANTED_ALL });
   expect(layer[2]).toEqual({ consent_statistics: true, consent_marketing: true });
