@@ -123,6 +123,20 @@ Consent Mode: усі запити GA4 після «Accept all» мають `gcs=
 
 Не перевірено агентом: параметр `gcd` у запитах Google (Z5) — вони йдуть із серверів Cloudflare, браузер їх не бачить. Порівняння GA4 за тиждень (Z9) — MAR-58, 24.11.2026.
 
+## Тестова заявка через HubSpot, 17–18 листопада 2026
+
+Production (Zaraz). Contact з `?utm_source=qa&utm_medium=cpc&utm_campaign=mar21_test&fbclid=QA_MAR21_TEST`, «Accept all», адреса `qa+mar21@heywowboy.com`.
+
+| Що | Результат |
+| --- | --- |
+| `/api/lead` | 200, `lead_id` і `event_id` повернуто, на сторінці показано успіх |
+| Контакт HubSpot | створено з атрибуцією: first/last touch UTM, `wb_fbclid`, `wb_fbc` з fbclid, `wb_fbp` (поставив `/api/meta/event`), згода statistics і marketing = true, `wb_lead_id`, `wb_event_id` |
+| Угода HubSpot | «Contact form: …» у Sales Pipeline, стадія `appointmentscheduled`, прив'язана до контакту, `wb_lead_id` |
+| Офлайн-конверсія | угоду переведено в `qualifiedtobuy`; `GET /api/cron/offline-conversions` → `sent: 1`, Meta відповіла 200, `wb_offline_sent = qualified_lead`; повторний виклик нічого не надіслав |
+| Meta | події заявки й синхронізації пішли з тестовим кодом; помилок `meta_capi_error` у логах немає. Після цього `META_TEST_EVENT_CODE` видалено |
+
+Тестові контакт і угода лишилися в HubSpot (`qa+mar21@heywowboy.com`); їх можна видалити.
+
 ## Сценарій для production з ідентифікаторами
 
 Виконати, коли закрито MAR-21 і опубліковано контейнер GTM. Для кожного з трьох сценаріїв: приватне вікно, GTM Preview увімкнено, шлях `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About → Contact → заявка з адресою виду `qa+дата@твій-домен`.
