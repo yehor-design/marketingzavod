@@ -40,7 +40,7 @@
 | `OFFLINE_CONVERSIONS_SECRET` | секрет | Пароль до файла для Google Ads. Згенеруй довгий випадковий рядок |
 | `META_CAPI_ACCESS_TOKEN`, `NEXT_PUBLIC_META_PIXEL_ID` | секрет / публічна | Відправка в Meta |
 | `HUBSPOT_STAGE_QUALIFIED`, `HUBSPOT_STAGE_WON` | не секрет | ID стадій, якщо пайплайн не типовий |
-| `CRON_SECRET` | секрет, необов'язковий | Якщо задано, `/api/cron/offline-conversions` приймає лише виклики Vercel Cron |
+| `CRON_SECRET` | секрет | `/api/cron/offline-conversions` приймає лише виклики Vercel Cron, решті відповідає 401. На production задано 18.11.2026 (випадковий рядок). Без нього ендпоінт відкритий |
 
 Без `HUBSPOT_ACCESS_TOKEN` усі три endpoint (webhook, синхронізація, файл для Google Ads) відповідають 503 і нічого не роблять.
 
@@ -48,7 +48,7 @@
 
 Конверсії в Meta надсилаються двома шляхами, обидва через `lib/offline/meta-sync.ts`:
 
-- **Щоденна синхронізація** (основний шлях): Vercel Cron щодня о 07:00 UTC викликає `GET /api/cron/offline-conversions` (`vercel.json`). Синхронізація бере угоди сайту, змінені за останні 7 дні в будь-якій стадії, і надсилає кожну досягнуту стадію-конверсію, якої ще немає в `wb_offline_sent`. Угода, що за добу пройшла і `qualifiedtobuy`, і `closedwon`, дає обидві події. Старші за 7 днів Meta не приймає, тож їх пропускає й синхронізація. Повторний виклик нічого не дублює. Якщо в Vercel задано `CRON_SECRET`, ендпоінт приймає лише виклики Vercel Cron.
+- **Щоденна синхронізація** (основний шлях): Vercel Cron щодня о 07:00 UTC викликає `GET /api/cron/offline-conversions` (`vercel.json`). Синхронізація бере угоди сайту, змінені за останні 7 дні в будь-якій стадії, і надсилає кожну досягнуту стадію-конверсію, якої ще немає в `wb_offline_sent`. Угода, що за добу пройшла і `qualifiedtobuy`, і `closedwon`, дає обидві події. Старші за 7 днів Meta не приймає, тож їх пропускає й синхронізація. Повторний виклик нічого не дублює. Ендпоінт приймає лише виклики Vercel Cron з `CRON_SECRET`.
 - **Webhook** (необов'язковий, миттєвий): `POST /api/crm/hubspot`. Потрібен застосунок HubSpot з webhooks і `HUBSPOT_CLIENT_SECRET`. Нові акаунти HubSpot (як wowboy, з листопада 2026) не можуть створити legacy private app, лише project-based app через HubSpot CLI. Тому webhook поки не підключено, і конверсії йдуть щоденною синхронізацією із затримкою до доби.
 
 Workflow з дією «Send webhook» потребує платного Operations Hub, тому він не використовується.
