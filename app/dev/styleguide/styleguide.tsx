@@ -44,7 +44,8 @@ const colors = [
 
 const display = (wght: number): CSSProperties => ({
   fontFamily: "var(--font-display)",
-  fontWeight: 1000,
+  fontWeight: wght,
+  fontStretch: "100%",
   fontVariationSettings: `"opsz" 14, "wght" ${wght}`,
 });
 

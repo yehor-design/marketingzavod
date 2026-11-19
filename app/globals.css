@@ -21,6 +21,10 @@
   --font-display: var(--font-google-sans), sans-serif;
   --font-sans: var(--font-google-sans), sans-serif;
   --font-mono: var(--font-google-sans-code), ui-monospace, monospace;
+  --weight-copy: 450;
+  --weight-strong: 550;
+  --weight-ui: 500;
+  --weight-input: 400;
   --header-height: 64px;
   --background: #000;
   --foreground: #fff;
@@ -281,6 +285,10 @@
   --font-heading: var(--font-google-sans), sans-serif;
   --font-sans: var(--font-google-sans), sans-serif;
   --font-mono: var(--font-google-sans-code), ui-monospace, monospace;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-copy: 450;
+  --font-weight-strong: 550;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -347,23 +355,23 @@
   --text-h1: 3.5rem;
   --text-h1--line-height: 1.1;
   --text-h1--letter-spacing: -0.04em;
-  --text-h1--font-weight: 1000;
+  --text-h1--font-weight: 550;
   --text-title: 2.2rem;
   --text-title--line-height: 1.2;
   --text-title--letter-spacing: -0.02em;
-  --text-title--font-weight: 1000;
+  --text-title--font-weight: 550;
   --text-h2: 1.6rem;
   --text-h2--line-height: 1.2;
   --text-h2--letter-spacing: -0.01em;
-  --text-h2--font-weight: 1000;
+  --text-h2--font-weight: 550;
   --text-h3-lg: 1.4rem;
   --text-h3-lg--line-height: 1.3;
   --text-h3-lg--letter-spacing: -0.01em;
-  --text-h3-lg--font-weight: 1000;
+  --text-h3-lg--font-weight: 550;
   --text-h3: 1.2rem;
   --text-h3--line-height: 1.4;
   --text-h3--letter-spacing: -0.01em;
-  --text-h3--font-weight: 1000;
+  --text-h3--font-weight: 550;
   --animate-consent-in: consent-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -422,6 +430,7 @@
 html {
   background: var(--background);
   color-scheme: dark;
+  font-stretch: 100%;
 }
 
 body {
@@ -429,8 +438,10 @@ body {
   min-height: 100vh;
   color: var(--text);
   font-family: var(--font-sans);
-  font-weight: 400;
+  font-weight: var(--weight-copy);
+  font-stretch: 100%;
   font-synthesis: none;
+  font-variation-settings: "opsz" 14, "wght" 450;
 }
 
 h1,
@@ -486,6 +497,48 @@ button {
   }
   html {
     @apply font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: var(--weight-strong);
+    font-stretch: 100%;
+    font-variation-settings: "opsz" 14, "wght" 550;
+  }
+
+  p {
+    font-weight: var(--weight-copy);
+    font-stretch: 100%;
+    font-variation-settings: "opsz" 14, "wght" 450;
+  }
+
+  button {
+    font-weight: var(--weight-strong);
+    font-stretch: 100%;
+    font-variation-settings: "opsz" 14, "wght" 550;
+  }
+
+  input,
+  textarea,
+  select {
+    font-weight: var(--weight-input);
+    font-stretch: 100%;
+    font-variation-settings: normal;
+  }
+
+  label {
+    font-weight: var(--weight-ui);
+    font-stretch: 100%;
+    font-variation-settings: "opsz" 14, "wght" 500;
+  }
+
+  .font-mono {
+    font-stretch: 100%;
+    font-variation-settings: normal;
   }
 }
 @keyframes dash-frame {
