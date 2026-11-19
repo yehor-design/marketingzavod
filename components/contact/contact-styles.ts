@@ -12,7 +12,7 @@ const styles = {
   "fieldError": "fieldError text-destructive [font-size:12px] [font-variation-settings:\"opsz\"_14,_\"wght\"_450] leading-[1.4]",
   "submit": "submit inline-flex items-center justify-center min-h-[40px] m-0 border-0 rounded-button [font-size:14px] h-[40px] [padding:0_18px] bg-foreground text-background cursor-pointer",
   "grain": "grain absolute inset-0 pointer-events-none [background-image:url(/about/grain.png)] [background-repeat:repeat] [background-size:40px] opacity-50",
-  "page": "page text-foreground font-display font-[1000] [font-variation-settings:\"opsz\"_14,_\"wght\"_550] [&_h1]:font-[inherit] [&_h2]:font-[inherit] [&_p]:font-[inherit] [&_button]:font-[inherit] [&_label]:font-[inherit] max-[809.98px]:mb-[-3px] min-[1200px]:pb-[1px]",
+  "page": "page text-foreground font-display font-[1000] [font-variation-settings:\"opsz\"_14,_\"wght\"_550] [&_h1]:font-[inherit] [&_h2]:font-[inherit] [&_p]:font-[inherit] [&_label]:font-[inherit] max-[809.98px]:mb-[-3px] min-[1200px]:pb-[1px]",
   "band": "band relative h-[100px] overflow-hidden min-[810px]:h-[177px]",
   "bandBottom": "bandBottom [&_.band]:relative [&_.band]:h-[100px] [&_.band]:overflow-hidden block [transform:rotate(180deg)] min-[810px]:[&_.band]:h-[177px]"
 };

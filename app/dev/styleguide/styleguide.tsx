@@ -4,7 +4,6 @@ import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
 import {
-  RollingText,
   TextGlitch,
   TextShimmer,
   nestedDither,
@@ -12,12 +11,13 @@ import {
   randomDither,
 } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
-import { RollLink } from "@/components/careers/roll-link";
 import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
 import { PhosphorIcon } from "@/components/home/phosphor-icon";
 import home from "@/components/home/home-styles";
-import contact from "@/components/contact/contact-styles";
+import { Button, CtaLink } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import styles from "./styleguide-styles";
 
 const NBSP = " ";
@@ -134,11 +134,11 @@ const type: { name: string; spec: string; sample: string; style: CSSProperties }
 const radii = [
   { value: 0, use: "Frames, cards, images" },
   { value: 4, use: "Count badge, post tag" },
-  { value: 6, use: "Nav buttons, tags" },
+  { value: 6, use: "Buttons, tags" },
   { value: 8, use: "Inputs, filter chips" },
   { value: 10, use: "Toggle buttons, tabs" },
   { value: 14, use: "Toggle track" },
-  { value: 20, use: "Buttons" },
+  { value: 20, use: "Large radius" },
   { value: 100, use: "Pills, round icons" },
 ] as const;
 
@@ -146,7 +146,7 @@ const spacing = [4, 6, 8, 10, 12, 16, 18, 20, 24, 28, 34, 44, 50, 100] as const;
 
 const motion = [
   ["RollingText", "Pill buttons", "hover / focus", "spring 0.4s, bounce 0; letter delay 0.4 / n × i × 0.25"],
-  ["GrayRing", "Secondary buttons", "hover / focus", "400ms pill spring; dash 8/6 (6/4 at 30px), 1s linear"],
+  ["GrayRing", "Secondary and tertiary buttons", "hover / focus", "400ms pill spring; dash 6/4 at 30px, 1s linear"],
   ["TextGlitch", "Header and footer links", "hover / focus", "300ms, redraw every 50ms, 20% of characters"],
   ["Link nudge", "Header / footer links", "hover / focus", "padding +4px, 0.4s cubic-bezier(0.22, 1, 0.36, 1)"],
   ["TextShimmer", "HIRING, announcement", "always", "3s linear, holds until 66.666%"],
@@ -257,22 +257,16 @@ export function StyleGuide() {
 
       <Section id="buttons" title="BUTTONS">
         <div className={styles.row}>
-          <RollLink href="/dev/styleguide" text={`Join${NBSP}waitlist`} className={home.buttonPrimary} />
-          <RollLink
-            href="/dev/styleguide"
-            text="Learn more"
-            className={`${home.buttonSecondary} gray-pill`}
-          />
-          <Link className={cx("nav-button", "nav-button-secondary")} href="/dev/styleguide">
-            <RollingText text="Contact" fontSize={12} lineHeightPx={21.6} />
-          </Link>
-          <Link className={cx("nav-button", "nav-button-primary")} href="/dev/styleguide">
-            <RollingText text={`Join${NBSP}waitlist`} fontSize={12} lineHeightPx={14.4} />
-          </Link>
+          <CtaLink href="/dev/styleguide" text={`Join${NBSP}waitlist`} location="styleguide" />
+          <CtaLink href="/dev/styleguide" text="Contact" variant="secondary" location="styleguide" />
+          <Button type="button" variant="tertiary">
+            Necessary only
+          </Button>
         </div>
         <p className={styles.caption}>
-          40px, radius 20px, padding 0 18px. Header buttons are 30px with radius 6px. The label
-          rolls; the button itself does not move.
+          30px, radius 6px, padding 0 12px, 12px type. Primary is the white header button. Secondary
+          is the gray header button. Tertiary is the same shell with a transparent rest state. The
+          label rolls; the button itself does not move.
         </p>
       </Section>
 
@@ -310,19 +304,23 @@ export function StyleGuide() {
 
       <Section id="forms" title="FORM FIELDS">
         <div className={styles.form}>
-          <label className={contact.field}>
-            <span>Full name</span>
-            <input name="name" placeholder="Jane Smith" />
+          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
+            Full name
+            <Input name="name" placeholder="Jane Smith" />
           </label>
-          <label className={contact.field}>
-            <span>Email</span>
-            <input name="email" defaultValue="orin@" aria-invalid="true" />
-            <span className={contact.fieldError}>Enter a valid email address.</span>
+          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
+            Email
+            <Input name="email" defaultValue="orin@" aria-invalid="true" />
+            <span className="text-destructive">Enter a valid email address.</span>
+          </label>
+          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
+            Message
+            <Textarea name="message" placeholder="Tell us what you need help with…" />
           </label>
         </div>
         <p className={styles.caption}>
-          Field #171717, radius 8px, padding 12px, Google Sans 14px. Invalid: 1px #db2c2c outline with a
-          message. Focus everywhere: 1px white outline, 3px offset.
+          shadcn Input is h-8, text-base, and text-sm from the md breakpoint, weight 400. Textarea
+          uses the same type, min-h-16, and does not resize.
         </p>
       </Section>
 

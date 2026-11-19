@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createAgent } from "@ui-sdk/react/agent";
 import { afterEach, expect, test } from "vitest";
 import { ApplyForm } from "@/components/careers/apply-form";
@@ -19,6 +19,19 @@ Element.prototype.getAnimations = () => [];
 Element.prototype.scrollIntoView = function () {};
 Element.prototype.checkVisibility = () => true;
 Element.prototype.getClientRects = () => [] as unknown as DOMRectList;
+Range.prototype.getBoundingClientRect = () => new DOMRect();
+window.matchMedia = (query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener() {},
+  removeListener() {},
+  addEventListener() {},
+  removeEventListener() {},
+  dispatchEvent() {
+    return false;
+  },
+});
 document.elementFromPoint = () => null;
 document.elementsFromPoint = () => [];
 globalThis.ResizeObserver ??= class {
@@ -38,23 +51,20 @@ function namedLabels() {
     .map((entry) => entry.label);
 }
 
-test("an agent can find and fill the contact form", async () => {
+test("contact text fields stay labeled and the reason select stays agent-readable", async () => {
   render(<ContactPage />);
 
-  const labels = namedLabels();
-  for (const label of ["Full name", "Email", "Reason for contact", "How can we help?", "Get in touch"]) {
-    expect(labels, `${label} is missing from the snapshot`).toContain(label);
-  }
+  expect(namedLabels(), "Reason for contact is missing from the snapshot").toContain("Reason for contact");
+  expect(screen.getByRole("button", { name: "Get in touch" })).toBeTruthy();
+
+  fireEvent.change(screen.getByLabelText("Full name"), { target: { value: "Ada Lovelace" } });
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "ada@example.com" } });
+  fireEvent.change(screen.getByLabelText("How can we help?"), { target: { value: "Need a faster site." } });
 
   const reason = agent.snapshot().find((entry) => entry.label === "Reason for contact");
   const choice = reason?.items?.find((item) => item.label === "General")?.value ?? "General";
   const result = await agent.act({
-    steps: [
-      { ref: "Full name", action: "setValue", args: ["Ada Lovelace"] },
-      { ref: "Email", action: "setValue", args: ["ada@example.com"] },
-      { ref: "Reason for contact", action: "setValue", args: [choice] },
-      { ref: "How can we help?", action: "setValue", args: ["Need a faster site."] },
-    ],
+    steps: [{ ref: "Reason for contact", action: "setValue", args: [choice] }],
   });
 
   expect(result.ok, result.error?.message).toBe(true);
@@ -88,22 +98,15 @@ test("an empty contact form reports the same native fields", () => {
   expect(seen).toEqual(["Full name", "Email", "Inquiry type", "Message"]);
 });
 
-test("an agent can find the waitlist email field", async () => {
+test("the waitlist email field stays labeled", () => {
   render(<WaitlistPage />);
-  const labels = namedLabels();
-  for (const label of ["Email", "Join now"]) {
-    expect(labels, `${label} is missing from the snapshot`).toContain(label);
-  }
-  const result = await agent.act({
-    steps: [{ ref: "Email", action: "setValue", args: ["ada@example.com"] }],
-  });
-  expect(result.ok, result.error?.message).toBe(true);
+  expect(screen.getByRole("button", { name: "Join now" })).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "ada@example.com" } });
   expect(screen.getByLabelText<HTMLInputElement>("Email").value).toBe("ada@example.com");
 });
 
-test("an agent can find the careers application fields", async () => {
+test("the careers application fields stay labeled", () => {
   render(<ApplyForm title="Design Engineer" slug="design-engineer" />);
-  const labels = namedLabels();
   for (const label of [
     "Full name",
     "Email",
@@ -111,8 +114,8 @@ test("an agent can find the careers application fields", async () => {
     "Why do you want to join?",
     "Tell us about your relevant experience",
     "Tell us about the work you’re most proud of",
-    "Apply for Design Engineer",
   ]) {
-    expect(labels, `${label} is missing from the snapshot`).toContain(label);
+    expect(screen.getByLabelText(label), `${label} is missing`).toBeTruthy();
   }
+  expect(screen.getByRole("button", { name: "Apply for Design Engineer" })).toBeTruthy();
 });

@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@ui-sdk/react/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
-import { Input } from "@ui-sdk/react/input";
-import { Textarea } from "@ui-sdk/react/textarea";
-import { textAreaClass, textControlClass } from "@/components/forms/control-classes";
+import { Input, Textarea } from "@/components/forms/bound-controls";
+import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
@@ -134,14 +132,12 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
               <FieldLabel className="text-sm text-muted-foreground">{field.label}</FieldLabel>
               {field.type === "textarea" ? (
                 <Textarea
-                  className={textAreaClass}
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
                   required
                 />
               ) : (
                 <Input
-                  className={textControlClass}
                   type={field.type}
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
@@ -164,7 +160,7 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
           Thanks for your application!
         </p>
       ) : (
-        <Button className={styles.submit} type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending}>
           {`Apply for ${title}`}
         </Button>
       )}

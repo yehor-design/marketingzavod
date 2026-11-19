@@ -4,12 +4,9 @@ import { cx } from "@/components/chrome-styles";
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
 import { orderedDither, randomDither } from "@/components/motion";
-import { Button } from "@ui-sdk/react/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
-import { Input } from "@ui-sdk/react/input";
-import { textControlClass } from "@/components/forms/control-classes";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/forms/bound-controls";
+import { Button } from "@/components/ui/button";
 import { amplitudeTrack } from "@/lib/tracking/amplitude";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
@@ -215,7 +212,6 @@ export function WaitlistPage() {
               <Field className="min-w-0 flex-1" name="Email" disabled={done || pending} invalid={error ? true : undefined}>
                 <FieldLabel className="sr-only">Email</FieldLabel>
                 <Input
-                  className={textControlClass}
                   type="email"
                   inputMode="email"
                   autoComplete="email"
@@ -224,7 +220,7 @@ export function WaitlistPage() {
                 />
               </Field>
               {done ? null : (
-                <Button className={cn(buttonVariants())} type="submit" disabled={pending} aria-busy={pending}>
+                <Button type="submit" disabled={pending} aria-busy={pending}>
                   Join now
                 </Button>
               )}

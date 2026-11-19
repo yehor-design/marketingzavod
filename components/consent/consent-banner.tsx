@@ -73,10 +73,14 @@ export function ConsentBanner() {
         </Link>
       </p>
       <div className="flex flex-wrap items-center gap-[8px]">
-        <ConsentButton text="Necessary only" onClick={() => choose({ statistics: false, marketing: false })} />
+        <ConsentButton
+          text="Necessary only"
+          variant="tertiary"
+          onClick={() => choose({ statistics: false, marketing: false })}
+        />
         <ConsentButton
           text="Accept all"
-          variant="default"
+          variant="primary"
           onClick={() => choose({ statistics: true, marketing: true })}
         />
         <ConsentButton text="Settings" onClick={() => openConsentSettings()} />

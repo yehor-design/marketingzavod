@@ -1,28 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { RollingText } from "@/components/motion";
-import styles from "@/components/updates/updates-styles";
+import { CtaLink } from "@/components/ui/button";
 
 const NBSP = "\u00A0";
 
 export function JoinButton() {
-  const [rolling, setRolling] = useState(false);
-
   return (
-    <Link
-      href="/waitlist"
-      className={styles.button}
-      data-track="cta_click"
-      data-track-cta-text="Join waitlist"
-      data-track-cta-location="updates"
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-      onFocus={() => setRolling(true)}
-      onBlur={() => setRolling(false)}
-    >
-      <RollingText text={`Join${NBSP}waitlist`} rolling={rolling} />
-    </Link>
+    <CtaLink href="/waitlist" text={`Join${NBSP}waitlist`} location="updates" className="mt-[28px]" />
   );
 }

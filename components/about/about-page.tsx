@@ -6,6 +6,7 @@ import { DitherImage } from "@/components/home/dither-image";
 import { GodRays, RollingText, orderedDither } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
 import { SiteCta } from "@/components/site-cta";
+import { CtaLink } from "@/components/ui/button";
 import styles from "@/components/about/about-styles";
 
 const NBSP = "\u00A0";
@@ -213,32 +214,6 @@ function ViewAll() {
   );
 }
 
-function RollLink({
-  href,
-  text,
-}: {
-  href: string;
-  text: string;
-}) {
-  const [rolling, setRolling] = useState(false);
-
-  return (
-    <Link
-      href={href}
-      className={styles.button}
-      data-track="cta_click"
-      data-track-cta-text={text.replace(/\u00a0/g, " ")}
-      data-track-cta-location="about"
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-      onFocus={() => setRolling(true)}
-      onBlur={() => setRolling(false)}
-    >
-      <RollingText text={text} rolling={rolling} />
-    </Link>
-  );
-}
-
 function PowerIcon({ name }: { name: string }) {
   const common = {
     viewBox: "0 0 256 256",
@@ -391,7 +366,7 @@ export function AboutPage() {
               We’re always <span className={styles.bright}>looking for people to join us</span>{" "}
               making the web simpler, and faster for everyone.
             </h2>
-            <RollLink href="/careers#open-roles" text={`Open${NBSP}positions`} />
+            <CtaLink href="/careers#open-roles" text={`Open${NBSP}positions`} location="about" />
           </div>
         </div>
       </section>

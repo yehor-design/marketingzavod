@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ApplyForm } from "@/components/careers/apply-form";
 import { BenefitIcon, Chevron } from "@/components/careers/icons";
-import { RollLink } from "@/components/careers/roll-link";
+import { CtaLink } from "@/components/ui/button";
 import { benefits, type CareerRole } from "@/lib/careers";
 import styles from "@/components/careers/careers-styles";
 
@@ -40,10 +40,10 @@ export function RolePage({ role }: { role: CareerRole }) {
           </div>
           <div className={styles.roleLead}>
             <p>{role.summary}</p>
-            <RollLink
+            <CtaLink
               href={`/careers/${role.slug}#application`}
               text={`Apply${NBSP}now`}
-              className={styles.buttonPrimary}
+              location="careers"
             />
           </div>
         </div>

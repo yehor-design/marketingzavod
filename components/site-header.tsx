@@ -4,41 +4,9 @@ import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { RollingText, TextGlitch } from "@/components/motion";
-import { GrayRing } from "@/components/motion/gray-ring";
+import { TextGlitch } from "@/components/motion";
+import { CtaLink } from "@/components/ui/button";
 import { navLinks } from "@/lib/routes";
-
-function NavRoll({
-  href,
-  text,
-  className,
-  lineHeightPx,
-}: {
-  href: string;
-  text: string;
-  className: string;
-  lineHeightPx: number;
-}) {
-  const label = text.replace(/\u00a0/g, " ");
-  const [rolling, setRolling] = useState(false);
-
-  return (
-    <Link
-      href={href}
-      className={className}
-      data-track="cta_click"
-      data-track-cta-text={label}
-      data-track-cta-location="header"
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-      onFocus={() => setRolling(true)}
-      onBlur={() => setRolling(false)}
-    >
-      <RollingText text={text} rolling={rolling} fontSize={12} lineHeightPx={lineHeightPx} />
-      {className.includes("gray-pill") ? <GrayRing /> : null}
-    </Link>
-  );
-}
 
 function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -177,18 +145,8 @@ export function SiteHeader() {
             </ul>
           </nav>
           <div className={cx("desktop-actions")}>
-            <NavRoll
-              href="/contact"
-              text="Contact"
-              className={cx("nav-button", "nav-button-secondary", "gray-pill")}
-              lineHeightPx={21.6}
-            />
-            <NavRoll
-              href="/waitlist"
-              text={"Join\u00A0waitlist"}
-              className={cx("nav-button", "nav-button-primary")}
-              lineHeightPx={14.4}
-            />
+            <CtaLink href="/contact" text="Contact" variant="secondary" location="header" />
+            <CtaLink href="/waitlist" text={"Join\u00A0waitlist"} location="header" />
           </div>
           <button
             type="button"
@@ -237,16 +195,12 @@ export function SiteHeader() {
               })}
             </ul>
           </nav>
-          <Link
-            className={cx("mobile-cta")}
+          <CtaLink
             href="/waitlist"
-            data-track="cta_click"
-            data-track-cta-text="Join waitlist"
-            data-track-cta-location="mobile_menu"
+            text={"Join\u00A0waitlist"}
+            location="mobile_menu"
             onClick={closeSoon}
-          >
-            <RollingText text={"Join\u00A0waitlist"} />
-          </Link>
+          />
         </div>
       ) : null}
     </header>

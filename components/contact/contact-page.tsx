@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
-import { Button } from "@ui-sdk/react/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
-import { Input } from "@ui-sdk/react/input";
+import { Input, Textarea } from "@/components/forms/bound-controls";
 import {
   Select,
   SelectContent,
@@ -13,13 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui-sdk/react/select";
-import { Textarea } from "@ui-sdk/react/textarea";
-import { selectOptionClass, selectPopupClass, textAreaClass, textControlClass } from "@/components/forms/control-classes";
+import { selectOptionClass, selectPopupClass, textControlClass } from "@/components/forms/control-classes";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
-import { cn } from "@/lib/utils";
 import styles from "@/components/contact/contact-styles";
 
 
@@ -114,7 +111,6 @@ export function ContactPage() {
                 <Field className="min-w-0 flex-1" name="Full name" disabled={done || pending} invalid={errors.name ? true : undefined}>
                   <FieldLabel className="text-sm text-muted-foreground">Full name</FieldLabel>
                   <Input
-                    className={textControlClass}
                     type="text"
                     autoComplete="name"
                     placeholder="Jane Smith"
@@ -125,7 +121,6 @@ export function ContactPage() {
                 <Field className="min-w-0 flex-1" name="Email" disabled={done || pending} invalid={errors.email ? true : undefined}>
                   <FieldLabel className="text-sm text-muted-foreground">Email</FieldLabel>
                   <Input
-                    className={textControlClass}
                     type="email"
                     inputMode="email"
                     autoComplete="email"
@@ -164,7 +159,7 @@ export function ContactPage() {
               </Field>
               <Field name="Message" disabled={done || pending} invalid={errors.message ? true : undefined}>
                 <FieldLabel className="text-sm text-muted-foreground">How can we help?</FieldLabel>
-                <Textarea className={textAreaClass} placeholder="Tell us what you need help with…" required />
+                <Textarea placeholder="Tell us what you need help with…" required />
                 {errors.message ? <FieldError match>{errors.message}</FieldError> : null}
               </Field>
             </FieldGroup>
@@ -178,7 +173,7 @@ export function ContactPage() {
                 We&apos;ll get back to you soon!
               </p>
             ) : (
-              <Button className={cn(buttonVariants())} type="submit" disabled={pending} aria-busy={pending}>
+              <Button type="submit" disabled={pending} aria-busy={pending}>
                 Get in touch
               </Button>
             )}
