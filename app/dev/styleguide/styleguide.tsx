@@ -17,10 +17,24 @@ import { PhosphorIcon } from "@/components/home/phosphor-icon";
 import home from "@/components/home/home-styles";
 import { Button, CtaLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import styles from "./styleguide-styles";
 
 const NBSP = " ";
+
+const THEMES = [
+  { label: "Light", value: "light" },
+  { label: "Dark", value: "dark" },
+  { label: "System", value: "system" },
+];
 
 const colors = [
   { name: "background", value: "#000", use: "Page, footer, canvases" },
@@ -317,10 +331,28 @@ export function StyleGuide() {
             Message
             <Textarea name="message" placeholder="Tell us what you need help with…" />
           </label>
+          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
+            Theme
+            <Select items={THEMES}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {THEMES.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </label>
         </div>
         <p className={styles.caption}>
           shadcn Input: 32px, padding 4px 10px, radius 10px, 16px type, 14px from 768px, weight 400.
-          Textarea uses the same type, a 64px minimum, and does not resize.
+          Textarea uses the same type, a 64px minimum, and does not resize. shadcn Select: 32px,
+          padding 8px 8px 8px 10px, radius 10px, 14px type, weight 400.
         </p>
       </Section>
 

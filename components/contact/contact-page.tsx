@@ -1,20 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
+import { Field, FieldError, FieldGroup, FieldLabel, useFieldControl } from "@ui-sdk/react/field";
 import { Input, Textarea } from "@/components/forms/bound-controls";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
-  SelectItemIndicator,
   SelectTrigger,
   SelectValue,
-} from "@ui-sdk/react/select";
-import { selectOptionClass, selectPopupClass, textControlClass } from "@/components/forms/control-classes";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/select";
 import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/contact/contact-styles";
@@ -27,6 +25,55 @@ const REASONS = [
   { value: "feedback", label: "Feedback" },
   { value: "other", label: "Other" },
 ];
+
+type BoundControl = {
+  id?: string;
+  "aria-labelledby"?: string;
+  "aria-describedby"?: string;
+};
+
+function ReasonSelect({
+  value,
+  onValueChange,
+  invalid,
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  invalid: boolean;
+}) {
+  const field = useFieldControl();
+  const bound = (field?.props({}) ?? {}) as BoundControl;
+
+  return (
+    <Select
+      items={REASONS}
+      name="Inquiry type"
+      required
+      disabled={field?.disabled}
+      value={value === "" ? null : value}
+      onValueChange={(next) => onValueChange(next ?? "")}
+    >
+      <SelectTrigger
+        id={bound.id}
+        className="w-full"
+        aria-labelledby={bound["aria-labelledby"]}
+        aria-describedby={bound["aria-describedby"]}
+        aria-invalid={invalid ? true : undefined}
+      >
+        <SelectValue placeholder="Select…" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {REASONS.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
 
 type Errors = {
   name?: string;
@@ -132,29 +179,11 @@ export function ContactPage() {
               </FieldGroup>
               <Field disabled={done || pending} invalid={errors.reason ? true : undefined}>
                 <FieldLabel className="text-sm text-muted-foreground">Reason for contact</FieldLabel>
-                <Select
-                  name="Inquiry type"
-                  required
-                  placeholder="Select…"
-                  items={REASONS}
-                  value={reason === "" ? null : reason}
-                  onValueChange={(next) => setReason(next ?? "")}
-                >
-                  <SelectTrigger className={textControlClass}>
-                    <SelectValue />
-                    <ChevronDownIcon aria-hidden="true" />
-                  </SelectTrigger>
-                  <SelectContent className={selectPopupClass}>
-                    {REASONS.map((item) => (
-                      <SelectItem key={item.value} className={selectOptionClass} value={item.value}>
-                        {item.label}
-                        <SelectItemIndicator>
-                          <CheckIcon aria-hidden="true" />
-                        </SelectItemIndicator>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <ReasonSelect
+                  value={reason}
+                  invalid={Boolean(errors.reason)}
+                  onValueChange={setReason}
+                />
                 {errors.reason ? <FieldError match>{errors.reason}</FieldError> : null}
               </Field>
               <Field name="Message" disabled={done || pending} invalid={errors.message ? true : undefined}>

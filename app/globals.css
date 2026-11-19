@@ -521,6 +521,45 @@ html [data-slot="textarea"] {
   outline-offset: 0;
 }
 
+/*
+  Stock shadcn Select reads the same rem scale. The trigger is text-sm (14px)
+  at every width. Input and Textarea keep their own type size. Buttons are untouched.
+*/
+html [data-slot="select-trigger"],
+html [data-slot="select-content"],
+html [data-slot="select-item"] {
+  --spacing: 4px;
+  --radius: 10px;
+  --radius-lg: 10px;
+  --radius-md: 8px;
+  --input: oklch(1 0 0 / 15%);
+  --color-input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --color-ring: oklch(0.556 0 0);
+  --popover: lab(7.78201% 0 0);
+  --color-popover: lab(7.78201% 0 0);
+  --ui-accent: lab(27.036% 0 0);
+  --color-accent: lab(27.036% 0 0);
+  font-weight: 400;
+  font-variation-settings: normal;
+}
+
+html [data-slot="select-trigger"],
+html [data-slot="select-item"] {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+html [data-slot="select-content"] {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+[data-slot="select-trigger"]:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
 @keyframes dash-frame {
 from {
     background-position:
