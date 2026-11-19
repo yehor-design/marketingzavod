@@ -454,9 +454,7 @@ a {
   border-radius: 0;
 }
 
-button,
-input,
-textarea {
+button {
   border-radius: 0;
   font: inherit;
 }
@@ -488,6 +486,41 @@ button {
     @apply font-sans;
   }
 }
+
+/*
+  Stock shadcn Input and Textarea use rem. The page root is 87.5%, 112.5%,
+  or 125%, so those utilities would not match the docs (a 16px root).
+  The variables below are what the stock classes read. Buttons are untouched.
+*/
+html [data-slot="input"],
+html [data-slot="textarea"] {
+  --spacing: 4px;
+  --radius: 10px;
+  --radius-lg: 10px;
+  --input: oklch(1 0 0 / 15%);
+  --color-input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --color-ring: oklch(0.556 0 0);
+  font-weight: 400;
+  font-variation-settings: normal;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@media (min-width: 48rem) {
+  html [data-slot="input"],
+  html [data-slot="textarea"] {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+[data-slot="input"]:focus-visible,
+[data-slot="textarea"]:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
 @keyframes dash-frame {
 from {
     background-position:
