@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { useReducedMotion } from "motion/react";
-import { PulseGradient, RollingText } from "@/components/motion";
-import { GrayRing } from "@/components/motion/gray-ring";
+import { PulseGradient } from "@/components/motion";
+import { Button, CtaLink } from "@/components/ui/button";
 import { SiteCta } from "@/components/site-cta";
 import { TrackView } from "@/components/tracking/track-view";
 import styles from "@/components/pricing/pricing-styles";
@@ -213,18 +213,10 @@ const groups: { title: string; rows: Row[] }[] = [
 ];
 
 function CardCta({ text, tone }: { text: string; tone: "primary" | "secondary" }) {
-  const [rolling, setRolling] = useState(false);
-  const gray = tone === "secondary";
-
   return (
-    <span
-      className={gray ? `${styles.cardButton} gray-pill` : styles.cardButtonPrimary}
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-    >
-      <RollingText text={text} rolling={rolling} />
-      {gray ? <GrayRing /> : null}
-    </span>
+    <Button variant={tone} nativeButton={false} render={<span />} className="max-[809.98px]:mt-[34px]">
+      {text}
+    </Button>
   );
 }
 
@@ -283,49 +275,6 @@ function PriceDigits({ value }: { value: string }) {
         ))}
       </span>
     </span>
-  );
-}
-
-function RollLink({
-  href,
-  text,
-  tone,
-  className,
-  fontSize,
-  letterSpacing,
-  location,
-}: {
-  href: string;
-  text: string;
-  tone: "primary" | "secondary";
-  className?: string;
-  fontSize?: number;
-  letterSpacing?: number;
-  location: string;
-}) {
-  const [rolling, setRolling] = useState(false);
-
-  return (
-    <Link
-      href={href}
-      className={`${tone === "primary" ? styles.primary : `${styles.secondary} gray-pill`} ${className ?? ""}`}
-      data-track="cta_click"
-      data-track-cta-text={text.replace(/\u00a0/g, " ")}
-      data-track-cta-location={location}
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-      onFocus={() => setRolling(true)}
-      onBlur={() => setRolling(false)}
-    >
-      <RollingText
-        text={text}
-        rolling={rolling}
-        fontSize={fontSize}
-        lineHeightPx={fontSize === 12 ? 21.6 : undefined}
-        letterSpacing={letterSpacing}
-      />
-      {tone === "secondary" ? <GrayRing /> : null}
-    </Link>
   );
 }
 
@@ -583,14 +532,11 @@ export function PricingPage() {
               </button>
             ))}
           </div>
-          <RollLink
+          <CtaLink
             href={CHECKOUT_HREF}
             text={activePlan.cta}
-            tone={activePlan.tone}
+            variant={activePlan.tone}
             location={`pricing_compare_${activePlan.id}`}
-            className={styles.smallButton}
-            fontSize={12}
-            letterSpacing={activePlan.id === "starter" ? 0.103 : undefined}
           />
         </div>
 
@@ -601,14 +547,12 @@ export function PricingPage() {
               <div className={styles.headPlan} key={plan.id}>
                 <PlanMark id={plan.id} size={20} />
                 <h3>{plan.name}</h3>
-                <RollLink
+                <CtaLink
                   href={CHECKOUT_HREF}
                   text={plan.cta}
-                  tone={plan.tone}
+                  variant={plan.tone}
                   location={`pricing_compare_${plan.id}`}
-                  className={styles.compareButton}
-                  fontSize={12}
-                  letterSpacing={plan.id === "starter" ? 0.103 : undefined}
+                  className="ml-auto"
                 />
               </div>
             ))}

@@ -115,7 +115,7 @@ export function ConsentSettings() {
             </DialogDescription>
           </div>
           <DialogClose
-            render={<Button variant="ghost" aria-label="Close" className="size-[30px] shrink-0 p-0" />}
+            render={<Button variant="tertiary" aria-label="Close" className="shrink-0" />}
           >
             <XIcon />
           </DialogClose>
@@ -158,8 +158,8 @@ export function ConsentSettings() {
           })}
         </ul>
         <DialogFooter className="mx-0 mb-0 flex-row flex-wrap items-center justify-start gap-[8px] rounded-none border-0 bg-transparent p-0 sm:justify-start">
-          <ConsentButton text="Necessary only" onClick={() => decide({ statistics: false, marketing: false })} />
-          <ConsentButton text="Accept all" variant="default" onClick={() => decide({ statistics: true, marketing: true })} />
+          <ConsentButton text="Necessary only" variant="tertiary" onClick={() => decide({ statistics: false, marketing: false })} />
+          <ConsentButton text="Accept all" variant="primary" onClick={() => decide({ statistics: true, marketing: true })} />
           <ConsentButton text="Save choices" onClick={() => decide(choice)} />
         </DialogFooter>
       </DialogContent>

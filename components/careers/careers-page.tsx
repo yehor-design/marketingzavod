@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CornerMarks } from "@/components/motion/corner-marks";
 import { GodRays } from "@/components/motion";
 import { BenefitIcon, Chevron } from "@/components/careers/icons";
-import { RollLink } from "@/components/careers/roll-link";
+import { CtaLink } from "@/components/ui/button";
 import { benefits, careers } from "@/lib/careers";
 import styles from "@/components/careers/careers-styles";
 
@@ -39,11 +39,12 @@ export function CareersPage() {
             everywhere.
           </p>
           <div className={styles.actions}>
-            <RollLink href="/careers#benefits" text="Company" className={styles.buttonPrimary} />
-            <RollLink
+            <CtaLink href="/careers#benefits" text="Company" location="careers" />
+            <CtaLink
               href="/careers#open-roles"
               text={`Open${NBSP}positions`}
-              className={`${styles.buttonSecondary} gray-pill`}
+              variant="secondary"
+              location="careers"
             />
           </div>
         </div>

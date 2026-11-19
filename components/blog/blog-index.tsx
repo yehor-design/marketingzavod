@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RollingText } from "@/components/motion";
-import { GrayRing } from "@/components/motion/gray-ring";
+import { Button } from "@/components/ui/button";
 import { blogCategories, posts } from "@/lib/blog";
 import { PostCard } from "@/components/blog/post-card";
 import styles from "@/components/blog/blog-styles";
@@ -13,7 +12,6 @@ const NBSP = "\u00A0";
 export function BlogIndex() {
   const [category, setCategory] = useState<(typeof blogCategories)[number]>("All");
   const [visible, setVisible] = useState(PAGE_SIZE);
-  const [rolling, setRolling] = useState(false);
   const filtered = category === "All" ? posts : posts.filter((post) => post.category === category);
   const featured = posts.slice(0, 3);
 
@@ -61,18 +59,9 @@ export function BlogIndex() {
         </ul>
         {visible < filtered.length ? (
           <div className={styles.more}>
-            <button
-              type="button"
-              className={`${styles.moreButton} gray-pill`}
-              onClick={() => setVisible((count) => count + PAGE_SIZE)}
-              onPointerEnter={() => setRolling(true)}
-              onPointerLeave={() => setRolling(false)}
-              onFocus={() => setRolling(true)}
-              onBlur={() => setRolling(false)}
-            >
-              <RollingText text={`Load${NBSP}more`} rolling={rolling} />
-              <GrayRing />
-            </button>
+            <Button type="button" variant="secondary" onClick={() => setVisible((count) => count + PAGE_SIZE)}>
+              {`Load${NBSP}more`}
+            </Button>
           </div>
         ) : null}
       </section>

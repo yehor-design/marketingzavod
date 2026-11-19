@@ -1,19 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import {
   LineAnimator,
   PulseGradient,
-  RollingText,
   nestedDither,
   orderedDither,
   randomDither,
 } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
-import { GrayRing } from "@/components/motion/gray-ring";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
+import { CtaLink } from "@/components/ui/button";
 import { Announcement } from "@/components/announcement";
 import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
@@ -292,39 +290,6 @@ const spring = { type: "spring" as const, duration: 0.6, bounce: 0 };
 const logoSpring = { type: "spring" as const, duration: 0.6, bounce: 0 };
 const faqSpring = { type: "spring" as const, duration: 0.4, bounce: 0 };
 
-function RollLink({
-  href,
-  text,
-  tone,
-  location,
-}: {
-  href: string;
-  text: string;
-  tone: "primary" | "secondary";
-  location: string;
-}) {
-  const [rolling, setRolling] = useState(false);
-
-  return (
-    <Link
-      href={href}
-      className={
-        tone === "primary" ? styles.buttonPrimary : `${styles.buttonSecondary} gray-pill`
-      }
-      data-track="cta_click"
-      data-track-cta-text={text.replace(/\u00a0/g, " ")}
-      data-track-cta-location={location}
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-      onFocus={() => setRolling(true)}
-      onBlur={() => setRolling(false)}
-    >
-      <RollingText text={text} rolling={rolling} />
-      {tone === "secondary" ? <GrayRing /> : null}
-    </Link>
-  );
-}
-
 function Check({ color }: { color: string }) {
   return (
     <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true" className={styles.check}>
@@ -510,8 +475,8 @@ export function HomePage() {
             <p>No code, no hassle. Jet simply keeps your website blazing fast 24/7.</p>
           </div>
           <div className={styles.actions}>
-            <RollLink href="/waitlist" text={`Join${NBSP}waitlist`} tone="primary" location="hero" />
-            <RollLink href="/#benefits" text="Learn more" tone="secondary" location="hero" />
+            <CtaLink href="/waitlist" text={`Join${NBSP}waitlist`} location="hero" />
+            <CtaLink href="/#benefits" text="Learn more" variant="secondary" location="hero" />
           </div>
         </div>
       </section>
@@ -775,7 +740,12 @@ export function HomePage() {
           <div className={styles.ctaCopy}>
             <h2 id="cta-title">Boost your site speed today.</h2>
             <p>Try Jet now—one click, instant performance. No risk, cancel anytime.</p>
-            <RollLink href="/waitlist" text={`Join${NBSP}waitlist`} tone="primary" location="footer_cta" />
+            <CtaLink
+              href="/waitlist"
+              text={`Join${NBSP}waitlist`}
+              location="footer_cta"
+              className="mt-[28px]"
+            />
           </div>
         </div>
       </section>

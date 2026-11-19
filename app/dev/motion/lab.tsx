@@ -5,13 +5,13 @@ import {
   Dither,
   GodRays,
   Pulser,
-  RollButton,
   TextGlitch,
   TextShimmer,
   nestedDither,
   orderedDither,
   randomDither,
 } from "@/components/motion";
+import { Button } from "@/components/ui/button";
 import styles from "./lab-styles";
 
 function useRamp() {
@@ -68,7 +68,7 @@ export function MotionLab() {
 
       <section className={styles.section} id="rolling-text" aria-labelledby="rolling-text-title">
         <h2 id="rolling-text-title">RollingText</h2>
-        <RollButton text={"Join\u00A0waitlist"} />
+        <Button type="button">{"Join\u00A0waitlist"}</Button>
       </section>
 
       <section className={styles.section} id="dither" aria-labelledby="dither-title">

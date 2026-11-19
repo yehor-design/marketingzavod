@@ -75,11 +75,15 @@ test("first visit: a small banner with two equal choices and a link to the detai
   const settings = banner(page).getByRole("button", { name: "Settings" });
   const join = page.locator('.desktop-actions a[href="/waitlist"]');
   const contact = page.locator('.desktop-actions a[href="/contact"]');
-  // Accept all matches Join waitlist. The other banner buttons match Contact.
+  // Accept all matches Join waitlist. Settings matches Contact.
+  // Necessary only is the same shell with a transparent rest state.
   // Labels keep their own width: the buttons are not stretched into columns.
   expect(await buttonShell(accept)).toEqual(await buttonShell(join));
-  expect(await buttonShell(necessary)).toEqual(await buttonShell(contact));
   expect(await buttonShell(settings)).toEqual(await buttonShell(contact));
+  const necessaryShell = await buttonShell(necessary);
+  const contactShell = await buttonShell(contact);
+  expect({ ...necessaryShell, backgroundColor: contactShell.backgroundColor }).toEqual(contactShell);
+  expect(necessaryShell.backgroundColor).toMatch(/rgba\(0,\s*0,\s*0,\s*0\)|transparent/);
   const [necessaryBox, acceptBox, bannerBox] = [
     await necessary.boundingBox(),
     await accept.boundingBox(),
