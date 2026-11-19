@@ -319,8 +319,8 @@ export function StyleGuide() {
           </label>
         </div>
         <p className={styles.caption}>
-          shadcn Input is h-8, text-base, and text-sm from the md breakpoint, weight 400. Textarea
-          uses the same type, min-h-16, and does not resize.
+          shadcn Input: 32px, padding 4px 10px, radius 10px, 16px type, 14px from 768px, weight 400.
+          Textarea uses the same type, a 64px minimum, and does not resize.
         </p>
       </Section>
 
