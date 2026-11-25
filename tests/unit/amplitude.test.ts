@@ -71,6 +71,7 @@ describe("lib/tracking/amplitude", () => {
       "amp_test_key",
       expect.objectContaining({
         serverZone: "US",
+        remoteConfig: { fetchRemoteConfig: false },
         autocapture: expect.objectContaining({ pageViews: { trackHistoryChanges: "pathOnly" }, elementInteractions: false }),
       }),
     );

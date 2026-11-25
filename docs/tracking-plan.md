@@ -14,7 +14,7 @@
 
 | Подія | Коли спрацьовує | Параметри | Куди йде | Ключова |
 | --- | --- | --- | --- | --- |
-| `page_view` | Один раз на перше завантаження і на кожен перехід між маршрутами | `page_location`, `page_path`, `page_title` | GA4, Amplitude (власний перегляд `[Amplitude] Page Viewed`), Google Ads Remarketing, Meta `PageView` | ні |
+| `page_view` | Один раз на перше завантаження і на кожен перехід між маршрутами. Після переходу подія чекає новий `<title>` (до 1 с), бо Next.js може дописати метадані трохи пізніше за сторінку | `page_location`, `page_path`, `page_title` | GA4, Amplitude (власний перегляд `[Amplitude] Page Viewed`), Google Ads Remarketing, Meta `PageView` | ні |
 | `generate_lead` | Сервер зберіг заявку з форми Contact або Waitlist | `form_name` (`contact`, `waitlist`), `lead_id` | GA4, Amplitude, Google Ads (Contact), Meta `Lead` (Contact), LinkedIn (Contact) | так |
 | `join_waitlist` | Сервер зберіг заявку Waitlist. Іде разом із `generate_lead`, з тим самим `event_id` | `form_name` (`waitlist`), `lead_id` | GA4, Amplitude, Google Ads (Waitlist), Meta `CompleteRegistration`, LinkedIn (Waitlist) | так |
 | `submit_application` | Сервер зберіг відгук на вакансію | `form_name` (`careers_apply`), `lead_id`, `role` | GA4, Amplitude | ні |

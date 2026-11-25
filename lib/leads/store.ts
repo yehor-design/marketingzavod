@@ -33,7 +33,7 @@ export async function saveLead(lead: Lead, store: LeadStore = getLeadStore()): P
   try {
     const result = await store.save(lead);
     if (store.name !== "log") {
-      console.log(JSON.stringify({ type: "lead_saved", lead_id: lead.lead_id, ...result }));
+      console.log(JSON.stringify({ type: "lead_stored", lead_id: lead.lead_id, ...result }));
     }
     return result;
   } catch (error) {

@@ -93,6 +93,10 @@ export function initAmplitude(): Promise<void> {
       await module.init(trackingIds.amplitude, {
         serverZone: AMPLITUDE_SERVER_ZONE,
         autocapture: AMPLITUDE_AUTOCAPTURE,
+        // Autocapture is set here only. Remote settings from the Amplitude UI
+        // could switch on capture the consent text does not cover, and each
+        // fetch is one more request on every page.
+        remoteConfig: { fetchRemoteConfig: false },
       }).promise;
       sdk = module;
       // Consent may have been withdrawn while the SDK was loading.

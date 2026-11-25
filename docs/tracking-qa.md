@@ -45,6 +45,24 @@
 
 `dataLayer` після «Accept all»: ідентифікатори → `consent default` → `consent_statistics`/`consent_marketing` → `gtm.js` → `page_view`. Помилок у консолі немає. Canonical, `sitemap.xml` і `robots.txt` віддають `https://www.marketingzavod.com`.
 
+### 25 листопада 2026, повний ланцюжок із секретами
+
+Деплой коміту `16d2401` о 18:27 UTC, після того як у Vercel (Production) додано `NEXT_PUBLIC_AMPLITUDE_API_KEY`, `HUBSPOT_ACCESS_TOKEN`, `META_CAPI_ACCESS_TOKEN` і `CRON_SECRET`. Скрипт Playwright, звичайний Chromium, чистий профіль: `/?utm_source=qa&utm_medium=cpc&utm_campaign=zav_e2e_…&gclid=…&fbclid=…` → «Accept all» → Pricing → Checkout → заявка Contact → заявка Waitlist. Прогнано кілька разів, останній о 18:36 UTC.
+
+| Сервіс | Результат |
+| --- | --- |
+| `/api/lead` | обидві заявки 200, `store: hubspot`, `consent_marketing: true`, `consent_statistics: true`; у запиті є `amplitude_device_id` і атрибуція з `utm_*`, `gclid`, `fbclid` |
+| HubSpot | на кожну заявку контакт і угода, наприклад контакт 938941917386 / угода 549141625074 (Contact) і 938987456729 / 549192888518 (Waitlist) |
+| GA4 | `page_view` з `gcs=G111` на кожній сторінці. `form_start` і `generate_lead` GA4 шле пакетом: один запит, назви подій (`en=`) у тілі POST, а не в URL. У Realtime вони з'явилися через кілька хвилин після `page_view` (`form_start 3`, `generate_lead 3` за три заявки) |
+| Meta, піксель | `PageView` на кожній сторінці, `ViewContent` (Pricing), `InitiateCheckout` (Checkout), `Lead` (Contact), `CompleteRegistration` (Waitlist); усі з `eid` |
+| Meta, Conversions API | `Lead` і `CompleteRegistration` з сервера; помилок `meta_capi_error` у логах немає. Відтепер кожна заявка пише в лог рядок `lead_forwarded` з `meta` і `amplitude`: `sent`, `skipped`, `not_configured`, `error`/`failed` |
+| Amplitude | `generate_lead` і `$identify` з браузера, записи сесій на `api-sr.amplitude.com`, `lead_saved` з сервера, `consent_recorded` під ID згоди |
+| Офлайн-конверсії | угода 549141625074 → `qualifiedtobuy` → запуск cron з дашборда Vercel → `{"type":"offline_conversion_sync","sent":1}`, в угоді `mz_offline_sent = qualified_lead`; другий запуск нічого не надіслав |
+| Cookies | `mz_consent`, `mz_attr`, `AMP_*`, `AMP_MKTG_*`, `_ga`, `_ga_5MKF62M6VV`, `_fbp`, `_fbc`. `_gcl_*` немає: Google Ads ще не підключено |
+| Консоль | помилок немає |
+
+Тестові контакти мають адреси `qa+zav-…@marketingzavod.com`; їх можна видалити в HubSpot разом з угодами.
+
 ## Сценарій для production з ідентифікаторами
 
 Для кожного сценарію: приватне вікно, GTM Preview увімкнено, шлях `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About → Contact → заявка з адресою виду `qa+дата@marketingzavod.com`.

@@ -4,11 +4,13 @@ Meta отримує конверсію двома шляхами: з брауз�
 
 ## Що зробити в кабінеті
 
-- [ ] business.facebook.com → створи Business Portfolio і рекламний акаунт.
-- [ ] Events Manager → Connect data → Web → створи набір даних (піксель). Скопіюй **Dataset ID** у Vercel як `NEXT_PUBLIC_META_PIXEL_ID`.
-- [ ] Events Manager → набір даних → Settings → Conversions API → **Generate access token**. Поклади у Vercel як `META_CAPI_ACCESS_TOKEN`. Це секрет: не в Linear і не в чат.
-- [ ] **Підтверди домен.** Business settings → Brand safety and suitability → Domains → Add → `marketingzavod.com` → метод DNS TXT. Додай запис у реєстратора, дочекайся статусу Verified.
-- [ ] Імпортуй оновлений контейнер GTM, опублікуй версію, зроби redeploy.
+- [x] business.facebook.com → створи Business Portfolio і рекламний акаунт.
+- [x] Events Manager → Connect data → Web → створи набір даних (піксель). Скопіюй **Dataset ID** у Vercel як `NEXT_PUBLIC_META_PIXEL_ID`.
+- [x] Events Manager → набір даних → Settings → Conversions API → **Generate access token**. Поклади у Vercel як `META_CAPI_ACCESS_TOKEN`. Це секрет: не в Linear і не в чат.
+- [x] **Підтверди домен.** Business settings → Brand safety and suitability → Domains → Add → `marketingzavod.com` → метод DNS TXT. Додай запис у реєстратора, дочекайся статусу Verified.
+- [x] Імпортуй оновлений контейнер GTM, опублікуй версію, зроби redeploy.
+
+Стан на 25.11.2026: портфель «Marketing Zavod», рекламний акаунт `marketingzavod`, набір даних `marketingzavod.com` (ID 1517555698103352), домен `marketingzavod.com` у статусі Verified, токен Conversions API у Vercel.
 
 ## Як це працює
 
