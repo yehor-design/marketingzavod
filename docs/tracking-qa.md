@@ -99,7 +99,7 @@
 
 ### Г. Відкликання
 
-Після сценарію А: футер → «Cookie settings» → «Necessary only». Сторінка перезавантажується, лишається тільки `mz_consent` (`1.s0m0.…`); cookies `_ga`, `_gcl_*`, `_fbp`, `AMP_*` і `mz_attr` зникли, у localStorage немає `AMP_*`, `amplitude.*`, `lastExternalReferrer*`, в IndexedDB немає `…_amp_session_replay_events`. Cookies на доменах linkedin.com і facebook.com сайт не видаляє, так і має бути.
+Після сценарію А: футер → «Cookie settings» → «Necessary only». Сторінка перезавантажується, лишається тільки `mz_consent` (`1.s0m0.…`); cookies `_ga`, `_gcl_*`, `_fbp`, `AMP_*` і `mz_attr` зникли, у localStorage немає `AMP_*`, `amplitude.*`, `lastExternalReferrer*`, в IndexedDB немає `…_amp_session_replay_events` і `AMP_diagnostics_…`. Cookies на доменах linkedin.com і facebook.com сайт не видаляє, так і має бути.
 
 ### Ґ. Журнал згод
 

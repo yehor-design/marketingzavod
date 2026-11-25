@@ -132,11 +132,11 @@ export const CATEGORY_STORAGE_PREFIXES: Record<keyof ConsentChoice, readonly str
 
 /**
  * IndexedDB databases each category leaves behind, by a part of their name.
- * Amplitude Session Replay keeps recordings that are not sent yet in
- * <first 10 characters of the key>_amp_session_replay_events.
+ * Amplitude keeps SDK diagnostics in AMP_diagnostics_<first 10 characters of key>
+ * and unsent Session Replay recordings in <first 10 characters>_amp_session_replay_events.
  */
 export const CATEGORY_INDEXED_DB: Record<keyof ConsentChoice, readonly string[]> = {
-  statistics: ["_amp_session_replay_events"],
+  statistics: ["_amp_session_replay_events", "AMP_diagnostics_"],
   marketing: [],
 };
 
