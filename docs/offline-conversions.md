@@ -5,7 +5,7 @@
 ## Схема
 
 ```
-Заявка на сайті ──► /api/lead ──► HubSpot: контакт (click ID, email, згода) + угода (wb_lead_id)
+Заявка на сайті ──► /api/lead ──► HubSpot: контакт (click ID, email, згода) + угода (mz_lead_id)
                                         │
             менеджер переводить угоду в «Qualified» або «Closed won»
                                         │
@@ -26,8 +26,8 @@
 
 ## Правила
 
-- **Згода.** Конверсія надсилається лише для ліда, у якого `wb_consent_marketing = true` на момент заявки. Інші угоди пропускаються в обох каналах.
-- **Ідемпотентність, Meta.** Після успішної відправки ключ конверсії (`qualified_lead`, `deal_won`) записується у властивість угоди `wb_offline_sent`. Повторний webhook для тієї самої стадії нічого не шле. Угода, яку перевели назад і знову вперед, не дублюється. Додатково `event_id` детермінований: `{lead_id}:{ключ}`.
+- **Згода.** Конверсія надсилається лише для ліда, у якого `mz_consent_marketing = true` на момент заявки. Інші угоди пропускаються в обох каналах.
+- **Ідемпотентність, Meta.** Після успішної відправки ключ конверсії (`qualified_lead`, `deal_won`) записується у властивість угоди `mz_offline_sent`. Повторний webhook для тієї самої стадії нічого не шле. Угода, яку перевели назад і знову вперед, не дублюється. Додатково `event_id` детермінований: `{lead_id}:{ключ}`.
 - **Ідемпотентність, Google Ads.** Файл не має стану: щоразу будується з поточних даних HubSpot. Google Ads сам відкидає повторний рядок з тим самим click ID, назвою конверсії і часом. Час береться з дати входу угоди в стадію, тому він стабільний.
 - **Ідентифікатори.** Google Ads: `gclid`, `gbraid` або `wbraid`. Якщо click ID немає, береться SHA-256 від email (Enhanced Conversions for Leads). Meta: хешований email і телефон, `fbp`, `fbc`, хешований `lead_id`.
 
@@ -35,7 +35,7 @@
 
 | Змінна | Тип | Для чого |
 | --- | --- | --- |
-| `HUBSPOT_ACCESS_TOKEN` | секрет | Читання угод і контактів, запис `wb_offline_sent` |
+| `HUBSPOT_ACCESS_TOKEN` | секрет | Читання угод і контактів, запис `mz_offline_sent` |
 | `HUBSPOT_CLIENT_SECRET` | секрет | Перевірка підпису webhook (`X-HubSpot-Signature-v3`) |
 | `OFFLINE_CONVERSIONS_SECRET` | секрет | Пароль до файла для Google Ads. Згенеруй довгий випадковий рядок |
 | `META_CAPI_ACCESS_TOKEN`, `NEXT_PUBLIC_META_PIXEL_ID` | секрет / публічна | Відправка в Meta |
@@ -48,17 +48,17 @@
 
 Конверсії в Meta надсилаються двома шляхами, обидва через `lib/offline/meta-sync.ts`:
 
-- **Щоденна синхронізація** (основний шлях): Vercel Cron щодня о 07:00 UTC викликає `GET /api/cron/offline-conversions` (`vercel.json`). Синхронізація бере угоди сайту, змінені за останні 7 дні в будь-якій стадії, і надсилає кожну досягнуту стадію-конверсію, якої ще немає в `wb_offline_sent`. Угода, що за добу пройшла і `qualifiedtobuy`, і `closedwon`, дає обидві події. Старші за 7 днів Meta не приймає, тож їх пропускає й синхронізація. Повторний виклик нічого не дублює. Ендпоінт приймає лише виклики Vercel Cron з `CRON_SECRET`.
-- **Webhook** (необов'язковий, миттєвий): `POST /api/crm/hubspot`. Потрібен застосунок HubSpot з webhooks і `HUBSPOT_CLIENT_SECRET`. Нові акаунти HubSpot (як wowboy, з листопада 2026) не можуть створити legacy private app, лише project-based app через HubSpot CLI. Тому webhook поки не підключено, і конверсії йдуть щоденною синхронізацією із затримкою до доби.
+- **Щоденна синхронізація** (основний шлях): Vercel Cron щодня о 07:00 UTC викликає `GET /api/cron/offline-conversions` (`vercel.json`). Синхронізація бере угоди сайту, змінені за останні 7 дні в будь-якій стадії, і надсилає кожну досягнуту стадію-конверсію, якої ще немає в `mz_offline_sent`. Угода, що за добу пройшла і `qualifiedtobuy`, і `closedwon`, дає обидві події. Старші за 7 днів Meta не приймає, тож їх пропускає й синхронізація. Повторний виклик нічого не дублює. Ендпоінт приймає лише виклики Vercel Cron з `CRON_SECRET`.
+- **Webhook** (необов'язковий, миттєвий): `POST /api/crm/hubspot`. Потрібен застосунок HubSpot з webhooks і `HUBSPOT_CLIENT_SECRET`. Нові акаунти HubSpot (як Marketing Zavod, з листопада 2026) не можуть створити legacy private app, лише project-based app через HubSpot CLI. Тому webhook поки не підключено, і конверсії йдуть щоденною синхронізацією із затримкою до доби.
 
 Workflow з дією «Send webhook» потребує платного Operations Hub, тому він не використовується.
 
-Доступ до API: service key «heywowboy.com website» (HubSpot → Development → Keys → Service Keys) з правами `crm.objects.contacts.read`/`write` і `crm.objects.deals.read`/`write`. Його значення зберігається лише у Vercel як `HUBSPOT_ACCESS_TOKEN`.
+Доступ до API: service key «marketingzavod.com website» (HubSpot → Development → Keys → Service Keys) з правами `crm.objects.contacts.read`/`write` і `crm.objects.deals.read`/`write`. Його значення зберігається лише у Vercel як `HUBSPOT_ACCESS_TOKEN`.
 
-- [x] Властивості `wb_*` створено 17.11.2026 через HubSpot MCP: 36 у контактів, 3 в угод (група «Custom information»). Для нового акаунта: `npm run hubspot:setup`. Назва `wb_message` — «Website message», бо «Message» уже зайнята стандартною властивістю HubSpot.
-- [x] Service key створено 17.11.2026.
-- [x] Значення service key у Vercel як `HUBSPOT_ACCESS_TOKEN` (Production, Sensitive), 17.11.2026. Перевірено тестовою угодою: перехід у `qualifiedtobuy` → синхронізація надіслала `QualifiedLead` (Meta відповіла 200), `wb_offline_sent = qualified_lead`, повторний запуск нічого не надіслав.
-- [ ] Необов'язково, для миттєвих подій: project-based app з webhook **Deal → Property changed → `dealstage`** на `https://www.heywowboy.com/api/crm/hubspot` і його Client secret у Vercel як `HUBSPOT_CLIENT_SECRET`. Endpoint приймає запит, лише якщо підпис v3 збігається і мітка часу не старша за 5 хвилин.
+- [ ] Властивості `mz_*` у HubSpot Marketing Zavod: 36 у контактів, 3 в угод (група «Custom information»). Створює `npm run hubspot:setup` або HubSpot MCP. Назва `mz_message` — «Website message», бо «Message» уже зайнята стандартною властивістю HubSpot.
+- [ ] Service key «marketingzavod.com website» з правами вище.
+- [ ] Значення service key у Vercel як `HUBSPOT_ACCESS_TOKEN` (Production, Sensitive). Перевірка: тестова угода → перехід у `qualifiedtobuy` → синхронізація надсилає `QualifiedLead` (Meta відповідає 200), `mz_offline_sent = qualified_lead`, повторний запуск нічого не надсилає.
+- [ ] Необов'язково, для миттєвих подій: project-based app з webhook **Deal → Property changed → `dealstage`** на `https://www.marketingzavod.com/api/crm/hubspot` і його Client secret у Vercel як `HUBSPOT_CLIENT_SECRET`. Endpoint приймає запит, лише якщо підпис v3 збігається і мітка часу не старша за 5 хвилин.
 
 ## Налаштування Google Ads
 
@@ -67,7 +67,7 @@ Developer token не потрібен: використовується запл
 - [ ] Goals → Conversions → New conversion action → **Import** → «CRMs, files, or other data sources» → «Track conversions from clicks». Створи дві дії з точними назвами `Qualified lead (offline)` і `Deal won (offline)`, категорії «Qualified lead» і «Converted lead», цінність «Use different values», підрахунок One.
 - [ ] Goals → Conversions → **Uploads** → **Schedules** → «+»:
   - Source: **HTTPS**;
-  - URL: `https://www.heywowboy.com/api/offline-conversions/google-ads`;
+  - URL: `https://www.marketingzavod.com/api/offline-conversions/google-ads`;
   - Username: будь-який (наприклад `google-ads`), Password: значення `OFFLINE_CONVERSIONS_SECRET`;
   - частота: щодня.
 - [ ] Натисни **Preview** на розкладі і перевір, що рядки розпізнано без помилок.
@@ -88,11 +88,11 @@ TEST-gclid,,,,Deal won (offline),2026-11-16 10:00:00,500,EUR,Granted,Granted
 
 1. Відправ форму Contact із `?gclid=TEST-gclid&utm_source=qa` і згодою на все. У HubSpot з'явилися контакт і угода.
 2. Додай `META_TEST_EVENT_CODE`, переведи угоду в «Qualified to buy». У Meta → Test events з'являється `QualifiedLead` з джерелом Server.
-3. Переведи угоду назад і знову в «Qualified to buy». Другої події немає, у властивості угоди `wb_offline_sent` значення `qualified_lead`.
+3. Переведи угоду назад і знову в «Qualified to buy». Другої події немає, у властивості угоди `mz_offline_sent` значення `qualified_lead`.
 4. Перевір файл:
 
    ```bash
-   curl -u google-ads:$OFFLINE_CONVERSIONS_SECRET https://www.heywowboy.com/api/offline-conversions/google-ads
+   curl -u google-ads:$OFFLINE_CONVERSIONS_SECRET https://www.marketingzavod.com/api/offline-conversions/google-ads
    ```
 
    У відповіді є рядок із `TEST-gclid` і `Qualified lead (offline)`.

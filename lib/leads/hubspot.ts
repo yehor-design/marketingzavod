@@ -40,7 +40,7 @@ export async function hubspotFetch<T>(
   return (textBody ? JSON.parse(textBody) : {}) as T;
 }
 
-function touchProperties(prefix: "wb_ft_" | "wb_lt_", touch: Touch | null): Record<string, string> {
+function touchProperties(prefix: "mz_ft_" | "mz_lt_", touch: Touch | null): Record<string, string> {
   const out: Record<string, string> = {};
   if (!touch) {
     return out;
@@ -68,15 +68,15 @@ function splitName(name: string): { firstname?: string; lastname?: string } {
 export function toContactProperties(lead: Lead, isNew: boolean): Record<string, string> {
   const properties: Record<string, string> = {
     email: lead.email,
-    wb_lead_id: lead.lead_id,
-    wb_event_id: lead.event_id,
-    wb_form_name: lead.form_name,
-    wb_page_url: lead.page_url,
-    wb_lead_created_at: lead.created_at,
-    wb_consent_marketing: String(lead.consent.marketing),
-    wb_consent_statistics: String(lead.consent.statistics),
-    ...touchProperties("wb_lt_", lead.attribution.last),
-    ...(isNew ? touchProperties("wb_ft_", lead.attribution.first) : {}),
+    mz_lead_id: lead.lead_id,
+    mz_event_id: lead.event_id,
+    mz_form_name: lead.form_name,
+    mz_page_url: lead.page_url,
+    mz_lead_created_at: lead.created_at,
+    mz_consent_marketing: String(lead.consent.marketing),
+    mz_consent_statistics: String(lead.consent.statistics),
+    ...touchProperties("mz_lt_", lead.attribution.last),
+    ...(isNew ? touchProperties("mz_ft_", lead.attribution.first) : {}),
   };
 
   if (lead.fields.name) {
@@ -91,28 +91,28 @@ export function toContactProperties(lead: Lead, isNew: boolean): Record<string, 
     for (const key of CLICK_ID_FIELDS) {
       const value = (touch as Record<string, string | undefined>)[key];
       if (value) {
-        properties[`wb_${key}`] = value;
+        properties[`mz_${key}`] = value;
         if (touch.timestamp) {
-          properties.wb_click_time = touch.timestamp;
+          properties.mz_click_time = touch.timestamp;
         }
       }
     }
   }
 
   if (lead.fbp) {
-    properties.wb_fbp = lead.fbp;
+    properties.mz_fbp = lead.fbp;
   }
   if (lead.fbc) {
-    properties.wb_fbc = lead.fbc;
+    properties.mz_fbc = lead.fbc;
   }
 
   if (lead.form_name === "contact") {
-    properties.wb_inquiry_type = lead.fields.reason ?? "";
-    properties.wb_message = lead.fields.message ?? "";
+    properties.mz_inquiry_type = lead.fields.reason ?? "";
+    properties.mz_message = lead.fields.message ?? "";
   }
   if (lead.form_name === "careers_apply") {
     properties.website = lead.fields.website ?? "";
-    properties.wb_application = [
+    properties.mz_application = [
       `Role: ${lead.fields.role ?? ""}`,
       `Why join: ${lead.fields.motivation ?? ""}`,
       `Experience: ${lead.fields.experience ?? ""}`,
@@ -141,8 +141,8 @@ export function toDealProperties(
     dealname: `${label}: ${lead.email}`,
     pipeline,
     dealstage: stage,
-    wb_lead_id: lead.lead_id,
-    wb_form_name: lead.form_name,
+    mz_lead_id: lead.lead_id,
+    mz_form_name: lead.form_name,
   };
 }
 

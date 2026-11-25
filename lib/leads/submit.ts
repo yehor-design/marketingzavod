@@ -6,7 +6,7 @@
 import { getAttributionForSubmit, getAttribution } from "@/lib/attribution";
 import { consentSnapshot } from "@/lib/consent";
 import { track, type FormName } from "@/lib/tracking";
-import { getPosthogDistinctId, posthogIdentifyLead } from "@/lib/tracking/posthog";
+import { amplitudeIdentifyLead, getAmplitudeDeviceId } from "@/lib/tracking/amplitude";
 
 export type SubmitResult =
   | { ok: true; lead_id: string; event_id: string }
@@ -30,7 +30,7 @@ export async function submitLead(
         attribution: getAttributionForSubmit(),
         consent: consentSnapshot(),
         page_url: `${window.location.origin}${window.location.pathname}`,
-        posthog_distinct_id: getPosthogDistinctId(),
+        amplitude_device_id: getAmplitudeDeviceId(),
       }),
     });
   } catch {
@@ -82,7 +82,7 @@ export async function submitLead(
   if (first.landing_page) {
     firstTouch.first_landing_page = first.landing_page;
   }
-  posthogIdentifyLead(leadId, firstTouch);
+  amplitudeIdentifyLead(leadId, firstTouch);
 
   return { ok: true, lead_id: leadId, event_id: eventId };
 }

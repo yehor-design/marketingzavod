@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/contact/contact-styles";
 
@@ -128,8 +127,6 @@ export function ContactPage() {
               );
               setPending(false);
               if (result.ok) {
-                posthogCapture("contact_form_submitted", { inquiry_type: reason });
-                posthogLogInfo("contact_form_submitted", { inquiry_type: reason });
                 setDone(true);
               } else if (result.error === "validation") {
                 setErrors(result.errors);

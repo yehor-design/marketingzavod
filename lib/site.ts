@@ -2,7 +2,7 @@
  * Canonical origin. The apex domain redirects to www on Vercel, so canonical
  * URLs point at www. Change this one value if the primary domain changes.
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.heywowboy.com").replace(
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.marketingzavod.com").replace(
   /\/+$/,
   "",
 );

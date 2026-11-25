@@ -3,10 +3,12 @@
  * was made, what it was and under which version of the texts (GDPR art. 7(1)).
  *
  * A record carries no personal data: the consent ID is random and lives only
- * in the visitor's wb_consent cookie. No IP address, user agent or person
- * profile is stored with it.
+ * in the visitor's mz_consent cookie. No IP address or user agent is stored
+ * with it. The record goes to Amplitude as a consent_recorded event, sent by
+ * the server, under the consent ID instead of a browser's device ID.
  */
 import { z } from "zod";
+import type { AmplitudeServerEvent } from "@/lib/amplitude-server";
 
 export const CONSENT_LOG_PATH = "/api/consent";
 export const CONSENT_LOG_EVENT = "consent_recorded";
@@ -23,18 +25,19 @@ export const consentRecordSchema = z.object({
 
 export type ConsentRecord = z.infer<typeof consentRecordSchema>;
 
-/**
- * Properties of the PostHog event. The event creates no person profile and
- * skips GeoIP, so nothing ties it to a person.
- */
-export function consentEventProperties(record: ConsentRecord): Record<string, string | number | boolean> {
+/** The Amplitude event for a record. Sent again, it is dropped as a duplicate (insert_id). */
+export function consentEvent(record: ConsentRecord): AmplitudeServerEvent {
   return {
-    version: record.version,
-    statistics: record.statistics,
-    marketing: record.marketing,
-    source: record.source,
-    decided_at: new Date(record.decided_at * 1000).toISOString(),
-    $process_person_profile: false,
-    $geoip_disable: true,
+    event_type: CONSENT_LOG_EVENT,
+    device_id: record.id,
+    insert_id: `${record.id}-${record.decided_at}`,
+    time: record.decided_at * 1000,
+    event_properties: {
+      version: record.version,
+      statistics: record.statistics,
+      marketing: record.marketing,
+      source: record.source,
+      decided_at: new Date(record.decided_at * 1000).toISOString(),
+    },
   };
 }

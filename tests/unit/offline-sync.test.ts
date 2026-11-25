@@ -21,7 +21,7 @@ function backend(deals: Array<{ id: string; properties: Record<string, string | 
       return json({ results: [{ toObjectId: 77 }] });
     }
     if (url.includes("/crm/v3/objects/contacts/77")) {
-      return json({ id: "77", properties: { email: "jane@example.com", wb_consent_marketing: consent, wb_fbp: "fb.1.1.1" } });
+      return json({ id: "77", properties: { email: "jane@example.com", mz_consent_marketing: consent, mz_fbp: "fb.1.1.1" } });
     }
     if (url.includes("/crm/v3/objects/deals/") && method === "PATCH") {
       // Like HubSpot, keep the change for the next search.
@@ -59,8 +59,8 @@ describe("lib/offline/meta-sync", () => {
       id: "9",
       properties: {
         dealstage: "closedwon",
-        wb_lead_id: "lead-1",
-        wb_offline_sent: null,
+        mz_lead_id: "lead-1",
+        mz_offline_sent: null,
         hs_v2_date_entered_qualifiedtobuy: new Date(NOW - 2 * DAY).toISOString(),
         hs_v2_date_entered_closedwon: new Date(NOW - DAY).toISOString(),
       },
@@ -82,8 +82,8 @@ describe("lib/offline/meta-sync", () => {
     ]);
     const patches = calls.filter((call) => call.method === "PATCH").map((call) => call.body);
     expect(patches).toEqual([
-      { properties: { wb_offline_sent: "qualified_lead" } },
-      { properties: { wb_offline_sent: "qualified_lead,deal_won" } },
+      { properties: { mz_offline_sent: "qualified_lead" } },
+      { properties: { mz_offline_sent: "qualified_lead,deal_won" } },
     ]);
 
     // The deal now says both were sent: a second run reports nothing.
@@ -94,11 +94,11 @@ describe("lib/offline/meta-sync", () => {
   it("skips leads without marketing consent and conversions Meta would reject as too old", async () => {
     const fresh = {
       id: "1",
-      properties: { dealstage: "closedwon", wb_lead_id: "l1", hs_v2_date_entered_closedwon: new Date(NOW - DAY).toISOString() },
+      properties: { dealstage: "closedwon", mz_lead_id: "l1", hs_v2_date_entered_closedwon: new Date(NOW - DAY).toISOString() },
     };
     const old = {
       id: "2",
-      properties: { dealstage: "closedwon", wb_lead_id: "l2", hs_v2_date_entered_closedwon: new Date(NOW - 8 * DAY).toISOString() },
+      properties: { dealstage: "closedwon", mz_lead_id: "l2", hs_v2_date_entered_closedwon: new Date(NOW - 8 * DAY).toISOString() },
     };
     const calls = backend([fresh, old], "false");
     const { syncMetaOfflineConversions } = await load();
@@ -119,7 +119,7 @@ describe("lib/offline/meta-sync", () => {
     };
     expect(search.filterGroups[0].filters).toEqual([
       { propertyName: "hs_lastmodifieddate", operator: "GTE", value: String(NOW - 7 * DAY) },
-      { propertyName: "wb_lead_id", operator: "HAS_PROPERTY" },
+      { propertyName: "mz_lead_id", operator: "HAS_PROPERTY" },
     ]);
   });
 

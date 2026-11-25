@@ -5,7 +5,6 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
 import { Input, Textarea } from "@/components/forms/bound-controls";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/careers/careers-styles";
 
@@ -97,8 +96,6 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
         const result = await submitLead("careers_apply", fields, String(data.get("company_url") ?? ""));
         setPending(false);
         if (result.ok) {
-          posthogCapture("career_application_submitted", { role_slug: slug });
-          posthogLogInfo("career_application_submitted", { role_slug: slug });
           setDone(true);
         } else if (result.error === "validation") {
           const next: Record<string, string> = {};

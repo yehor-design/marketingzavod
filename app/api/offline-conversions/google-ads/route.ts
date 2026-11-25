@@ -51,14 +51,14 @@ export async function GET(request: NextRequest) {
     const deals = await searchConvertedDeals(token, since);
     for (const deal of deals) {
       const contact = await getDealContact(token, deal.id);
-      if (!contact || contact.properties.wb_consent_marketing !== "true") {
+      if (!contact || contact.properties.mz_consent_marketing !== "true") {
         continue;
       }
       const properties = contact.properties;
       const clickIds = {
-        gclid: properties.wb_gclid ?? undefined,
-        gbraid: properties.wb_gbraid ?? undefined,
-        wbraid: properties.wb_wbraid ?? undefined,
+        gclid: properties.mz_gclid ?? undefined,
+        gbraid: properties.mz_gbraid ?? undefined,
+        wbraid: properties.mz_wbraid ?? undefined,
       };
       const email = properties.email ?? undefined;
       if (!clickIds.gclid && !clickIds.gbraid && !clickIds.wbraid && !email) {

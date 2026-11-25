@@ -1,22 +1,21 @@
-# Аналітика, трекінг і реклама на heywowboy.com
+# Аналітика, трекінг і реклама на marketingzavod.com
 
 Оглядовий документ. Назви подій і змінних — у [tracking-plan.md](tracking-plan.md).
 
 ## Потік даних
 
-Менеджер тегів обирає `NEXT_PUBLIC_TAG_MANAGER`. **На production з 17.11.2026 — Cloudflare Zaraz.** GTM лишається запасним варіантом до MAR-58: щоб повернутися, прибери змінну у Vercel і зроби redeploy.
-
 ```
                          ┌──────────────── браузер ─────────────────┐
  відвідувач ──► сторінка │ track(event, params)   lib/tracking       │
-                         │   ├─► zaraz.track ──► z.heywowboy.com (Cloudflare, лише після згоди)
-                         │   │                    └─► GA4 (з серверів Cloudflare, мета Statistics)
-                         │   ├─► /api/meta/event ──► Meta Conversions API (згода на маркетинг)
-                         │   ├─► [запасний варіант] dataLayer ──► GTM ──► GA4, Google Ads, Meta, LinkedIn
-                         │   └─► PostHog ──► /ingest (власний домен) ──► eu.i.posthog.com
-                         │ Amplitude        лише за згоди на статистику
+                         │   ├─► dataLayer ──► GTM (лише після згоди)
+                         │   │                  ├─► GA4 (analytics_storage)
+                         │   │                  ├─► Google Ads (ad_storage)
+                         │   │                  ├─► Meta Pixel (ad_storage)
+                         │   │                  └─► LinkedIn (ad_storage)
+                         │   └─► Amplitude (лише за згоди на статистику)
+                         │ Amplitude        події, перегляди сторінок, записи сесій
                          │ lib/consent      стан згоди, типово відмова
-                         │ lib/attribution  UTM і click ID → cookie wb_attr (за згоди)
+                         │ lib/attribution  UTM і click ID → cookie mz_attr (за згоди)
                          └────────────────────────┬─────────────────┘
                                  форма: поля + атрибуція + згода
                                                   ▼
@@ -25,32 +24,28 @@
                          │   валідація → lead_id, event_id           │
                          │   ├─► LeadStore: HubSpot або лог          │
                          │   ├─► Meta Conversions API (згода на маркетинг)
-                         │   └─► PostHog lead_saved (згода на статистику)
-                         │ POST /api/meta/event         події Meta з браузера → Conversions API
+                         │   └─► Amplitude lead_saved (згода на статистику)
+                         │ POST /api/consent            журнал згод → Amplitude
                          │ GET  /api/cron/offline-conversions  щодня: стадії угод → Meta (офлайн)
                          │ POST /api/crm/hubspot        webhook стадії угоди (необов'язковий)
                          │ GET  /api/offline-conversions/google-ads  файл для Google Ads
                          └───────────────────────────────────────────┘
  Vercel Speed Insights: окремо, лише за згоди на статистику.
- До згоди не вантажиться нічого: ні Zaraz, ні GTM, ні PostHog, ні Amplitude, ні Speed Insights.
- DNS: Cloudflare (з 17.11.2026). Сайт — DNS only на Vercel, через Cloudflare проксіюється лише z.heywowboy.com.
+ До згоди не вантажиться нічого: ні GTM, ні Amplitude, ні Speed Insights.
+ Хостинг і DNS: Vercel, команда zavodzamarketing, проєкт marketingzavod. Основний домен — www.marketingzavod.com,
+ marketingzavod.com перенаправляє на www.
 ```
 
-Перехідні записи DNS. Частина резолверів провайдерів ще до ~20.11.2026 питає старі nameserver'и Vercel, а там wildcard `*` вів `z` на Vercel, і Zaraz не завантажувався. Тому 18.11.2026 у зону Vercel додано `z` A `172.67.132.140` і AAAA `2606:4700:3032::ac43:848c` (адреси Cloudflare). Після 20.11.2026 їх можна видалити (MAR-58).
-
 ## Роль кожного сервісу
-
-Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій і теплові карти вже є в PostHog і Amplitude.
 
 | Сервіс | Для чого | Як підключений | Згода |
 | --- | --- | --- | --- |
 | Власний банер згоди | Банер і панель налаштувань, сигнали Consent Mode v2, журнал згод | `components/consent/`, `lib/consent` | — |
-| Google Tag Manager | Єдина точка входу для тегів Google, Meta, LinkedIn | `components/tracking/gtm.tsx`, `lib/tracking/gtm.ts` | вантажиться лише після згоди на статистику або маркетинг |
-| GA4 | Аудиторії і конверсії для Google Ads, основа звітності | Zaraz (запасний — GTM) | мета Statistics; `analytics_storage` (без згоди запитів немає) |
-| PostHog | Продуктова аналітика, воронки, записи, експерименти | Код, через `/ingest` | згода на статистику; без неї бібліотека не вантажиться |
-| Amplitude | Продуктова аналітика, автозбір подій, записи сесій | Код: `lib/tracking/amplitude.ts`, викликається з `TrackingProvider` | згода на статистику; без неї SDK навіть не завантажується |
+| Google Tag Manager | Єдина точка входу для тегів Google, Meta, LinkedIn | `components/tracking/gtm.tsx`, `lib/tracking/gtm.ts`, контейнер `gtm/` | вантажиться лише після згоди на статистику або маркетинг |
+| GA4 | Аудиторії і конверсії для Google Ads, основа звітності | GTM | `analytics_storage` (без згоди запитів немає) |
+| Amplitude | Продуктова аналітика: події плану, перегляди сторінок, воронки, записи сесій | Код: `lib/tracking/amplitude.ts` (браузер), `lib/amplitude-server.ts` (сервер) | згода на статистику; без неї SDK навіть не завантажується |
 | Google Ads | Конверсії, Enhanced Conversions, ремаркетинг | GTM | `ad_storage`, `ad_user_data` |
-| Meta | Conversions API: події з браузера через `/api/meta/event`, заявки через `/api/lead` (з GTM — піксель) | сервер | згода на маркетинг |
+| Meta | Піксель у браузері і Conversions API із сервера для заявок, з одним `event_id` | GTM + `/api/lead` | згода на маркетинг |
 | LinkedIn | Insight Tag і конверсії | GTM | `ad_storage` |
 | HubSpot | Зберігання заявок з атрибуцією, угоди | Сервер | не залежить від згоди, але click ID лише за згоди |
 | Vercel Speed Insights | Швидкість у реальних користувачів | Код: `components/tracking/speed-insights.tsx` | згода на статистику |
@@ -63,9 +58,8 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 | Список подій (типи) | `lib/tracking/events.ts` |
 | `track()` | `lib/tracking/index.ts` |
 | Умови ввімкнення, ідентифікатори | `lib/tracking/env.ts` |
-| PostHog у браузері / на сервері | `lib/tracking/posthog.ts` / `lib/posthog-server.ts` |
-| Amplitude | `lib/tracking/amplitude.ts` |
-| Згода | `lib/consent/index.ts` (стан), `lib/consent/core.ts` (cookie `wb_consent`), `components/consent/` (банер і панель) |
+| Amplitude у браузері / на сервері | `lib/tracking/amplitude.ts` / `lib/amplitude-server.ts` |
+| Згода | `lib/consent/index.ts` (стан), `lib/consent/core.ts` (cookie `mz_consent`), `components/consent/` (банер і панель) |
 | Журнал згод | `app/api/consent/route.ts`, `lib/consent/record.ts`, `lib/consent/log.ts` |
 | Атрибуція | `lib/attribution/core.ts` (логіка), `lib/attribution/index.ts` (cookie) |
 | Перегляди, делеговані слухачі | `components/tracking/tracking-provider.tsx` |
@@ -74,9 +68,8 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 | Кнопка «Cookie settings» | `components/tracking/cookie-settings.tsx` |
 | Обробник заявок | `app/api/lead/route.ts`, `lib/leads/*` |
 | Meta Conversions API | `lib/meta/capi.ts` |
-| Офлайн-конверсії | `app/api/crm/hubspot/route.ts`, `app/api/offline-conversions/google-ads/route.ts`, `lib/offline/*` |
+| Офлайн-конверсії | `app/api/cron/offline-conversions/route.ts`, `app/api/crm/hubspot/route.ts`, `app/api/offline-conversions/google-ads/route.ts`, `lib/offline/*` |
 | Контейнер GTM | `gtm/` |
-| Cloudflare Zaraz (замість GTM за перемикачем) | `lib/tracking/zaraz.ts`, `zaraz/` |
 | SEO | `app/sitemap.ts`, `app/robots.ts`, `lib/seo.ts`, `components/json-ld.tsx` |
 | Запити BigQuery | `analytics/sql/` |
 | Тести | `tests/unit/`, `tests/e2e/` |
@@ -88,14 +81,12 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 | --- | --- |
 | Змінні середовища | `.env.example`, `tracking-plan.md` |
 | Імпорт і публікація контейнера | `gtm/README.md` |
-| Zaraz: конфіг, публікація, перемикач `NEXT_PUBLIC_TAG_MANAGER` | `zaraz/README.md` |
 | GA4 | `ga4-setup.md` |
-| PostHog і воронки | `posthog-setup.md` |
+| Amplitude | `amplitude-setup.md` |
 | Google Ads | `google-ads-setup.md` |
 | Meta | `meta-setup.md` |
 | LinkedIn | `linkedin-setup.md` |
 | Офлайн-конверсії | `offline-conversions.md` |
-| Server-side GTM | `sgtm-plan.md` |
 | BigQuery і Looker Studio | `reporting-setup.md` |
 | Швидкість | `performance-budget.md` |
 | Перевірка | `tracking-qa.md` |
@@ -110,22 +101,22 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 | Локально | ні |
 | Будь-де з `NEXT_PUBLIC_TRACKING_DEBUG=true` | так |
 
-Події в `dataLayer` пишуться завжди: це лише масив у пам'яті сторінки. Назовні вони йдуть, тільки коли завантажено GTM або PostHog.
+Події в `dataLayer` пишуться завжди: це лише масив у пам'яті сторінки. Назовні вони йдуть, тільки коли завантажено GTM або Amplitude.
 
 ## Згода
 
-Власний банер згоди. Вимоги й рішення — у документі «Специфікація банера згоди» в Linear-проекті «Власний банер згоди». Код: `components/consent/` (банер і панель), `lib/consent` (стан, cookie, очищення, журнал).
+Власний банер згоди. Вимоги й рішення — у документі «Специфікація банера згоди» в Linear-проєкті «Аналітика, трекінг і Zaraz». Код: `components/consent/` (банер і панель), `lib/consent` (стан, cookie, очищення, журнал).
 
 **Що бачить відвідувач.** Унизу ліворуч (на телефоні — на всю ширину) картка з одним реченням, посиланням «Learn more» на розділ `#cookies` у Privacy Policy і двома однаковими кнопками: «Necessary only» і «Accept all». «Settings» відкриває панель із перемикачами Statistics і Marketing. Сайт працює і без вибору, хрестика немає.
 
 **Що відбувається після вибору.**
 
-- Вибір записується в cookie `wb_consent` на 180 днів (`<версія>.s<0|1>m<0|1>.<час>.<ID згоди>`). Після 180 днів або при новій `CONSENT_VERSION` у `lib/consent/core.ts` банер з'являється знову.
-- Розширення згоди діє одразу: стартують GTM (з Consent Mode `default` за вибором), PostHog, Amplitude і Speed Insights. Якщо GTM уже працює, він отримує `gtag('consent','update')` і подію `consent_update` з `consent_statistics` і `consent_marketing`.
-- Звуження згоди видаляє cookies і сховище відкликаних категорій і перезавантажує сторінку. На наступному завантаженні відхилені категорії чистяться ще раз.
+- Вибір записується в cookie `mz_consent` на 180 днів (`<версія>.s<0|1>m<0|1>.<час>.<ID згоди>`). Після 180 днів або при новій `CONSENT_VERSION` у `lib/consent/core.ts` банер з'являється знову.
+- Розширення згоди діє одразу: стартують GTM (з Consent Mode `default` за вибором), Amplitude і Speed Insights. Події, які сталися на сторінці до вибору, чекають у черзі й ідуть у GTM та Amplitude зі своїм часом. Якщо GTM уже працює, він отримує `gtag('consent','update')` і подію `consent_update` з `consent_statistics` і `consent_marketing`.
+- Звуження згоди видаляє cookies, localStorage, sessionStorage і бази IndexedDB відкликаних категорій (зокрема незавантажені записи Session Replay) і перезавантажує сторінку. На наступному завантаженні відхилені категорії чистяться ще раз.
 - Кожен вибір іде в журнал згод (нижче).
 
-**Повторний візит.** Inline-скрипт у `components/tracking/gtm.tsx` читає `wb_consent` ще до будь-якого бандла і, якщо згода є, запускає GTM з потрібним станом уже на першому перегляді.
+**Повторний візит.** Inline-скрипт у `components/tracking/gtm.tsx` читає `mz_consent` ще до будь-якого бандла і, якщо згода є, запускає GTM з потрібним станом уже на першому перегляді.
 
 **Де банер видно.** Лише там, де працює трекінг (`TRACKING_ENABLED`), і на production — лише коли `CONSENT_TOOL_READY = true` у `lib/consent` (зараз так). На preview і в e2e з `NEXT_PUBLIC_TRACKING_DEBUG=true` банер видно завжди. Та сама константа передається в GTM як `consent_ready`: поки вона `false`, тригер-виняток `Block - Consent tool missing` тримає всі теги.
 
@@ -135,22 +126,16 @@ Microsoft Clarity прибрано 17.11.2026 (MAR-54): записи сесій 
 
 ## Журнал згод
 
-Кожен вибір у банері чи панелі браузер надсилає на `POST /api/consent` (`navigator.sendBeacon`). Сервер перевіряє origin, формат і частоту запитів і записує в PostHog подію `consent_recorded`:
+Кожен вибір у банері чи панелі браузер надсилає на `POST /api/consent` (`navigator.sendBeacon`). Сервер перевіряє origin, формат і частоту запитів і записує в Amplitude подію `consent_recorded` через HTTP API:
 
-- `distinct_id` — випадковий ID згоди з cookie `wb_consent`. Одна й та сама людина зберігає його між змінами вибору, тож видно всю історію;
+- `device_id` — випадковий ID згоди з cookie `mz_consent`. Людина зберігає його між змінами вибору, тож видно всю історію. Це не той самий ID, що в Amplitude у браузері: журнал не пов'язаний з аналітикою;
 - властивості: `version`, `statistics`, `marketing`, `source` (`banner` або `settings`), `decided_at`;
-- профіль людини не створюється (`$process_person_profile: false`), GeoIP вимкнено, IP і user agent не записуються.
+- `insert_id` = `<ID згоди>-<decided_at>`: повтор того самого запису Amplitude відкидає;
+- IP відвідувача і user agent не передаються. Amplitude бачить лише адресу сервера Vercel.
 
-Журнал ведеться й при «Necessary only»: правова підстава — обов'язок довести згоду (GDPR, ст. 7(1)), а не сама згода. Події PostHog зберігаються рік на безкоштовному плані і 7 років на платному.
+Журнал ведеться й при «Necessary only»: правова підстава — обов'язок довести згоду (GDPR, ст. 7(1)), а не сама згода. Записи журналу виглядають в Amplitude як окремі пристрої з однією подією `consent_recorded`. У звітах про користувачів їх відфільтровують за подією.
 
-Знайти записи за ID згоди (PostHog → SQL):
-
-```sql
-SELECT timestamp, properties.statistics, properties.marketing, properties.source, properties.version
-FROM events
-WHERE event = 'consent_recorded' AND distinct_id = '<ID згоди з cookie wb_consent>'
-ORDER BY timestamp
-```
+Знайти записи за ID згоди: Amplitude → User Look-Up → Device ID = `<ID згоди з cookie mz_consent>`.
 
 ## Розмітка подій у верстці
 
@@ -176,7 +161,7 @@ ORDER BY timestamp
 1. Додай назву і параметри в `lib/tracking/events.ts` (тип `TrackEvents` і масив `TRACK_EVENT_NAMES`).
 2. Додай той самий запис у `gtm/events.json`.
 3. Опиши подію в `docs/tracking-plan.md`.
-4. Розміть елемент атрибутами `data-track-*` або виклич `track()`.
+4. Розміть елемент атрибутами `data-track-*` або виклич `track()`. В Amplitude подія піде сама.
 5. `npm run gtm:build` — з'являться тригер, змінні і тег GA4. Теги інших сервісів додаються в `gtm/build-container.mjs`.
 6. `npm test` — тест синхронізації перевірить, що код, план і контейнер збігаються.
 7. Додай перевірку в `tests/e2e/tracking.spec.ts`.
@@ -187,16 +172,17 @@ ORDER BY timestamp
 ```bash
 npm run typecheck   # типи
 npm run lint        # лінт
-npm test            # юніт-тести: атрибуція, валідація, CRM, хешування, контейнер
+npm test            # юніт-тести: атрибуція, валідація, CRM, хешування, контейнер, Amplitude
 npm run test:e2e    # e2e: події, згода, cookies, API
 npm run build && npm run lighthouse   # швидкість
 ```
 
-У браузері на production: GTM Preview, GA4 DebugView, PostHog Live events. Повний сценарій — у `tracking-qa.md`.
+У браузері на production: GTM Preview, GA4 DebugView, Meta Test Events, Amplitude → Live Events і Session Replay. Повний сценарій — у `tracking-qa.md`.
 
 ## Безпека і приватність
 
-- Секрети (`META_CAPI_ACCESS_TOKEN`, `HUBSPOT_ACCESS_TOKEN`, `HUBSPOT_CLIENT_SECRET`, `OFFLINE_CONVERSIONS_SECRET`) живуть лише у Vercel і читаються лише на сервері.
+- Секрети (`META_CAPI_ACCESS_TOKEN`, `HUBSPOT_ACCESS_TOKEN`, `HUBSPOT_CLIENT_SECRET`, `CRON_SECRET`, `OFFLINE_CONVERSIONS_SECRET`) живуть лише у Vercel і читаються лише на сервері.
 - Персональних даних немає в `dataLayer`, URL і параметрах подій. Єдиний виняток: email для Enhanced Conversions, який потрапляє в `dataLayer` на час однієї події, лише за згоди на маркетинг, і одразу видаляється.
+- Amplitude Session Replay маскує всі поля форм і елементи з `data-private`.
 - У логах сервера повна заявка з'являється лише тоді, коли CRM не підключено або вона не відповіла. Це запасне сховище, щоб заявка не загубилась.
 - Обробник заявок відхиляє запити з чужого origin, має поле-пастку і обмеження п'ять заявок на хвилину з однієї адреси. Обмеження тримається в пам'яті інстансу і не є жорсткою гарантією.

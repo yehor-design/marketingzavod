@@ -47,7 +47,7 @@ describe("buildMetaPayload", () => {
     eventId: "event-1",
     eventTime: new Date("2026-11-16T10:00:00.000Z"),
     actionSource: "website" as const,
-    eventSourceUrl: "https://www.heywowboy.com/contact",
+    eventSourceUrl: "https://www.marketingzavod.com/contact",
     email: "Jane@Example.com",
     clientIp: "203.0.113.7",
     userAgent: "Mozilla/5.0",
@@ -63,7 +63,7 @@ describe("buildMetaPayload", () => {
           event_name: "Lead",
           event_time: 1794823200,
           event_id: "event-1",
-          event_source_url: "https://www.heywowboy.com/contact",
+          event_source_url: "https://www.marketingzavod.com/contact",
           action_source: "website",
           user_data: {
             em: [sha256("jane@example.com")],

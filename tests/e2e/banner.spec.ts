@@ -51,7 +51,7 @@ async function buttonShell(locator: ReturnType<Page["locator"]>) {
 }
 
 async function consentCookie(page: Page): Promise<string | undefined> {
-  return (await page.context().cookies()).find((cookie) => cookie.name === "wb_consent")?.value;
+  return (await page.context().cookies()).find((cookie) => cookie.name === "mz_consent")?.value;
 }
 
 test("first visit: a small banner with two equal choices and a link to the details", async ({ page }) => {
@@ -148,7 +148,7 @@ test("accept all: one click stores the choice, starts GTM and the banner stays a
   expect(layer[1]).toMatchObject({ 0: "consent", 1: "default", 2: { analytics_storage: "granted", ad_storage: "granted" } });
   expect(layer.findIndex((entry) => entry.event === "page_view")).toBeGreaterThan(1);
   await expect.poll(() => requests.filter((url) => url.includes("gtm.js?id=GTM-E2ETEST")).length).toBe(1);
-  await expect.poll(() => requests.filter((url) => url.includes("/ingest/")).length, { timeout: 10_000 }).toBeGreaterThan(0);
+  await expect.poll(() => requests.filter((url) => url.includes("amplitude.com")).length, { timeout: 10_000 }).toBeGreaterThan(0);
 
   await page.goto("/pricing");
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
@@ -163,8 +163,8 @@ test("necessary only: one click stores the refusal and nothing third-party loads
   await expect(banner(page)).toHaveCount(0);
   expect(await consentCookie(page)).toMatch(/^1\.s0m0\.\d+\.[0-9a-f]{32}$/);
   await page.waitForTimeout(4500);
-  expect(requests.filter((url) => /googletagmanager|\/ingest\/|speed-insights|amplitude|posthog\.com/.test(url))).toEqual([]);
-  expect((await page.context().cookies()).map((cookie) => cookie.name)).toEqual(["wb_consent"]);
+  expect(requests.filter((url) => /googletagmanager|speed-insights|amplitude/.test(url))).toEqual([]);
+  expect((await page.context().cookies()).map((cookie) => cookie.name)).toEqual(["mz_consent"]);
 
   await page.goto("/about");
   await expect(banner(page)).toHaveCount(0);
@@ -300,7 +300,7 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
     .getByText("Necessary cookies keep the site working and are always on.", { exact: false })
     .evaluate((node) => getComputedStyle(node).fontSize);
   expect(descriptionSize).toBe("12px");
-  await expect(panel(page)).toContainText("Google Analytics, PostHog, Amplitude, Vercel Speed Insights");
+  await expect(panel(page)).toContainText("Google Analytics, Amplitude, Vercel Speed Insights");
 
   await statistics.click();
   await expect.poll(async () => {
@@ -321,7 +321,7 @@ test("settings from the banner: statistics only, and click IDs stay out of the c
   await expect(panel(page)).toBeHidden();
   await expect(banner(page)).toHaveCount(0);
   expect(await consentCookie(page)).toMatch(/^1\.s1m0\./);
-  const attribution = (await page.context().cookies()).find((cookie) => cookie.name === "wb_attr")?.value ?? "";
+  const attribution = (await page.context().cookies()).find((cookie) => cookie.name === "mz_attr")?.value ?? "";
   expect(decodeURIComponent(attribution)).toContain("qa_test");
   expect(decodeURIComponent(attribution)).not.toContain("TEST");
   const updates = (await dataLayer(page)).filter((entry) => entry.event === "consent_update");
@@ -336,16 +336,16 @@ test("withdrawal from the footer removes stored data and reloads the page", asyn
   await page.goto(LANDING);
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
   await page.context().addCookies(
-    ["_ga", "_ga_TEST", "_gcl_au", "_fbp", "_clck"].map((name) => ({ name, value: "1", url: "http://localhost:3100" })),
+    ["_ga", "_ga_TEST", "_gcl_au", "_fbp", "AMP_e2e_amplit"].map((name) => ({ name, value: "1", url: "http://localhost:3100" })),
   );
-  // Keys the real PostHog, Amplitude and Meta pixel leave on production.
+  // Keys the real Amplitude (with Session Replay) and Meta pixel leave on production.
   await page.evaluate(() => {
-    localStorage.setItem("ph_phc_e2e_test_key_posthog", "{}");
-    localStorage.setItem("amplitude.engagement.e2e", "{}");
+    localStorage.setItem("AMP_unsent_e2e_amplit", "[]");
+    localStorage.setItem("amplitude.sessionReplay.e2e", "{}");
     localStorage.setItem("lastExternalReferrer", "google");
     localStorage.setItem("lastExternalReferrerTime", "1");
   });
-  expect((await page.context().cookies()).map((cookie) => cookie.name)).toContain("wb_attr");
+  expect((await page.context().cookies()).map((cookie) => cookie.name)).toContain("mz_attr");
 
   await page.locator(".site-footer").getByRole("button", { name: "Cookie settings" }).click();
   await expect(panel(page).getByRole("switch", { name: "Statistics" })).toHaveAttribute("aria-checked", "true");
@@ -360,12 +360,12 @@ test("withdrawal from the footer removes stored data and reloads the page", asyn
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
   await page.waitForTimeout(4500);
 
-  expect((await page.context().cookies()).map((cookie) => cookie.name)).toEqual(["wb_consent"]);
+  expect((await page.context().cookies()).map((cookie) => cookie.name)).toEqual(["mz_consent"]);
   expect(await consentCookie(page)).toMatch(/^1\.s0m0\./);
   // The record of the withdrawal survives the reload.
   expect(records).toEqual([expect.objectContaining({ statistics: false, marketing: false, source: "settings" })]);
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
-  expect(requests.filter((url) => /googletagmanager|\/ingest\/|speed-insights/.test(url))).toEqual([]);
+  expect(requests.filter((url) => /googletagmanager|speed-insights|amplitude/.test(url))).toEqual([]);
   await expect(banner(page)).toHaveCount(0);
 });
 
@@ -411,7 +411,7 @@ test("Learn more leads to the cookie section, which describes what the site does
   await expect(banner(page)).toBeVisible();
 
   const policy = page.locator("article, main").first();
-  for (const text of ["Necessary only", "180 days", "Cookie settings", "Amplitude", "Vercel Speed Insights", "wb_consent"]) {
+  for (const text of ["Necessary only", "180 days", "Cookie settings", "Amplitude", "Vercel Speed Insights", "mz_consent"]) {
     await expect(policy).toContainText(text);
   }
   await expect(policy).not.toContainText("runs without consent");

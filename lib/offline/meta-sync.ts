@@ -7,7 +7,7 @@
  * once, but needs a HubSpot app with webhooks, which new accounts can only
  * build as a project-based app.
  *
- * Each reported conversion is written to the deal's wb_offline_sent, so a
+ * Each reported conversion is written to the deal's mz_offline_sent, so a
  * second run, a webhook retry or a deal moved back and forth never reports it
  * twice. The event_id is deterministic as well, so Meta deduplicates too.
  */
@@ -58,7 +58,7 @@ export async function sendDealConversion(
   now: number = Date.now(),
 ): Promise<ConversionStatus> {
   try {
-    const leadId = deal.properties.wb_lead_id;
+    const leadId = deal.properties.mz_lead_id;
     if (!leadId) {
       return "skipped_no_lead";
     }
@@ -70,7 +70,7 @@ export async function sendDealConversion(
       return "skipped_too_old";
     }
     const contact = await getDealContact(token, deal.id);
-    if (!contact || contact.properties.wb_consent_marketing !== "true") {
+    if (!contact || contact.properties.mz_consent_marketing !== "true") {
       return "skipped_no_consent";
     }
     const sent = await sendMetaEvent({
@@ -80,8 +80,8 @@ export async function sendDealConversion(
       actionSource: "system_generated",
       email: contact.properties.email ?? undefined,
       phone: contact.properties.phone ?? undefined,
-      fbp: contact.properties.wb_fbp ?? undefined,
-      fbc: contact.properties.wb_fbc ?? undefined,
+      fbp: contact.properties.mz_fbp ?? undefined,
+      fbc: contact.properties.mz_fbc ?? undefined,
       leadId,
       customData: {
         event_source: "crm",
@@ -93,7 +93,7 @@ export async function sendDealConversion(
     // Marked when Meta accepted it, or when Meta is not connected at all.
     if (sent.sent || sent.reason === "not_configured") {
       await markSent(token, deal, conversion.key);
-      deal.properties.wb_offline_sent = [...new Set([...sentKeys(deal), conversion.key])].join(",");
+      deal.properties.mz_offline_sent = [...new Set([...sentKeys(deal), conversion.key])].join(",");
     }
     return sent.sent ? "sent" : sent.reason;
   } catch (error) {
@@ -124,7 +124,7 @@ export async function searchChangedDeals(token: string, sinceMs: number): Promis
             {
               filters: [
                 { propertyName: "hs_lastmodifieddate", operator: "GTE", value: String(sinceMs) },
-                { propertyName: "wb_lead_id", operator: "HAS_PROPERTY" },
+                { propertyName: "mz_lead_id", operator: "HAS_PROPERTY" },
               ],
             },
           ],

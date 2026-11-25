@@ -1,12 +1,12 @@
 /**
- * Pure consent logic: the format of the wb_consent cookie and its rules.
+ * Pure consent logic: the format of the mz_consent cookie and its rules.
  * No browser APIs here, so the inline GTM bootstrap, the server and the unit
  * tests all read the cookie the same way.
  *
  * Value: <version>.s<0|1>m<0|1>.<decided at, Unix seconds>.<consent ID>
  * Example: 1.s1m0.1763380000.0f8c2b1d9e7a4c6b8d0e1f2a3b4c5d6e
  */
-export const CONSENT_COOKIE = "wb_consent";
+export const CONSENT_COOKIE = "mz_consent";
 
 /** Raise when a service, purpose or category is added: every visitor is asked again. */
 export const CONSENT_VERSION = 1;
@@ -86,7 +86,7 @@ export const CONSENT_READER_SOURCE =
   'return{s:r[2]==="1",m:r[3]==="1"}' +
   "}";
 
-/** Finds wb_consent in a Cookie header or in document.cookie. */
+/** Finds mz_consent in a Cookie header or in document.cookie. */
 export function readConsentCookie(
   cookies: string,
   nowSeconds?: number,
@@ -118,30 +118,34 @@ export function newConsentId(): string {
 
 /**
  * First-party cookie and storage names each category leaves behind, by
- * prefix. wb_attr is not here: lib/attribution rewrites or deletes it on
- * every consent change. Cookies on other domains (clarity.ms, linkedin.com,
- * facebook.com) cannot be removed by the site.
+ * prefix. mz_attr is not here: lib/attribution rewrites or deletes it on
+ * every consent change. Cookies on other domains (facebook.com,
+ * linkedin.com) cannot be removed by the site.
  */
 export const CATEGORY_STORAGE_PREFIXES: Record<keyof ConsentChoice, readonly string[]> = {
-  // GA4, PostHog, Amplitude (incl. its guides and surveys SDK). _clck, _clsk
-  // and _cltk are Microsoft Clarity's, kept so visitors from before its removal
-  // lose them on withdrawal too. Checked against production on 17.11.2026.
-  // With Zaraz (lib/tracking/zaraz.ts) its tools keep cfz_<tool> and cfzs_<tool>
-  // cookies on heywowboy.com, cf_zaraz_client identifies the browser to Zaraz,
-  // and wb_zaraz_consent holds the purposes it was given (seen 17.11.2026).
-  // The Zaraz cookies are in both categories: Zaraz writes them again on its
-  // next load if one of them is still on.
-  statistics: [
-    "_ga", "_gid", "ph_", "__ph", "_clck", "_clsk", "_cltk", "AMP_", "amp_", "amplitude.",
-    "cfz_google-analytics", "cfzs_google-analytics", "cfz_zaraz-analytics", "cfzs_zaraz-analytics",
-    "cf_zaraz", "wb_zaraz_consent",
-  ],
+  // GA4 (_ga, _ga_<stream>, _gid) and Amplitude with its Session Replay
+  // (AMP_<key>, AMP_MKTG_<key>, amp_*, amplitude.* in local storage).
+  statistics: ["_ga", "_gid", "AMP_", "amp_", "amplitude."],
   // Google Ads, Meta (the pixel also keeps lastExternalReferrer* in localStorage), LinkedIn.
-  marketing: [
-    "_gcl_", "_fbp", "_fbc", "lastExternalReferrer", "li_fat_id", "li_gc",
-    "cfz_facebook-pixel", "cfzs_facebook-pixel", "cf_zaraz", "wb_zaraz_consent",
-  ],
+  marketing: ["_gcl_", "_fbp", "_fbc", "lastExternalReferrer", "li_fat_id", "li_gc"],
 };
+
+/**
+ * IndexedDB databases each category leaves behind, by a part of their name.
+ * Amplitude Session Replay keeps recordings that are not sent yet in
+ * <first 10 characters of the key>_amp_session_replay_events.
+ */
+export const CATEGORY_INDEXED_DB: Record<keyof ConsentChoice, readonly string[]> = {
+  statistics: ["_amp_session_replay_events"],
+  marketing: [],
+};
+
+/** The IndexedDB name parts to clear when moving from one choice to the next. */
+export function indexedDbToClear(previous: ConsentChoice, next: ConsentChoice): string[] {
+  return (Object.keys(CATEGORY_INDEXED_DB) as Array<keyof ConsentChoice>)
+    .filter((category) => previous[category] && !next[category])
+    .flatMap((category) => CATEGORY_INDEXED_DB[category]);
+}
 
 /** The prefixes to clear when moving from one choice to the next. */
 export function prefixesToClear(previous: ConsentChoice, next: ConsentChoice): string[] {

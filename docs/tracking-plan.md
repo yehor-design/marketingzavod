@@ -14,20 +14,22 @@
 
 | Подія | Коли спрацьовує | Параметри | Куди йде | Ключова |
 | --- | --- | --- | --- | --- |
-| `page_view` | Один раз на перше завантаження і на кожен перехід між маршрутами | `page_location`, `page_path`, `page_title` | GA4, PostHog (як `$pageview`), Google Ads Remarketing, Meta `PageView` | ні |
-| `generate_lead` | Сервер зберіг заявку з форми Contact або Waitlist | `form_name` (`contact`, `waitlist`), `lead_id` | GA4, PostHog, Google Ads (Contact), Meta `Lead` (Contact), LinkedIn (Contact), Clarity (тег `form_name`) | так |
-| `join_waitlist` | Сервер зберіг заявку Waitlist. Іде разом із `generate_lead`, з тим самим `event_id` | `form_name` (`waitlist`), `lead_id` | GA4, PostHog, Google Ads (Waitlist), Meta `CompleteRegistration`, LinkedIn (Waitlist) | так |
-| `submit_application` | Сервер зберіг відгук на вакансію | `form_name` (`careers_apply`), `lead_id`, `role` | GA4, PostHog | ні |
-| `begin_checkout` | Відкрито сторінку `/checkout` | `plan`, `value`, `currency` | GA4, PostHog, Google Ads (додаткова), Meta `InitiateCheckout` | так |
-| `view_pricing` | Відкрито `/pricing`, а також перемкнуто період оплати | `billing_period` (`monthly`, `yearly`) | GA4, PostHog, Meta `ViewContent` | ні |
-| `cta_click` | Клік по кнопці заклику | `cta_text`, `cta_location`, `destination` | GA4, PostHog | ні |
-| `contact_click` | Клік по `mailto:`, `tel:` або посиланню на месенджер | `method` (`email`, `phone`, `whatsapp`, `telegram`, `messenger`) | GA4, PostHog, Google Ads (додаткова), Meta `Contact` | ні |
-| `outbound_click` | Клік по посиланню на інший домен, зокрема соцмережі | `link_domain`, `link_url` (без рядка запиту) | GA4, PostHog | ні |
-| `form_start` | Перший фокус у полі форми, один раз на форму | `form_name` | GA4, PostHog | ні |
-| `form_error` | Поле не пройшло валідацію в браузері або на сервері | `form_name`, `field` | GA4, PostHog | ні |
-| `faq_open` | Розкрито питання в FAQ (закриття не рахується) | `question` | GA4, PostHog | ні |
+| `page_view` | Один раз на перше завантаження і на кожен перехід між маршрутами | `page_location`, `page_path`, `page_title` | GA4, Amplitude (власний перегляд `[Amplitude] Page Viewed`), Google Ads Remarketing, Meta `PageView` | ні |
+| `generate_lead` | Сервер зберіг заявку з форми Contact або Waitlist | `form_name` (`contact`, `waitlist`), `lead_id` | GA4, Amplitude, Google Ads (Contact), Meta `Lead` (Contact), LinkedIn (Contact) | так |
+| `join_waitlist` | Сервер зберіг заявку Waitlist. Іде разом із `generate_lead`, з тим самим `event_id` | `form_name` (`waitlist`), `lead_id` | GA4, Amplitude, Google Ads (Waitlist), Meta `CompleteRegistration`, LinkedIn (Waitlist) | так |
+| `submit_application` | Сервер зберіг відгук на вакансію | `form_name` (`careers_apply`), `lead_id`, `role` | GA4, Amplitude | ні |
+| `begin_checkout` | Відкрито сторінку `/checkout` | `plan`, `value`, `currency` | GA4, Amplitude, Google Ads (додаткова), Meta `InitiateCheckout` | так |
+| `view_pricing` | Відкрито `/pricing`, а також перемкнуто період оплати | `billing_period` (`monthly`, `yearly`) | GA4, Amplitude, Meta `ViewContent` | ні |
+| `cta_click` | Клік по кнопці заклику | `cta_text`, `cta_location`, `destination` | GA4, Amplitude | ні |
+| `contact_click` | Клік по `mailto:`, `tel:` або посиланню на месенджер | `method` (`email`, `phone`, `whatsapp`, `telegram`, `messenger`) | GA4, Amplitude, Google Ads (додаткова), Meta `Contact` | ні |
+| `outbound_click` | Клік по посиланню на інший домен, зокрема соцмережі | `link_domain`, `link_url` (без рядка запиту) | GA4, Amplitude | ні |
+| `form_start` | Перший фокус у полі форми, один раз на форму | `form_name` | GA4, Amplitude | ні |
+| `form_error` | Поле не пройшло валідацію в браузері або на сервері | `form_name`, `field` | GA4, Amplitude | ні |
+| `faq_open` | Розкрито питання в FAQ (закриття не рахується) | `question` | GA4, Amplitude | ні |
 
-Серверна подія PostHog `lead_saved` (`form_name`, `lead_id`, `event_id`, `store`) відправляється з route handler після збереження заявки, якщо була згода на статистику.
+Серверна подія Amplitude `lead_saved` (`form_name`, `lead_id`, `event_id`, `store`) відправляється з route handler після збереження заявки, якщо була згода на статистику. Вона прив'язана до того самого пристрою, що й браузер (`amplitude_device_id` із форми). Ще одна серверна подія, `consent_recorded`, — це журнал згод (див. `analytics.md`).
+
+Amplitude, окрім подій плану, сам збирає перегляди сторінок (`[Amplitude] Page Viewed`, один на маршрут), сесії, атрибуцію кампаній і завантаження файлів, а також записує всі сесії (Session Replay, поля форм замасковано). Кліки і форми він не збирає: їх покривають події плану.
 
 ### Значення `cta_location`
 
@@ -89,9 +91,9 @@
 
 - **First touch** записується один раз і не перезаписується. **Last touch** оновлюється, коли приходить новий набір параметрів кампанії.
 - Кожен дотик містить UTM, click ID, `landing_page`, `referrer` (обидва без рядка запиту) і `timestamp`.
-- Сховище: first-party cookie `wb_attr` на 90 днів.
+- Сховище: first-party cookie `mz_attr` на 90 днів.
 
-| Згода | Cookie `wb_attr` | Що йде з формою |
+| Згода | Cookie `mz_attr` | Що йде з формою |
 | --- | --- | --- |
 | Маркетинг | є, з click ID | UTM, click ID, landing page, referrer, час |
 | Лише статистика | є, без click ID | UTM, landing page, referrer, час |
@@ -103,26 +105,21 @@
 
 | Категорія згоди | Сигнали Consent Mode | Що вмикає поза GTM |
 | --- | --- | --- |
-| Necessary | `security_storage` (завжди `granted`) | cookie `wb_consent` із вибором відвідувача |
+| Necessary | `security_storage` (завжди `granted`) | cookie `mz_consent` із вибором відвідувача |
 | Preferences (у банері не показується) | `functionality_storage`, `personalization_storage` (завжди `denied`) | нічого |
-| Statistics | `analytics_storage` | GTM (якщо дано лише цю згоду), PostHog з записами, Amplitude, Vercel Speed Insights, cookie атрибуції, серверна подія PostHog |
+| Statistics | `analytics_storage` | GTM (якщо дано лише цю згоду), Amplitude із записами сесій, Vercel Speed Insights, cookie атрибуції, серверна подія Amplitude `lead_saved` |
 | Marketing | `ad_storage`, `ad_user_data`, `ad_personalization` | GTM (якщо дано лише цю згоду), click ID, Meta Conversions API, передача email у Enhanced Conversions |
 
 ## Змінні середовища
 
 | Змінна | Тип | Призначення |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | публічна | Канонічний origin. Типово `https://www.heywowboy.com` |
+| `NEXT_PUBLIC_SITE_URL` | публічна | Канонічний origin. Типово `https://www.marketingzavod.com` |
 | `NEXT_PUBLIC_GSC_VERIFICATION` | публічна | Запасне підтвердження Search Console мета-тегом |
 | `NEXT_PUBLIC_TRACKING_DEBUG` | публічна | `true` дозволяє трекінг поза production |
 | `NEXT_PUBLIC_GTM_ID` | публічна | ID контейнера GTM (`GTM-…`) |
-| `NEXT_PUBLIC_TAG_MANAGER` | публічна | `gtm` (за замовчуванням) або `zaraz`. Див. `zaraz/README.md` |
-| `NEXT_PUBLIC_ZARAZ_HOST` | публічна | Проксійований піддомен Zaraz, `z.heywowboy.com` |
 | `NEXT_PUBLIC_GA4_ID` | публічна | Measurement ID (`G-…`) |
-| `NEXT_PUBLIC_POSTHOG_KEY` | публічна | Ключ проєкту PostHog (`phc_…`). Якщо порожня, браузер бере `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` |
-| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | публічна | Той самий ключ під назвою з майстра PostHog. Ним користуються серверні логи (`instrumentation.ts`) |
-| `NEXT_PUBLIC_AMPLITUDE_API_KEY` | публічна | Ключ проєкту Amplitude. Amplitude вантажиться лише за згоди на статистику |
-| `NEXT_PUBLIC_POSTHOG_HOST` | публічна | Хост PostHog. Типово `https://eu.i.posthog.com` |
+| `NEXT_PUBLIC_AMPLITUDE_API_KEY` | публічна | Ключ проєкту Amplitude. Браузер вантажить Amplitude лише за згоди на статистику; сервер шле цим ключем `lead_saved` і журнал згод |
 | `NEXT_PUBLIC_GOOGLE_ADS_ID` | публічна | ID акаунта Google Ads (`AW-…`) |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_CONTACT` | публічна | Мітка конверсії «заявка з Contact» |
 | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_WAITLIST` | публічна | Мітка конверсії «запис у Waitlist» |
@@ -134,7 +131,8 @@
 | `NEXT_PUBLIC_LINKEDIN_CONVERSION_WAITLIST` | публічна | ID конверсії LinkedIn для Waitlist |
 | `META_CAPI_ACCESS_TOKEN` | **секрет** | Токен Conversions API |
 | `HUBSPOT_ACCESS_TOKEN` | **секрет** | Токен доступу HubSpot |
-| `HUBSPOT_CLIENT_SECRET` | **секрет** | Client secret застосунку HubSpot, перевіряє підпис webhook |
+| `HUBSPOT_CLIENT_SECRET` | **секрет** | Client secret застосунку HubSpot, перевіряє підпис webhook (необов'язковий шлях) |
+| `CRON_SECRET` | **секрет** | Vercel Cron передає його в `/api/cron/offline-conversions`, інших викликачів відхилено |
 | `OFFLINE_CONVERSIONS_SECRET` | **секрет** | Пароль до файла офлайн-конверсій для Google Ads |
 | `META_TEST_EVENT_CODE` | не секрет | Тестовий код Meta. Прибрати після перевірки |
 | `HUBSPOT_PIPELINE` | не секрет | ID пайплайна. Типово `default` |

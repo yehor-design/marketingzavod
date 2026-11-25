@@ -13,7 +13,7 @@ let lastRun = 0;
 /**
  * Daily sync of offline conversions to Meta (vercel.json → crons). It reports
  * deals that reached a conversion stage in the last seven days and were not
- * reported yet. It is idempotent: wb_offline_sent on the deal and a
+ * reported yet. It is idempotent: mz_offline_sent on the deal and a
  * deterministic event_id stop any double report, so an extra call does no harm.
  *
  * With CRON_SECRET set in Vercel, Vercel Cron sends it as a bearer token and

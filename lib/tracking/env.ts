@@ -18,25 +18,11 @@ export const trackingIds = {
   linkedin: clean(process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID),
   linkedinConversionContact: clean(process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_CONTACT),
   linkedinConversionWaitlist: clean(process.env.NEXT_PUBLIC_LINKEDIN_CONVERSION_WAITLIST),
-  // The PostHog wizard named the same public key NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN.
-  posthogKey:
-    clean(process.env.NEXT_PUBLIC_POSTHOG_KEY) || clean(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN),
   amplitude: clean(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY),
-  posthogHost: clean(process.env.NEXT_PUBLIC_POSTHOG_HOST) || "https://eu.i.posthog.com",
-  /** The Cloudflare-proxied host that serves Zaraz, for example z.heywowboy.com. */
-  zarazHost: clean(process.env.NEXT_PUBLIC_ZARAZ_HOST),
 } as const;
 
-/**
- * Which tag manager carries the events to GA4, Google Ads, Meta and LinkedIn:
- * Google Tag Manager (the default) or Cloudflare Zaraz. Switching back is one
- * variable and a redeploy. PostHog and Amplitude are loaded by the site
- * itself and do not depend on it.
- */
-export type TagManager = "gtm" | "zaraz";
-
-export const TAG_MANAGER: TagManager =
-  clean(process.env.NEXT_PUBLIC_TAG_MANAGER) === "zaraz" ? "zaraz" : "gtm";
+/** Data region of the Amplitude project. The browser SDK and the HTTP API (lib/amplitude-server.ts) both use it. */
+export const AMPLITUDE_SERVER_ZONE: "US" | "EU" = "US";
 
 /**
  * Tracking sends data only from the production deployment. Preview and local
@@ -53,9 +39,6 @@ export const TRACKING_ENABLED =
  * show them before that, so they can be checked.
  */
 export const CONSENT_UI_ENABLED = TRACKING_ENABLED && (CONSENT_TOOL_READY || TRACKING_DEBUG);
-
-/** Path of the first-party reverse proxy to PostHog. See next.config.ts. */
-export const POSTHOG_PROXY_PATH = "/ingest";
 
 /** The values the GTM container reads from the dataLayer instead of hardcoded constants. */
 export function gtmConfig(): Record<string, string> {

@@ -52,8 +52,8 @@ test("search files: sitemap, robots and noindex outside production", async ({ re
   expect(sitemap.status()).toBe(200);
   const xml = await sitemap.text();
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  expect(urls).toContain("https://www.heywowboy.com/");
-  expect(urls).toContain("https://www.heywowboy.com/pricing");
+  expect(urls).toContain("https://www.marketingzavod.com/");
+  expect(urls).toContain("https://www.marketingzavod.com/pricing");
   expect(urls.some((url) => url.includes("/blog/"))).toBe(true);
   expect(urls.some((url) => url.includes("/updates/"))).toBe(true);
   expect(urls.some((url) => url.includes("/careers/"))).toBe(true);
@@ -69,10 +69,10 @@ test("search files: sitemap, robots and noindex outside production", async ({ re
   expect(missing.status()).toBe(404);
 
   const html = await home.text();
-  expect(html).toContain('<link rel="canonical" href="https://www.heywowboy.com"');
+  expect(html).toContain('<link rel="canonical" href="https://www.marketingzavod.com"');
   expect(html).toContain('"@type":"Organization"');
   expect(html).toContain('"@type":"WebSite"');
-  const post = await (await request.get(urls.find((url) => url.includes("/blog/"))!.replace("https://www.heywowboy.com", ""))).text();
+  const post = await (await request.get(urls.find((url) => url.includes("/blog/"))!.replace("https://www.marketingzavod.com", ""))).text();
   expect(post).toContain('"@type":"Article"');
   expect(post).toContain('property="og:type" content="article"');
 });

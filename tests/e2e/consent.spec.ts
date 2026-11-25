@@ -41,15 +41,15 @@ const GRANTED_ALL = {
   analytics_storage: "granted",
 };
 
-/** Lets lazy loaders (PostHog waits for idle time, up to 4 s) have their chance. */
+/** Lets lazy loaders (Amplitude, Speed Insights) and event batches have their chance. */
 async function settle(page: Page) {
   await page.waitForTimeout(4500);
 }
 
 const thirdParty = (requests: string[]) =>
-  requests.filter((url) => /googletagmanager\.com|\/ingest\/|\/_vercel\/speed-insights|amplitude\.com|posthog\.com/.test(url));
+  requests.filter((url) => /googletagmanager\.com|\/_vercel\/speed-insights|amplitude\.com/.test(url));
 
-test("no choice: the IDs are in the dataLayer, but nothing reaches Google, PostHog or Vercel", async ({ page }) => {
+test("no choice: the IDs are in the dataLayer, but nothing reaches Google, Amplitude or Vercel", async ({ page }) => {
   const requests = await prepare(page, { choice: "none" });
   await page.goto("/");
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
@@ -85,7 +85,7 @@ test("stored choice to allow everything: GTM starts with that consent before pag
   expect(start).toBe(3);
   expect(view).toBeGreaterThan(start);
   await expect.poll(() => requests.filter((url) => url.includes("gtm.js?id=GTM-E2ETEST")).length).toBe(1);
-  await expect.poll(() => requests.filter((url) => url.includes("/ingest/")).length, { timeout: 10_000 }).toBeGreaterThan(0);
+  await expect.poll(() => requests.filter((url) => url.includes("amplitude.com")).length, { timeout: 10_000 }).toBeGreaterThan(0);
   await expect.poll(() => requests.filter((url) => url.includes("/_vercel/speed-insights")).length).toBeGreaterThan(0);
 });
 
@@ -124,17 +124,17 @@ test("necessary only: no analytics cookies, only UTM leaves with the form", asyn
     last: { utm_source: "qa", utm_medium: "cpc", utm_campaign: "qa_test" },
   });
   expect(JSON.stringify(body)).not.toContain("TEST");
-  expect(body.posthog_distinct_id).toBeUndefined();
+  expect(body.amplitude_device_id).toBeUndefined();
 
   const names = await cookieNames(page);
-  expect(names).toContain("wb_consent");
-  expect(names).not.toContain("wb_attr");
-  expect(names.filter((name) => /^(ph_|_ga|_gcl|_fb|_clck|_clsk|li_)/.test(name))).toEqual([]);
-  expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith("ph_")))).toEqual([]);
+  expect(names).toContain("mz_consent");
+  expect(names).not.toContain("mz_attr");
+  expect(names.filter((name) => /^(AMP_|_ga|_gcl|_fb|li_)/.test(name))).toEqual([]);
+  expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => /^(AMP_|amp_|amplitude\.)/.test(key)))).toEqual([]);
   expect(await events(page, "page_view")).toHaveLength(3);
 });
 
-test("necessary only: Amplitude and PostHog's own hosts are never contacted", async ({ page }) => {
+test("necessary only: Amplitude is never contacted", async ({ page }) => {
   const requests = await prepare(page);
   await page.goto("/waitlist");
   await page.getByPlaceholder("Enter your email").fill("amplitude.tester@example.com");
@@ -143,7 +143,7 @@ test("necessary only: Amplitude and PostHog's own hosts are never contacted", as
   await page.goto("/");
   await expect.poll(() => events(page, "page_view")).toHaveLength(1);
 
-  expect(requests.filter((url) => /amplitude\.com|posthog\.com/.test(url))).toEqual([]);
+  expect(requests.filter((url) => /amplitude\.com/.test(url))).toEqual([]);
   const names = await cookieNames(page);
   expect(names.filter((name) => name.startsWith("AMP_"))).toEqual([]);
   expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith("AMP_")))).toEqual([]);

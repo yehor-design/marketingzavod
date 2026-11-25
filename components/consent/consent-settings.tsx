@@ -37,7 +37,7 @@ const CATEGORIES: readonly Category[] = [
     name: "Statistics",
     purpose:
       "Shows us how visitors use the site and how fast it loads, including session recordings with form fields hidden. Remembers the campaign that brought you here for 90 days.",
-    services: "Google Analytics, PostHog, Amplitude, Vercel Speed Insights",
+    services: "Google Analytics, Amplitude, Vercel Speed Insights",
   },
   {
     key: "marketing",

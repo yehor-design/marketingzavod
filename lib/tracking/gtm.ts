@@ -6,7 +6,7 @@
  * GTM on page load. This module covers a choice made on the page itself.
  */
 import type { ConsentState } from "@/lib/consent";
-import { TAG_MANAGER, TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
+import { TRACKING_ENABLED, trackingIds } from "@/lib/tracking/env";
 
 export const GTM_ID_PATTERN = /^GTM-[A-Z0-9]+$/;
 
@@ -16,12 +16,12 @@ declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
     /** Set once gtm.js has been requested, by the bootstrap or by startGtm(). */
-    __wbGtmStarted?: boolean;
+    __mzGtmStarted?: boolean;
   }
 }
 
 export function gtmActive(): boolean {
-  return TRACKING_ENABLED && TAG_MANAGER === "gtm" && GTM_ID_PATTERN.test(trackingIds.gtm);
+  return TRACKING_ENABLED && GTM_ID_PATTERN.test(trackingIds.gtm);
 }
 
 export function gtmScriptUrl(id: string = trackingIds.gtm): string {
@@ -56,10 +56,10 @@ function layer(): unknown[] {
 
 /** Requests gtm.js once. */
 export function startGtm() {
-  if (!gtmActive() || typeof document === "undefined" || window.__wbGtmStarted) {
+  if (!gtmActive() || typeof document === "undefined" || window.__mzGtmStarted) {
     return;
   }
-  window.__wbGtmStarted = true;
+  window.__mzGtmStarted = true;
   layer().push({ "gtm.start": Date.now(), event: "gtm.js" });
   const script = document.createElement("script");
   script.async = true;
@@ -81,7 +81,7 @@ export function applyGtmConsent(state: ConsentState) {
   const signals = consentModeState(state.statistics, state.marketing);
   const queue = layer();
 
-  if (window.__wbGtmStarted) {
+  if (window.__mzGtmStarted) {
     queue.push(gtagCommand("consent", "update", signals));
     queue.push({ event: "consent_update", ...flags });
     return;

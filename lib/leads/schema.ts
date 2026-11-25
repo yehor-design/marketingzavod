@@ -60,7 +60,8 @@ const shared = {
   attribution: z.unknown().optional().transform(sanitizeAttribution),
   consent,
   page_url: z.string().trim().max(500).optional().default(""),
-  posthog_distinct_id: z.string().trim().max(200).optional(),
+  /** The browser's Amplitude device ID, sent only with statistics consent. */
+  amplitude_device_id: z.string().trim().min(5).max(200).optional(),
 };
 
 export const leadRequestSchema = z.discriminatedUnion("form_name", [

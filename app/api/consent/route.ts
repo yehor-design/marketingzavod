@@ -1,8 +1,8 @@
 import { after, NextResponse, type NextRequest } from "next/server";
-import { CONSENT_LOG_EVENT, consentEventProperties, consentRecordSchema } from "@/lib/consent/record";
+import { consentEvent, consentRecordSchema } from "@/lib/consent/record";
 import { clientIp, sameOrigin } from "@/lib/http/request";
 import { createRateLimiter } from "@/lib/leads/rate-limit";
-import { capturePosthogServerEvent } from "@/lib/posthog-server";
+import { amplitudeServerAllowed, sendAmplitudeServerEvents } from "@/lib/amplitude-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,12 +10,9 @@ export const dynamic = "force-dynamic";
 /** A visitor chooses rarely. Twenty a minute from one address is already a burst. */
 const allow = createRateLimiter(20, 60_000);
 
-const LOGGING_ALLOWED =
-  process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_TRACKING_DEBUG === "true";
-
 /**
  * The consent log (spec 7.6). The browser posts each choice here; the record
- * goes to PostHog as a consent_recorded event without a person profile. The
+ * goes to Amplitude as a consent_recorded event (lib/consent/record.ts). The
  * client address is used only for the rate limit and is not stored.
  */
 export async function POST(request: NextRequest) {
@@ -44,8 +41,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "validation" }, { status: 400 });
   }
 
-  if (LOGGING_ALLOWED) {
-    after(() => capturePosthogServerEvent(record.id, CONSENT_LOG_EVENT, consentEventProperties(record)));
+  if (amplitudeServerAllowed()) {
+    after(() => sendAmplitudeServerEvents([consentEvent(record)]));
   }
   return new NextResponse(null, { status: 204 });
 }

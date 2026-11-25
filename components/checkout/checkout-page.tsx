@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { TrackView } from "@/components/tracking/track-view";
 import styles from "@/components/checkout/checkout-styles";
 
@@ -222,13 +221,7 @@ export function CheckoutPage() {
                   type="button"
                   className={selected ? styles.planOn : styles.plan}
                   aria-pressed={selected}
-                  onClick={() => {
-                    if (plan !== item.id) {
-                      posthogCapture("checkout_plan_selected", { payment_plan: item.id });
-                      posthogLogInfo("checkout_plan_selected", { payment_plan: item.id });
-                    }
-                    setPlan(item.id);
-                  }}
+                  onClick={() => setPlan(item.id)}
                 >
                   <span className={styles.price}>{item.price}</span>
                   <span className={styles.detail}>{item.detail}</span>
@@ -379,10 +372,6 @@ export function CheckoutPage() {
               className={styles.access}
               href={ACCESS_HREF}
               text={"Get\u00A0access"}
-              onClick={() => {
-                posthogCapture("checkout_access_requested", { payment_plan: plan });
-                posthogLogInfo("checkout_access_requested", { payment_plan: plan });
-              }}
             />
             <ActionLink className={styles.askDesktop} href={ASK_DESKTOP} text={"Ask\u00A0a\u00A0question"} />
             <ActionLink className={styles.askMobile} href={ASK_MOBILE} text={"Ask\u00A0a\u00A0question"} />

@@ -14,7 +14,7 @@
   | Waitlist signup | Sign up | 10 EUR | 30 днів клік, 7 днів перегляд | `NEXT_PUBLIC_LINKEDIN_CONVERSION_WAITLIST` |
 
   На останньому кроці LinkedIn показує фрагмент `lintrk('track', { conversion_id: 1234567 })`. Число з нього і є ID конверсії.
-- [ ] Analyze → Insight Tag → Manage Insight Tag → додай домен `heywowboy.com`.
+- [ ] Analyze → Insight Tag → Manage Insight Tag → додай домен `marketingzavod.com`.
 - [ ] Plan → Audiences → Create audience → Website: «Усі відвідувачі, 90 днів» і «Відвідали `/pricing`, 30 днів».
 - [ ] Redeploy. Новий імпорт контейнера не потрібен, якщо його вже імпортовано з цими тегами.
 
@@ -26,7 +26,7 @@
 | `LinkedIn - Conversion - Contact lead` | `generate_lead`, `form_name = contact` | `ad_storage` |
 | `LinkedIn - Conversion - Waitlist signup` | `join_waitlist` | `ad_storage` |
 
-`li_fat_id` входить до списку click ID модуля атрибуції: він зберігається в cookie `wb_attr` за згоди на маркетинг і потрапляє в HubSpot у властивість `wb_li_fat_id`.
+`li_fat_id` входить до списку click ID модуля атрибуції: він зберігається в cookie `mz_attr` за згоди на маркетинг і потрапляє в HubSpot у властивість `mz_li_fat_id`.
 
 ## Перевірка
 

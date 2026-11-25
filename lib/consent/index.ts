@@ -1,9 +1,9 @@
 /**
- * The visitor's consent state. Everything outside GTM (PostHog, Amplitude,
- * the attribution cookie, server events) reads consent from here and nowhere
- * else.
+ * The visitor's consent state. Everything outside GTM (Amplitude, Speed
+ * Insights, the attribution cookie, server events) reads consent from here and
+ * nowhere else.
  *
- * The choice lives in the first-party wb_consent cookie (see core.ts). Until
+ * The choice lives in the first-party mz_consent cookie (see core.ts). Until
  * the visitor chooses, nothing is granted. The consent banner reports a choice
  * through saveConsent().
  */
@@ -11,6 +11,7 @@ import {
   CONSENT_COOKIE,
   CONSENT_VERSION,
   consentCookieAttributes,
+  indexedDbToClear,
   narrowsConsent,
   newConsentId,
   prefixesToClear,
@@ -20,7 +21,7 @@ import {
   type StoredConsent,
 } from "@/lib/consent/core";
 import { sendConsentRecord } from "@/lib/consent/log";
-import { clearStoredByPrefix } from "@/lib/consent/storage";
+import { clearIndexedDbByName, clearStoredByPrefix } from "@/lib/consent/storage";
 
 export * from "@/lib/consent/core";
 
@@ -101,7 +102,7 @@ export function setConsent(next: Omit<ConsentState, "necessary">): void {
 
 /**
  * The entry point for the consent banner and settings panel: stores the
- * choice in wb_consent for 180 days, then applies it.
+ * choice in mz_consent for 180 days, then applies it.
  *
  * Every choice also goes to the consent log (lib/consent/log.ts).
  * A grant applies without a reload. A withdrawal also removes what the
@@ -140,6 +141,7 @@ export function saveConsent(
   const narrowed = narrowsConsent(previous, next);
   if (narrowed && typeof window !== "undefined") {
     clearStoredByPrefix(prefixesToClear(previous, next));
+    void clearIndexedDbByName(indexedDbToClear(previous, next));
     window.location.reload();
   }
   return { stored: next, narrowed, source };
@@ -155,10 +157,12 @@ export function clearRefusedStorage(): string[] {
   if (!state.answered) {
     return [];
   }
-  return clearStoredByPrefix(prefixesToClear({ statistics: true, marketing: true }, state));
+  const all = { statistics: true, marketing: true };
+  void clearIndexedDbByName(indexedDbToClear(all, state));
+  return clearStoredByPrefix(prefixesToClear(all, state));
 }
 
-/** Analytics outside GTM: PostHog, Amplitude, Speed Insights, the attribution cookie. */
+/** Analytics outside GTM: Amplitude, Speed Insights, the attribution cookie. */
 export function hasAnalyticsConsent(): boolean {
   return getConsent().statistics;
 }
