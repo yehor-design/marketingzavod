@@ -9,15 +9,15 @@ GA4 стоїть лише через GTM. Прямого `gtag.js` у коді �
 
 ## Налаштування
 
-- [ ] **Зберігання даних.** Admin → Data collection and modification → Data retention → **14 months**.
-- [ ] **Enhanced Measurement.** Data streams → потік → шестерня:
+- [x] **Зберігання даних.** Admin → Data collection and modification → Data retention → **14 months**.
+- [x] **Enhanced Measurement.** Data streams → потік → шестерня:
   - Page views → Advanced settings → **вимкни «Page changes based on browser history events»**. Сайт сам надсилає один `page_view` на маршрут. Якщо лишити цю опцію, перегляди подвояться;
   - **Site search — вимкни** (пошуку на сайті немає);
   - **Outbound clicks — вимкни**: сайт надсилає власний `outbound_click`;
   - **Form interactions — вимкни**: сайт надсилає `form_start` і `generate_lead`;
   - Scrolls, Video engagement, File downloads лиши ввімкненими.
 - [ ] **Ключові події.** Admin → Data display → Events → позначити **Mark as key event** для `generate_lead`, `join_waitlist`, `begin_checkout`. Подія з'являється у списку після першого надходження. Щоб не чекати, створи їх заздалегідь через Key events → New key event.
-- [ ] **Custom dimensions.** Admin → Data display → Custom definitions → Create custom dimension, scope **Event**:
+- [x] **Custom dimensions.** Створено 25.11.2026, усі 12. Admin → Data display → Custom definitions → Create custom dimension, scope **Event**:
 
   | Назва | Event parameter |
   | --- | --- |
@@ -41,7 +41,7 @@ GA4 стоїть лише через GTM. Прямого `gtag.js` у коді �
 - [ ] **Згода.** Admin → Data collection → Consent settings: після першого трафіку тут має бути зелений статус для ad measurement і ad personalization.
 - [ ] **Зв'язки.** Admin → Product links:
   - Google Ads (після створення акаунта);
-  - Search Console (після підтвердження домену);
+  - Search Console — зв'язано 25.11.2026 (ресурс «Домен» marketingzavod.com, потік marketingzavod.com);
   - BigQuery (див. `reporting-setup.md`).
 
 ## Як влаштовані теги
