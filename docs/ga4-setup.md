@@ -16,7 +16,7 @@ GA4 стоїть лише через GTM. Прямого `gtag.js` у коді �
   - **Outbound clicks — вимкни**: сайт надсилає власний `outbound_click`;
   - **Form interactions — вимкни**: сайт надсилає `form_start` і `generate_lead`;
   - Scrolls, Video engagement, File downloads лиши ввімкненими.
-- [ ] **Ключові події.** Admin → Data display → Events → позначити **Mark as key event** для `generate_lead`, `join_waitlist`, `begin_checkout`. Подія з'являється у списку після першого надходження. Щоб не чекати, створи їх заздалегідь через Key events → New key event.
+- [ ] **Ключові події.** Admin → Data display → Events → вкладка **Recent events** → зірочка біля `generate_lead`, `join_waitlist`, `begin_checkout`. Кнопки «New key event» у цьому інтерфейсі вже немає, тож подію можна позначити лише після того, як вона з'явиться в Recent events, а це до 24 годин після першого надходження. Перші події надійшли 25.11.2026 (видно в Realtime).
 - [x] **Custom dimensions.** Створено 25.11.2026, усі 12. Admin → Data display → Custom definitions → Create custom dimension, scope **Event**:
 
   | Назва | Event parameter |
@@ -36,7 +36,7 @@ GA4 стоїть лише через GTM. Прямого `gtag.js` у коді �
 
   `lead_id` потрібен, щоб звести заявку в GA4 із записом у CRM. Це внутрішній UUID, не персональні дані. `event_id`, `page_location`, `page_title`, `value`, `currency` реєструвати не треба.
 - [ ] **Внутрішній трафік.** Data streams → потік → Configure tag settings → Define internal traffic → додай свою IP-адресу. Потім Admin → Data filters → Internal Traffic → стан **Active**.
-- [ ] **Небажані реферали.** Configure tag settings → List unwanted referrals → додай `whop.com` і `dub.link` (зовнішня сторінка оплати), щоб повернення з них не починало нову сесію.
+- [x] **Небажані реферали.** Configure tag settings → List unwanted referrals → додай `whop.com` і `dub.link` (зовнішня сторінка оплати), щоб повернення з них не починало нову сесію. Зроблено 25.11.2026: Google tag GA4 тепер є контейнером Tag Manager (`GTM-W6JHP4RS`), тож після Save зміну треба опублікувати кнопкою Submit; опубліковано як версію 2.
 - [ ] **Google Signals.** Admin → Data collection → увімкни, якщо плануєш ремаркетингові аудиторії. Він працює лише для користувачів із `ad_personalization = granted`.
 - [ ] **Згода.** Admin → Data collection → Consent settings: після першого трафіку тут має бути зелений статус для ad measurement і ad personalization.
 - [ ] **Зв'язки.** Admin → Product links:

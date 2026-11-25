@@ -18,6 +18,14 @@ import { applyGtmConsent } from "@/lib/tracking/gtm";
 
 /** Survives React strict-mode remounts, so a route produces one page_view. */
 let lastViewedPath: string | null = null;
+/** Title sent with the previous page_view. null until the first one. */
+let lastViewedTitle: string | null = null;
+
+/**
+ * How long a client-side navigation may wait for the new <title>. Next.js can
+ * stream metadata, so the title may arrive after the route has rendered.
+ */
+const TITLE_WAIT_MS = 1000;
 
 const MESSENGERS: Array<[RegExp, ContactMethod]> = [
   [/(^|\.)wa\.me$|(^|\.)whatsapp\.com$/, "whatsapp"],
@@ -196,11 +204,40 @@ export function TrackingProvider() {
       return;
     }
     lastViewedPath = pathname;
-    track("page_view", {
-      page_location: window.location.href,
-      page_path: pathname,
-      page_title: document.title,
+    const location = window.location.href;
+    const previousTitle = lastViewedTitle;
+    const report = () => {
+      lastViewedTitle = document.title;
+      track("page_view", { page_location: location, page_path: pathname, page_title: document.title });
+    };
+    const titleReady = () => document.title !== "" && document.title !== previousTitle;
+
+    // The first view comes with the server HTML, so its title is final. After
+    // a client-side navigation, wait until the new title is in the document.
+    // Two routes may share a title, hence the time limit.
+    if (previousTitle === null || titleReady()) {
+      report();
+      return;
+    }
+    let sent = false;
+    const send = () => {
+      if (sent) {
+        return;
+      }
+      sent = true;
+      observer.disconnect();
+      window.clearTimeout(timer);
+      report();
+    };
+    const observer = new MutationObserver(() => {
+      if (titleReady()) {
+        send();
+      }
     });
+    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    const timer = window.setTimeout(send, TITLE_WAIT_MS);
+    // Leaving before the title arrives still counts as a view of this route.
+    return send;
   }, [pathname]);
 
   return null;

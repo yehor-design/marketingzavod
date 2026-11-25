@@ -100,44 +100,43 @@ export async function POST(request: NextRequest) {
   });
 
   after(async () => {
-    const tasks: Promise<unknown>[] = [];
     const metaEvent = META_EVENTS[lead.form_name];
-    if (TRACKING_ALLOWED && consent.marketing && metaEvent) {
-      tasks.push(
-        sendMetaEvent({
-          eventName: metaEvent,
-          eventId: lead.event_id,
-          eventTime: new Date(lead.created_at),
-          actionSource: "website",
-          eventSourceUrl: lead.page_url || undefined,
-          email: lead.email,
-          phone: lead.fields.phone,
-          clientIp: ip === "unknown" ? undefined : ip,
-          userAgent: lead.user_agent || undefined,
-          fbp: lead.fbp,
-          fbc: lead.fbc,
-          leadId: lead.lead_id,
-        }),
-      );
-    }
-    if (amplitudeServerAllowed() && consent.statistics && data.amplitude_device_id) {
-      tasks.push(
-        sendAmplitudeServerEvents([
-          {
-            event_type: "lead_saved",
-            device_id: data.amplitude_device_id,
-            insert_id: lead.lead_id,
-            event_properties: {
-              form_name: lead.form_name,
-              lead_id: lead.lead_id,
-              event_id: lead.event_id,
-              store: saved.store,
+    const metaTask: Promise<string> =
+      TRACKING_ALLOWED && consent.marketing && metaEvent
+        ? sendMetaEvent({
+            eventName: metaEvent,
+            eventId: lead.event_id,
+            eventTime: new Date(lead.created_at),
+            actionSource: "website",
+            eventSourceUrl: lead.page_url || undefined,
+            email: lead.email,
+            phone: lead.fields.phone,
+            clientIp: ip === "unknown" ? undefined : ip,
+            userAgent: lead.user_agent || undefined,
+            fbp: lead.fbp,
+            fbc: lead.fbc,
+            leadId: lead.lead_id,
+          }).then((result) => (result.sent ? "sent" : result.reason))
+        : Promise.resolve("skipped");
+    const amplitudeTask: Promise<string> =
+      amplitudeServerAllowed() && consent.statistics && data.amplitude_device_id
+        ? sendAmplitudeServerEvents([
+            {
+              event_type: "lead_saved",
+              device_id: data.amplitude_device_id,
+              insert_id: lead.lead_id,
+              event_properties: {
+                form_name: lead.form_name,
+                lead_id: lead.lead_id,
+                event_id: lead.event_id,
+                store: saved.store,
+              },
             },
-          },
-        ]),
-      );
-    }
-    await Promise.allSettled(tasks);
+          ]).then((accepted) => (accepted ? "sent" : "failed"))
+        : Promise.resolve("skipped");
+    const [meta, amplitude] = await Promise.all([metaTask, amplitudeTask]);
+    // One line per lead, so a successful send is visible in the logs too.
+    serverLog.info("lead_forwarded", { lead_id: lead.lead_id, meta, amplitude });
   });
 
   return NextResponse.json({ ok: true, lead_id: leadId, event_id: eventId });
