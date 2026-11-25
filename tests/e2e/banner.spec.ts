@@ -338,12 +338,22 @@ test("withdrawal from the footer removes stored data and reloads the page", asyn
   await page.context().addCookies(
     ["_ga", "_ga_TEST", "_gcl_au", "_fbp", "AMP_e2e_amplit"].map((name) => ({ name, value: "1", url: "http://localhost:3100" })),
   );
-  // Keys the real Amplitude (with Session Replay) and Meta pixel leave on production.
-  await page.evaluate(() => {
+  // Keys and IndexedDB databases the real Amplitude and Meta pixel leave on production.
+  await page.evaluate(async () => {
     localStorage.setItem("AMP_unsent_e2e_amplit", "[]");
     localStorage.setItem("amplitude.sessionReplay.e2e", "{}");
     localStorage.setItem("lastExternalReferrer", "google");
     localStorage.setItem("lastExternalReferrerTime", "1");
+    for (const dbName of ["e2e_amplit_amp_session_replay_events", "AMP_diagnostics_e2e_amplit"]) {
+      await new Promise<void>((resolve, reject) => {
+        const req = indexedDB.open(dbName, 1);
+        req.onsuccess = () => {
+          req.result.close();
+          resolve();
+        };
+        req.onerror = () => reject(req.error);
+      });
+    }
   });
   expect((await page.context().cookies()).map((cookie) => cookie.name)).toContain("mz_attr");
 
@@ -365,6 +375,9 @@ test("withdrawal from the footer removes stored data and reloads the page", asyn
   // The record of the withdrawal survives the reload.
   expect(records).toEqual([expect.objectContaining({ statistics: false, marketing: false, source: "settings" })]);
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  expect(
+    await page.evaluate(async () => ((await indexedDB.databases()) ?? []).map((db) => db.name)),
+  ).toEqual([]);
   expect(requests.filter((url) => /googletagmanager|speed-insights|amplitude/.test(url))).toEqual([]);
   await expect(banner(page)).toHaveCount(0);
 });

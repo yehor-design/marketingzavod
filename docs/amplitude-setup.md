@@ -23,7 +23,7 @@
 | Ідентифікація | `amplitudeIdentifyLead()` | Після заявки: властивість користувача `last_lead_id` і first touch (`first_utm_*`, `first_landing_page`). Email і `user_id` не використовуються. Лише за згоди на статистику |
 | Серверна подія | `lib/amplitude-server.ts`, з `/api/lead` | `lead_saved` через HTTP API на той самий пристрій, що й у браузері (`amplitude_device_id` із форми) |
 | Журнал згод | `lib/amplitude-server.ts`, з `/api/consent` | `consent_recorded` під ID згоди замість ID пристрою (див. `analytics.md`, «Журнал згод») |
-| Відкликання | `applyAmplitudeConsent()`, `lib/consent` | SDK переходить в opt-out; cookies і localStorage `AMP_*`, `amp_*`, `amplitude.*` та база IndexedDB `…_amp_session_replay_events` видаляються, сторінка перезавантажується |
+| Відкликання | `applyAmplitudeConsent()`, `lib/consent` | SDK переходить в opt-out; cookies і localStorage `AMP_*`, `amp_*`, `amplitude.*` та бази IndexedDB `…_amp_session_replay_events` і `AMP_diagnostics_…` видаляються, сторінка перезавантажується |
 
 **Назва перегляду.** У плані подія називається `page_view`, а в Amplitude це `[Amplitude] Page Viewed`: на ній тримаються стандартні звіти, шляхи і записи сесій.
 

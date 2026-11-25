@@ -234,25 +234,34 @@ describe("IndexedDB cleanup", () => {
     vi.unstubAllGlobals();
   });
 
-  it("clears Session Replay recordings only when statistics is withdrawn", async () => {
+  it("clears Amplitude IndexedDB databases only when statistics is withdrawn", async () => {
     const { indexedDbToClear } = await import("@/lib/consent/core");
     const all = { statistics: true, marketing: true };
-    expect(indexedDbToClear(all, { statistics: false, marketing: true })).toEqual(["_amp_session_replay_events"]);
+    expect(indexedDbToClear(all, { statistics: false, marketing: true })).toEqual([
+      "_amp_session_replay_events",
+      "AMP_diagnostics_",
+    ]);
     expect(indexedDbToClear(all, { statistics: true, marketing: false })).toEqual([]);
   });
 
   it("deletes the matching databases and leaves the others", async () => {
     const deleteDatabase = vi.fn();
     vi.stubGlobal("indexedDB", {
-      databases: async () => [{ name: "e2e_amplit_amp_session_replay_events" }, { name: "other" }],
+      databases: async () => [
+        { name: "e2e_amplit_amp_session_replay_events" },
+        { name: "AMP_diagnostics_e2e_amplit" },
+        { name: "other" },
+      ],
       deleteDatabase,
     });
     const { clearIndexedDbByName } = await import("@/lib/consent/storage");
-    await expect(clearIndexedDbByName(["_amp_session_replay_events"])).resolves.toEqual([
+    await expect(clearIndexedDbByName(["_amp_session_replay_events", "AMP_diagnostics_"])).resolves.toEqual([
       "e2e_amplit_amp_session_replay_events",
+      "AMP_diagnostics_e2e_amplit",
     ]);
-    expect(deleteDatabase).toHaveBeenCalledTimes(1);
+    expect(deleteDatabase).toHaveBeenCalledTimes(2);
     expect(deleteDatabase).toHaveBeenCalledWith("e2e_amplit_amp_session_replay_events");
+    expect(deleteDatabase).toHaveBeenCalledWith("AMP_diagnostics_e2e_amplit");
   });
 
   it("does nothing where IndexedDB cannot list databases", async () => {
