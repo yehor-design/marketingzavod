@@ -32,7 +32,18 @@
 
 ## Production marketingzavod.com
 
-Результати перевірки після підключення нових акаунтів — у розділах нижче, у порядку дат.
+### 25 листопада 2026, браузерна частина
+
+Деплой коміту `573dccb` (PR #36). У Vercel задано `NEXT_PUBLIC_GTM_ID`, `NEXT_PUBLIC_GA4_ID`, `NEXT_PUBLIC_META_PIXEL_ID`; ключа Amplitude і секретів HubSpot та Meta CAPI ще немає. Перевірено скриптом Playwright у звичайному (не headless) Chromium з чистим профілем. Шлях: `/?utm_source=qa&utm_medium=cpc&utm_campaign=qa_test&gclid=TEST` → Pricing → About.
+
+| Сценарій | Сторонні запити | Cookies | localStorage |
+| --- | --- | --- | --- |
+| Без вибору | жодного | жодної | порожній |
+| «Necessary only» | жодного; один `POST /api/consent` | лише `mz_consent` | порожній |
+| «Accept all» | `googletagmanager.com/gtm.js` і `gtag/js`; `region1.google-analytics.com/g/collect` (`tid=G-5MKF62M6VV`, `gcs=G111`); `connect.facebook.net` (піксель `1517555698103352`); `facebook.com/tr` з `PageView` і `ViewContent`, обидва з `eid` | `mz_consent`, `mz_attr`, `_ga`, `_ga_5MKF62M6VV`, `_fbp` | `lastExternalReferrer`, `lastExternalReferrerTime` (піксель Meta) |
+| Відкликання після «Accept all» | після перезавантаження жодного | лише `mz_consent` | порожній; IndexedDB порожня |
+
+`dataLayer` після «Accept all»: ідентифікатори → `consent default` → `consent_statistics`/`consent_marketing` → `gtm.js` → `page_view`. Помилок у консолі немає. Canonical, `sitemap.xml` і `robots.txt` віддають `https://www.marketingzavod.com`.
 
 ## Сценарій для production з ідентифікаторами
 
