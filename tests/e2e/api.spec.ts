@@ -96,3 +96,11 @@ test("the consent log accepts a choice and nothing else", async ({ request }) =>
     (await request.post("/api/consent", { data: record, headers: { ...headers, origin: "https://evil.example" } })).status(),
   ).toBe(403);
 });
+
+test("the Resend verification endpoint stays disabled without EMAIL_VERIFY_SECRET", async ({ request }) => {
+  const response = await request.post("/api/email/verify", {
+    headers: { "x-forwarded-for": ip() },
+  });
+  expect(response.status()).toBe(503);
+  expect(response.headers()["x-robots-tag"]).toContain("noindex");
+});

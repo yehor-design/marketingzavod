@@ -113,9 +113,9 @@ Amplitude → User Look-Up → Device ID = ID згоди з cookie `mz_consent`.
 
 | Перевірка | Як | Очікуване |
 | --- | --- | --- |
-| Секретів немає в клієнтському бандлі | `grep -rlE "META_CAPI_ACCESS_TOKEN\|HUBSPOT_ACCESS_TOKEN\|HUBSPOT_CLIENT_SECRET\|OFFLINE_CONVERSIONS_SECRET\|CRON_SECRET" .next/static` | нічого не знайдено |
+| Секретів немає в клієнтському бандлі | `grep -rlE "META_CAPI_ACCESS_TOKEN\|HUBSPOT_ACCESS_TOKEN\|HUBSPOT_CLIENT_SECRET\|OFFLINE_CONVERSIONS_SECRET\|CRON_SECRET\|RESEND_API_KEY\|EMAIL_VERIFY_SECRET" .next/static` | нічого не знайдено |
 | Секретів немає в репозиторії | `.env*` в `.gitignore`, `.env.example` без значень | так |
-| Клієнтський код не читає серверних секретів | жоден файл з `"use client"` не імпортує `lib/leads/hubspot`, `lib/meta/capi`, `lib/offline`, `lib/amplitude-server` | так |
+| Клієнтський код не читає серверних секретів | жоден файл з `"use client"` не імпортує `lib/leads/hubspot`, `lib/meta/capi`, `lib/offline`, `lib/amplitude-server`, `lib/email` | так |
 | Персональних даних немає в `dataLayer` і URL | e2e-тест форми Contact і Waitlist | пройдено |
 | Персональних даних немає в логах помилок | Помилки Meta і Amplitude логують лише ідентифікатори, статус і тіло відповіді | так, за кодом |
 | Повна заявка в логах | Лише коли CRM не підключено або не відповіла. Це свідоме запасне сховище | так |

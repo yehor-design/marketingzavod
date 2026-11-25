@@ -134,6 +134,10 @@ Amplitude, окрім подій плану, сам збирає перегля�
 | `HUBSPOT_CLIENT_SECRET` | **секрет** | Client secret застосунку HubSpot, перевіряє підпис webhook (необов'язковий шлях) |
 | `CRON_SECRET` | **секрет** | Vercel Cron передає його в `/api/cron/offline-conversions`, інших викликачів відхилено |
 | `OFFLINE_CONVERSIONS_SECRET` | **секрет** | Пароль до файла офлайн-конверсій для Google Ads |
+| `RESEND_API_KEY` | **секрет** | Ключ API Resend для відправки листів з домену `marketingzavod.com` |
+| `EMAIL_VERIFY_SECRET` | **секрет** | Bearer-секрет для операційної перевірки відправки `POST /api/email/verify` |
+| `RESEND_FROM` | не секрет | Адреса відправника Resend. Типово `Marketing Zavod <noreply@marketingzavod.com>` |
+| `RESEND_VERIFY_TO` | не секрет | Скринька одержувача для перевірки `POST /api/email/verify` |
 | `META_TEST_EVENT_CODE` | не секрет | Тестовий код Meta. Прибрати після перевірки |
 | `HUBSPOT_PIPELINE` | не секрет | ID пайплайна. Типово `default` |
 | `HUBSPOT_DEAL_STAGE_NEW` | не секрет | Стадія нової угоди. Типово `appointmentscheduled` |
