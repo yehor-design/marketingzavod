@@ -1,33 +1,34 @@
-# Аудит аналітики: стан до початку робіт
+# Аудит аналітики: стан на момент перепідключення
 
-Дата аудиту: 16 листопада 2026. Гілка `main`, коміт `86485f7`.
-Це знімок «як було». Поточний стан описано в [analytics.md](analytics.md).
+Дата аудиту: 25 листопада 2026. Гілка `main`, коміт `f530bc1`.
+Сайт переїхав на нову назву і домен (Marketing Zavod, `marketingzavod.com`), а всі сервіси підключаються до нових акаунтів. Це знімок «як було» перед перепідключенням. Поточний стан описано в [analytics.md](analytics.md).
 
 ## Технічна основа
 
 | Пункт | Значення |
 | --- | --- |
-| Фреймворк | Next.js 16.4 (`next` `^16.4.5`), React 19.3 |
+| Фреймворк | Next.js 16.4.6, React 19.3.1 |
 | Роутер | App Router (`app/`). Pages Router не використовується |
-| Хостинг | Vercel, проєкт `wowboy/wowboy`, деплой з GitHub `yehor-design/marketing` |
-| Основний домен | `https://www.heywowboy.com`. Апекс `heywowboy.com` віддає 308 на `www` |
-| Серверний код | Не було жодного route handler і жодної server action |
-| Змінні середовища | Жодна не читалася кодом, `.env.example` не існував |
-| Лінтер, тести, CI | Не було |
+| Хостинг | Vercel, команда `zavodzamarketing`, проєкт `marketingzavod`, деплой з GitHub `yehor-design/marketingzavod` (гілка `main`) |
+| Основний домен | `https://www.marketingzavod.com`. Апекс `marketingzavod.com` віддає 308 на `www`. Домен зареєстровано у Vercel, DNS — Vercel |
+| Серверний код | Route handlers: `/api/lead`, `/api/consent`, `/api/cron/offline-conversions`, `/api/crm/hubspot`, `/api/offline-conversions/google-ads`, а також `/api/meta/event` (лише для Zaraz) |
+| Змінні середовища | У проєкті Vercel не було жодної: увесь трекінг на production був неактивний |
+| Лінтер, тести, CI | ESLint, Vitest, Playwright, Lighthouse CI у GitHub Actions |
 
 ## Скрипти аналітики
 
-| Сервіс | Чи був у коді | Як вантажився | Чи зважав на згоду |
-| --- | --- | --- | --- |
-| Google Tag Manager | ні | — | — |
-| GA4 (`gtag.js`) | ні | — | — |
-| PostHog | ні | — | — |
-| Microsoft Clarity | ні | — | — |
-| Meta Pixel | ні | — | — |
-| Vercel Speed Insights / Analytics | ні | — | — |
-| Банер згоди | ні | — | — |
+| Сервіс | Чи був у коді | Як вантажився | Чи зважав на згоду | Що з ним зроблено |
+| --- | --- | --- | --- | --- |
+| Google Tag Manager | так | inline-бутстрап + `gtm.js` лише після згоди | так | лишається єдиним менеджером тегів |
+| Cloudflare Zaraz | так, за перемикачем `NEXT_PUBLIC_TAG_MANAGER` | `z.<домен>` після згоди | так | прибрано: вибрано GTM |
+| GA4 | так, через GTM або Zaraz | всередині менеджера тегів | так | лишається, через GTM |
+| PostHog | так, у коді (`/ingest`), плюс серверні логи через OpenTelemetry | ліниво після згоди | так | прибрано: продуктова аналітика лише в Amplitude |
+| Amplitude | так, `@amplitude/unified` | після згоди | так | лишається; лише SDK аналітики і Session Replay |
+| Meta Pixel / Conversions API | піксель у GTM, CAPI з `/api/lead`, при Zaraz — `/api/meta/event` | після згоди на маркетинг | так | піксель у GTM + CAPI для заявок; `/api/meta/event` прибрано |
+| Vercel Speed Insights | так | після згоди на статистику | так | лишається |
+| Банер згоди | так, власний | — | — | лишається; cookie перейменовано на `mz_consent` |
 
-Висновок: сайт не мав жодного трекінгу і жодної cookie. Дублікатів прибирати не довелося.
+Префікс власних cookie, ключів і властивостей HubSpot змінено з `wb_` на `mz_` (`mz_consent`, `mz_attr`, `mz_*` у HubSpot).
 
 ## Точки конверсії
 
@@ -51,28 +52,23 @@
 
 ## Базова швидкість (Lighthouse, мобільний профіль)
 
-Виміряно на production (`https://www.heywowboy.com`) до будь-яких змін. Lighthouse 12.8.2, стандартна мобільна емуляція (Slow 4G, CPU ×4), по три запуски, у таблиці медіана. Lighthouse не вимірює INP, тому лабораторним замінником є TBT.
+Виміряно на production (`https://www.marketingzavod.com`) до підключення сервісів: жодного стороннього скрипта на сторінці. Lighthouse 13.6.0, стандартна мобільна емуляція (Slow 4G, CPU ×4), по три запуски, у таблиці медіана. Lighthouse не вимірює INP, тому лабораторним замінником є TBT.
 
 | Сторінка | Оцінка | LCP | CLS | TBT | JS (передано) | Усього |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/` | 70 | 7,40 с | 0,000 | 88 мс | 219 КБ | 2106 КБ |
-| `/pricing` | 83 | 3,75 с | 0,000 | 50 мс | 225 КБ | 561 КБ |
-| `/contact` | 97 | 2,52 с | 0,000 | 1 мс | 217 КБ | 462 КБ |
-
-Окремі запуски (оцінка / LCP у мс): головна 67 / 7640, 80 / 5302, 70 / 7401; Pricing 83 / 3752, 88 / 3710, 83 / 3800; Contact 88 / 3347, 97 / 2524, 99 / 1927.
+| `/` | 77 | 5,15 с | 0,000 | 206 мс | 334 КБ | 2134 КБ |
+| `/pricing` | 91 | 3,50 с | 0,000 | 41 мс | 328 КБ | 571 КБ |
+| `/contact` | 100 | 1,10 с | 0,000 | 2 мс | 378 КБ | 543 КБ |
 
 Спостереження: LCP головної і Pricing уже до трекінгу перевищує бюджет 2,5 с. Причина не в скриптах аналітики (їх не було), а у вазі головної (2,1 МБ) і в тому, що героїчні зображення малюються на canvas після завантаження. Це зафіксовано в [performance-budget.md](performance-budget.md) як окрема проблема.
 
 ## Що було встановлено і чого бракувало
 
-Встановлено: нічого з аналітики.
+Встановлено: увесь код стеку (згода, GTM, атрибуція, ліди, Meta CAPI, HubSpot, офлайн-конверсії, Speed Insights, SEO, CI).
 
-Бракувало, і це закрито в межах MAR-20:
+Бракувало, і це закривається перепідключенням:
 
-- банера згоди і Consent Mode v2;
-- GTM, `dataLayer` і єдиного помічника `track()`;
-- GA4, PostHog, Clarity, Google Ads, Meta, LinkedIn;
-- серверного обробника форм, збереження заявок і передачі в CRM;
-- збереження UTM і click ID;
-- `sitemap.xml`, `robots.txt`, canonical на власний домен (canonical вказував на `jet.framer.website`), Open Graph, JSON-LD;
-- Speed Insights, бюджету швидкості, CI.
+- акаунтів під Marketing Zavod: GA4, GTM, набір даних Meta, Amplitude, HubSpot (властивості й ключ), Search Console;
+- змінних середовища у проєкті Vercel `marketingzavod`;
+- підтвердження домену `marketingzavod.com` у Meta і Search Console;
+- згадки старого домену і префікса `wb_` у коді й документації.

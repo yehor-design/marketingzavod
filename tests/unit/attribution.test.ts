@@ -17,7 +17,7 @@ const NOW = new Date("2026-11-16T10:00:00.000Z");
 describe("parseTouch", () => {
   it("reads UTM parameters and click IDs from a landing URL", () => {
     const touch = parseTouch(
-      "https://www.heywowboy.com/pricing?utm_source=google&utm_medium=cpc&utm_campaign=brand_q4&gclid=AbC-123",
+      "https://www.marketingzavod.com/pricing?utm_source=google&utm_medium=cpc&utm_campaign=brand_q4&gclid=AbC-123",
       "https://www.google.com/search?q=jet",
       NOW,
     );
@@ -26,7 +26,7 @@ describe("parseTouch", () => {
       utm_medium: "cpc",
       utm_campaign: "brand_q4",
       gclid: "AbC-123",
-      landing_page: "https://www.heywowboy.com/pricing",
+      landing_page: "https://www.marketingzavod.com/pricing",
       referrer: "https://www.google.com/search",
       timestamp: "2026-11-16T10:00:00.000Z",
     });

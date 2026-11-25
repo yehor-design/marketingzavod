@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { sendConsentRecord } from "@/lib/consent/log";
-import { CONSENT_LOG_PATH, consentEventProperties, consentRecordSchema } from "@/lib/consent/record";
+import { CONSENT_LOG_EVENT, CONSENT_LOG_PATH, consentEvent, consentRecordSchema } from "@/lib/consent/record";
 
 const RECORD = {
   id: "0f8c2b1d9e7a4c6b8d0e1f2a3b4c5d6e",
@@ -28,16 +28,19 @@ describe("consent log record", () => {
     expect(consentRecordSchema.safeParse(value).success).toBe(false);
   });
 
-  it("becomes an event without a person profile, GeoIP or personal data", () => {
-    const properties = consentEventProperties(RECORD);
-    expect(properties).toEqual({
-      version: 1,
-      statistics: true,
-      marketing: false,
-      source: "banner",
-      decided_at: "2025-11-17T11:46:40.000Z",
-      $process_person_profile: false,
-      $geoip_disable: true,
+  it("becomes an Amplitude event under the consent ID, without personal data", () => {
+    expect(consentEvent(RECORD)).toEqual({
+      event_type: CONSENT_LOG_EVENT,
+      device_id: RECORD.id,
+      insert_id: `${RECORD.id}-${RECORD.decided_at}`,
+      time: RECORD.decided_at * 1000,
+      event_properties: {
+        version: 1,
+        statistics: true,
+        marketing: false,
+        source: "banner",
+        decided_at: "2025-11-17T11:46:40.000Z",
+      },
     });
   });
 });

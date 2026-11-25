@@ -10,6 +10,9 @@ import { createHash } from "node:crypto";
 /** Latest Graph API version, checked against graph.facebook.com on 2026-11-16. */
 export const META_GRAPH_VERSION = "v27.0";
 
+/** Meta events /api/lead sends for each form, deduplicated with the pixel tags in gtm/container.json. */
+export const META_SERVER_LEAD_EVENTS = { contact: "Lead", waitlist: "CompleteRegistration" } as const;
+
 export type MetaActionSource = "website" | "system_generated";
 
 export type MetaEventInput = {

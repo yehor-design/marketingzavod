@@ -1,6 +1,6 @@
 # Контейнер Google Tag Manager
 
-`container.json` — файл імпорту веб-контейнера GTM. У ньому всі теги сайту: GA4, Google Ads, Meta Pixel, LinkedIn. Microsoft Clarity прибрано 17.11.2026.
+`container.json` — файл імпорту веб-контейнера GTM. У ньому всі теги сайту: GA4, Google Ads, Meta Pixel, LinkedIn.
 
 Файл генерується. Не редагуй його руками.
 
@@ -22,14 +22,14 @@
 2. Обери `gtm/container.json`.
 3. Workspace: **Existing** → `Default Workspace` (або новий, якщо хочеш переглянути зміни окремо).
 4. Режим: **Merge** → **Overwrite conflicting tags, triggers, and variables**.
-5. Перевір прев'ю: має бути 31 тег, 26 тригерів і 37 змінних. Натисни **Confirm**.
+5. Перевір прев'ю: має бути 28 тегів, 25 тригерів і 34 змінні. Натисни **Confirm**.
 
 Ідентифікатори сервісів у контейнер вписувати не треба. Сайт передає їх у `dataLayer` зі змінних середовища Vercel, а контейнер читає їх змінними `ID - …`. Тег із порожнім ідентифікатором не спрацьовує: його тримає тригер-виняток `Block - … missing`.
 
 ## Як перевірити в Preview
 
 1. Додай у Vercel `NEXT_PUBLIC_GTM_ID`, зроби redeploy.
-2. GTM → **Preview**, введи `https://www.heywowboy.com`. Без згоди сайт GTM не вантажить, тож у вікні Preview спершу натисни в банері «Accept all».
+2. GTM → **Preview**, введи `https://www.marketingzavod.com`. Без згоди сайт GTM не вантажить, тож у вікні Preview спершу натисни в банері «Accept all».
 3. У Tag Assistant перевір по порядку:
    - на події **Consent Initialization** не спрацював жоден тег, вкладка Consent показує стан, який ти вибрав у банері (після «Accept all» — `granted` для `ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`);
    - далі йде `Initialization` (Google tag, Conversion Linker), потім один `page_view`;
@@ -39,7 +39,7 @@
 
 ## Як опублікувати
 
-**Submit** → назва версії (наприклад `MAR-20: initial tracking`) → **Publish**. Після кожного нового імпорту потрібна нова публікація.
+**Submit** → назва версії (наприклад `ZAV-27: initial tracking`) → **Publish**. Після кожного нового імпорту потрібна нова публікація.
 
 ## Налаштування згоди в тегах
 

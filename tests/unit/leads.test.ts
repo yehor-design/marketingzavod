@@ -127,31 +127,31 @@ describe("HubSpot mapping", () => {
       email: "jane@example.com",
       firstname: "Jane",
       lastname: "van Smith",
-      wb_lead_id: "lead-1",
-      wb_event_id: "event-1",
-      wb_form_name: "contact",
-      wb_page_url: "https://x.test/contact",
-      wb_lead_created_at: "2026-11-16T10:00:00.000Z",
-      wb_consent_marketing: "true",
-      wb_consent_statistics: "true",
-      wb_ft_utm_source: "test",
-      wb_ft_landing_page: "https://x.test/",
-      wb_ft_timestamp: "2026-11-01T00:00:00.000Z",
-      wb_lt_utm_source: "newsletter",
-      wb_lt_utm_medium: "email",
-      wb_lt_timestamp: "2026-11-10T00:00:00.000Z",
-      wb_gclid: "abc",
-      wb_click_time: "2026-11-01T00:00:00.000Z",
-      wb_fbp: "fb.1.1.2",
-      wb_inquiry_type: "sales",
-      wb_message: "Hello",
+      mz_lead_id: "lead-1",
+      mz_event_id: "event-1",
+      mz_form_name: "contact",
+      mz_page_url: "https://x.test/contact",
+      mz_lead_created_at: "2026-11-16T10:00:00.000Z",
+      mz_consent_marketing: "true",
+      mz_consent_statistics: "true",
+      mz_ft_utm_source: "test",
+      mz_ft_landing_page: "https://x.test/",
+      mz_ft_timestamp: "2026-11-01T00:00:00.000Z",
+      mz_lt_utm_source: "newsletter",
+      mz_lt_utm_medium: "email",
+      mz_lt_timestamp: "2026-11-10T00:00:00.000Z",
+      mz_gclid: "abc",
+      mz_click_time: "2026-11-01T00:00:00.000Z",
+      mz_fbp: "fb.1.1.2",
+      mz_inquiry_type: "sales",
+      mz_message: "Hello",
     });
   });
 
   it("never overwrites first touch on an existing contact", () => {
     const properties = toContactProperties(lead, false);
-    expect(Object.keys(properties).some((key) => key.startsWith("wb_ft_"))).toBe(false);
-    expect(properties.wb_lt_utm_source).toBe("newsletter");
+    expect(Object.keys(properties).some((key) => key.startsWith("mz_ft_"))).toBe(false);
+    expect(properties.mz_lt_utm_source).toBe("newsletter");
   });
 
   it("creates a deal for sales forms only", () => {
@@ -159,8 +159,8 @@ describe("HubSpot mapping", () => {
       dealname: "Contact form: jane@example.com",
       pipeline: "default",
       dealstage: "appointmentscheduled",
-      wb_lead_id: "lead-1",
-      wb_form_name: "contact",
+      mz_lead_id: "lead-1",
+      mz_form_name: "contact",
     });
     expect(toDealProperties({ ...lead, form_name: "careers_apply" }, "x", "default")).toBeNull();
   });

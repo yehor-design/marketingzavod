@@ -5,7 +5,7 @@ export type Entry = Record<string, unknown> & { event?: string };
 let ipCounter = 0;
 
 /**
- * Keeps the test offline: GTM, PostHog and Amplitude requests are answered locally and
+ * Keeps the test offline: GTM, Amplitude and Vercel requests are answered locally and
  * recorded. Each page also gets its own client address, so the lead API's
  * rate limit never couples one test to another.
  *
@@ -26,12 +26,8 @@ export async function prepare(page: Page, { choice = "necessary" }: { choice?: "
     requests.push(route.request().url());
     return route.fulfill({ status: 200, contentType: "application/javascript", body: "" });
   });
-  await page.route(/\/ingest\//, (route) => {
-    requests.push(route.request().url());
-    return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
-  });
-  // Amplitude and PostHog's own hosts. Nothing may reach them before consent.
-  await page.route(/amplitude\.com|posthog\.com/, (route) => {
+  // Amplitude events, Session Replay and its remote config. Nothing may reach them before consent.
+  await page.route(/amplitude\.com/, (route) => {
     requests.push(route.request().url());
     return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
   });
@@ -47,7 +43,7 @@ export async function storeConsent(page: Page, statistics: boolean, marketing: b
   const decidedAt = Math.floor(Date.now() / 1000) - 60;
   await page.context().addCookies([
     {
-      name: "wb_consent",
+      name: "mz_consent",
       value: `1.s${statistics ? 1 : 0}m${marketing ? 1 : 0}.${decidedAt}.0f8c2b1d9e7a4c6b8d0e1f2a3b4c5d6e`,
       url: "http://localhost:3100",
     },

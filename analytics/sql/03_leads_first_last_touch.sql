@@ -1,7 +1,7 @@
 -- Заявки за first touch і last touch.
 -- First touch: джерело, з яким користувача вперше побачив GA4 (traffic_source).
 -- Last touch: джерело сесії, у якій сталася заявка.
--- Точніша атрибуція з вікном 90 днів лежить у CRM (властивості wb_ft_* і wb_lt_*).
+-- Точніша атрибуція з вікном 90 днів лежить у CRM (властивості mz_ft_* і mz_lt_*).
 -- Заміни PROJECT.DATASET і діапазон дат.
 WITH events AS (
   SELECT

@@ -2,7 +2,6 @@
 
 import NextError from "next/error";
 import { useEffect } from "react";
-import { posthogCaptureException } from "@/lib/tracking/posthog";
 
 export default function GlobalError({
   error,
@@ -10,9 +9,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }>) {
-  // Reaches PostHog only when it is running, which needs statistics consent.
+  // The digest ties the browser error to the server log line in Vercel.
   useEffect(() => {
-    posthogCaptureException(error);
+    console.error(error);
   }, [error]);
 
   return (

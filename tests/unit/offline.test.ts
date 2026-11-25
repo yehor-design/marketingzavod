@@ -58,7 +58,7 @@ describe("deal helpers", () => {
   });
 
   it("reads the conversions already sent for a deal", () => {
-    expect(sentKeys({ id: "1", properties: { wb_offline_sent: "qualified_lead, deal_won" } })).toEqual([
+    expect(sentKeys({ id: "1", properties: { mz_offline_sent: "qualified_lead, deal_won" } })).toEqual([
       "qualified_lead",
       "deal_won",
     ]);
@@ -68,7 +68,7 @@ describe("deal helpers", () => {
 
 describe("request authentication", () => {
   const secret = "client-secret";
-  const url = "https://www.heywowboy.com/api/crm/hubspot";
+  const url = "https://www.marketingzavod.com/api/crm/hubspot";
   const body = '[{"objectId":1}]';
   const now = 1794823200000;
   const sign = (timestamp: string) =>

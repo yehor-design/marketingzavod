@@ -7,7 +7,7 @@ Meta отримує конверсію двома шляхами: з брауз�
 - [ ] business.facebook.com → створи Business Portfolio і рекламний акаунт.
 - [ ] Events Manager → Connect data → Web → створи набір даних (піксель). Скопіюй **Dataset ID** у Vercel як `NEXT_PUBLIC_META_PIXEL_ID`.
 - [ ] Events Manager → набір даних → Settings → Conversions API → **Generate access token**. Поклади у Vercel як `META_CAPI_ACCESS_TOKEN`. Це секрет: не в Linear і не в чат.
-- [ ] **Підтверди домен.** Business settings → Brand safety and suitability → Domains → Add → `heywowboy.com` → метод DNS TXT. Додай запис у реєстратора, дочекайся статусу Verified.
+- [ ] **Підтверди домен.** Business settings → Brand safety and suitability → Domains → Add → `marketingzavod.com` → метод DNS TXT. Додай запис у реєстратора, дочекайся статусу Verified.
 - [ ] Імпортуй оновлений контейнер GTM, опублікуй версію, зроби redeploy.
 
 ## Як це працює

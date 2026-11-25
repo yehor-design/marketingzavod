@@ -6,10 +6,9 @@ import { createRateLimiter } from "@/lib/leads/rate-limit";
 import { cleanPageUrl, fieldErrors, leadRequestSchema } from "@/lib/leads/schema";
 import { saveLead } from "@/lib/leads/store";
 import type { Lead } from "@/lib/leads/types";
-import { META_SERVER_LEAD_EVENTS } from "@/lib/meta/browser-events";
-import { fbcFromClickId, sendMetaEvent } from "@/lib/meta/capi";
-import { capturePosthogServerEvent } from "@/lib/posthog-server";
-import { flushServerLogs, serverLog } from "@/lib/posthog-server-logs";
+import { amplitudeServerAllowed, sendAmplitudeServerEvents } from "@/lib/amplitude-server";
+import { fbcFromClickId, META_SERVER_LEAD_EVENTS, sendMetaEvent } from "@/lib/meta/capi";
+import { serverLog } from "@/lib/server-log";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -121,17 +120,23 @@ export async function POST(request: NextRequest) {
         }),
       );
     }
-    if (TRACKING_ALLOWED && consent.statistics && data.posthog_distinct_id) {
+    if (amplitudeServerAllowed() && consent.statistics && data.amplitude_device_id) {
       tasks.push(
-        capturePosthogServerEvent(data.posthog_distinct_id, "lead_saved", {
-          form_name: lead.form_name,
-          lead_id: lead.lead_id,
-          event_id: lead.event_id,
-          store: saved.store,
-        }),
+        sendAmplitudeServerEvents([
+          {
+            event_type: "lead_saved",
+            device_id: data.amplitude_device_id,
+            insert_id: lead.lead_id,
+            event_properties: {
+              form_name: lead.form_name,
+              lead_id: lead.lead_id,
+              event_id: lead.event_id,
+              store: saved.store,
+            },
+          },
+        ]),
       );
     }
-    tasks.push(flushServerLogs());
     await Promise.allSettled(tasks);
   });
 

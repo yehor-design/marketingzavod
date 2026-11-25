@@ -1,16 +1,5 @@
 import type { NextConfig } from "next";
 
-/**
- * PostHog ingestion host. The browser never talks to it directly: requests go
- * to /ingest on this domain and are rewritten here. The path avoids words that
- * ad blockers match.
- */
-const posthogHost = (process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com").replace(
-  /\/+$/,
-  "",
-);
-const posthogAssets = posthogHost.replace("://eu.i.", "://eu-assets.i.").replace("://us.i.", "://us-assets.i.");
-
 const isProduction = process.env.VERCEL_ENV === "production";
 
 const nextConfig: NextConfig = {
@@ -22,28 +11,6 @@ const nextConfig: NextConfig = {
   env: {
     // Client code cannot read VERCEL_ENV. Tracking is allowed only when this is "production".
     NEXT_PUBLIC_SITE_ENV: process.env.VERCEL_ENV ?? "development",
-  },
-
-  // PostHog API paths end with a slash. Without this every event costs a 308 round trip.
-  skipTrailingSlashRedirect: true,
-
-  async rewrites() {
-    return [
-      { source: "/ingest/static/:path*", destination: `${posthogAssets}/static/:path*` },
-      { source: "/ingest/array/:path*", destination: `${posthogAssets}/array/:path*` },
-      { source: "/ingest/:path*", destination: `${posthogHost}/:path*` },
-    ];
-  },
-
-  async redirects() {
-    // skipTrailingSlashRedirect turns off the built-in redirect, so pages keep it here.
-    return [
-      {
-        source: "/:path((?!ingest/|api/|_next/).+)/",
-        destination: "/:path",
-        permanent: true,
-      },
-    ];
   },
 
   async headers() {

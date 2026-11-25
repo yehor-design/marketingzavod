@@ -64,9 +64,9 @@ describe("consent cookie format", () => {
   });
 
   it("finds the cookie among others", () => {
-    const cookies = `wb_attr=x; wb_consent=${serializeConsent(CHOICE)}; _ga=1`;
+    const cookies = `mz_attr=x; mz_consent=${serializeConsent(CHOICE)}; _ga=1`;
     expect(readConsentCookie(cookies, NOW)).toEqual(CHOICE);
-    expect(readConsentCookie("wb_attr=x", NOW)).toBeNull();
+    expect(readConsentCookie("mz_attr=x", NOW)).toBeNull();
     expect(readConsentCookie("xwb_consent=1", NOW)).toBeNull();
   });
 
@@ -90,14 +90,14 @@ describe("consent cookie format", () => {
       "lastExternalReferrer",
       "li_fat_id",
       "li_gc",
-      "cfz_facebook-pixel",
-      "cfzs_facebook-pixel",
-      "cf_zaraz",
-      "wb_zaraz_consent",
     ]);
-    expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("amplitude.");
-    expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("ph_");
-    expect(prefixesToClear(all, { statistics: false, marketing: true })).toContain("AMP_");
+    expect(prefixesToClear(all, { statistics: false, marketing: true })).toEqual([
+      "_ga",
+      "_gid",
+      "AMP_",
+      "amp_",
+      "amplitude.",
+    ]);
     expect(prefixesToClear({ statistics: false, marketing: false }, all)).toEqual([]);
   });
 
@@ -118,17 +118,17 @@ describe("the inline reader used by the GTM bootstrap", () => {
   ) => { s: boolean; m: boolean } | null;
 
   it.each([
-    ["no cookie", "wb_attr=x"],
-    ["statistics only", `wb_consent=1.s1m0.${NOW}.${ID}`],
-    ["marketing only", `a=1; wb_consent=1.s0m1.${NOW}.${ID}; b=2`],
-    ["both", `wb_consent=1.s1m1.${NOW}.${ID}`],
-    ["neither", `wb_consent=1.s0m0.${NOW}.${ID}`],
-    ["another version", `wb_consent=2.s1m1.${NOW}.${ID}`],
-    ["garbage", "wb_consent=yes"],
+    ["no cookie", "mz_attr=x"],
+    ["statistics only", `mz_consent=1.s1m0.${NOW}.${ID}`],
+    ["marketing only", `a=1; mz_consent=1.s0m1.${NOW}.${ID}; b=2`],
+    ["both", `mz_consent=1.s1m1.${NOW}.${ID}`],
+    ["neither", `mz_consent=1.s0m0.${NOW}.${ID}`],
+    ["another version", `mz_consent=2.s1m1.${NOW}.${ID}`],
+    ["garbage", "mz_consent=yes"],
     ["prefix of another name", `xwb_consent=1.s1m1.${NOW}.${ID}`],
-    ["from the future", `wb_consent=1.s1m1.${NOW + 3600}.${ID}`],
-    ["expired", `wb_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS}.${ID}`],
-    ["just inside 180 days", `wb_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS + 1}.${ID}`],
+    ["from the future", `mz_consent=1.s1m1.${NOW + 3600}.${ID}`],
+    ["expired", `mz_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS}.${ID}`],
+    ["just inside 180 days", `mz_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS + 1}.${ID}`],
   ])("agrees with readConsentCookie: %s", (_, cookies) => {
     const expected = readConsentCookie(cookies, NOW);
     const actual = inline(cookies, NOW);
@@ -177,7 +177,7 @@ describe("lib/consent in the browser", () => {
 
   it("restores a stored choice on page load", () => {
     const decidedAt = Math.floor(Date.now() / 1000) - 60;
-    const { document } = cookieJar({ wb_consent: serializeConsent({ ...CHOICE, decidedAt }) });
+    const { document } = cookieJar({ mz_consent: serializeConsent({ ...CHOICE, decidedAt }) });
     vi.stubGlobal("window", { location: { protocol: "https:" } });
     vi.stubGlobal("document", document);
     expect(getConsent()).toEqual({ necessary: true, preferences: false, statistics: true, marketing: false, answered: true });
@@ -188,7 +188,7 @@ describe("lib/consent in the browser", () => {
     const { document, writes } = cookieJar();
     const reload = vi.fn();
     const sendBeacon = vi.fn(() => true);
-    vi.stubGlobal("window", { location: { protocol: "https:", hostname: "www.heywowboy.com", reload } });
+    vi.stubGlobal("window", { location: { protocol: "https:", hostname: "www.marketingzavod.com", reload } });
     vi.stubGlobal("navigator", { sendBeacon });
     vi.stubGlobal("document", document);
 
@@ -197,7 +197,7 @@ describe("lib/consent in the browser", () => {
     const result = saveConsent({ statistics: true, marketing: true }, "banner");
 
     expect(writes).toHaveLength(1);
-    expect(writes[0]).toMatch(/^wb_consent=1\.s1m1\.\d+\.[0-9a-f]{32}; Path=\/; Max-Age=15552000; SameSite=Lax; Secure$/);
+    expect(writes[0]).toMatch(/^mz_consent=1\.s1m1\.\d+\.[0-9a-f]{32}; Path=\/; Max-Age=15552000; SameSite=Lax; Secure$/);
     expect(result).toMatchObject({ narrowed: false, source: "banner", stored: { statistics: true, marketing: true } });
     expect(getConsent()).toMatchObject({ statistics: true, marketing: true, answered: true });
     expect(consentSnapshot()).toEqual({ statistics: true, marketing: true, preferences: false });
@@ -226,5 +226,38 @@ describe("lib/consent in the browser", () => {
     vi.stubGlobal("window", {});
     setConsent({ preferences: false, statistics: true, marketing: false, answered: true });
     expect(consentSnapshot()).toEqual({ statistics: true, marketing: false, preferences: false });
+  });
+});
+
+describe("IndexedDB cleanup", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("clears Session Replay recordings only when statistics is withdrawn", async () => {
+    const { indexedDbToClear } = await import("@/lib/consent/core");
+    const all = { statistics: true, marketing: true };
+    expect(indexedDbToClear(all, { statistics: false, marketing: true })).toEqual(["_amp_session_replay_events"]);
+    expect(indexedDbToClear(all, { statistics: true, marketing: false })).toEqual([]);
+  });
+
+  it("deletes the matching databases and leaves the others", async () => {
+    const deleteDatabase = vi.fn();
+    vi.stubGlobal("indexedDB", {
+      databases: async () => [{ name: "e2e_amplit_amp_session_replay_events" }, { name: "other" }],
+      deleteDatabase,
+    });
+    const { clearIndexedDbByName } = await import("@/lib/consent/storage");
+    await expect(clearIndexedDbByName(["_amp_session_replay_events"])).resolves.toEqual([
+      "e2e_amplit_amp_session_replay_events",
+    ]);
+    expect(deleteDatabase).toHaveBeenCalledTimes(1);
+    expect(deleteDatabase).toHaveBeenCalledWith("e2e_amplit_amp_session_replay_events");
+  });
+
+  it("does nothing where IndexedDB cannot list databases", async () => {
+    vi.stubGlobal("indexedDB", { deleteDatabase: vi.fn() });
+    const { clearIndexedDbByName } = await import("@/lib/consent/storage");
+    await expect(clearIndexedDbByName(["_amp_session_replay_events"])).resolves.toEqual([]);
   });
 });

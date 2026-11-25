@@ -8,7 +8,7 @@ import { gtmActive, gtmScriptUrl } from "@/lib/tracking/gtm";
  *
  * It always puts the service IDs in the dataLayer and defines gtag(). GTM
  * itself starts only when the visitor has already consented to statistics or
- * marketing (the wb_consent cookie): then the script sets the Consent Mode v2
+ * marketing (the mz_consent cookie): then the script sets the Consent Mode v2
  * default from that choice and requests gtm.js. Without consent nothing is
  * requested from Google. A choice made on the page starts GTM through
  * lib/tracking/gtm.ts.
@@ -31,7 +31,7 @@ export function GoogleTagManager() {
     "window.gtag('consent','default',{ad_storage:a,ad_user_data:a,ad_personalization:a," +
     "analytics_storage:c.s?g:d,functionality_storage:d,personalization_storage:d,security_storage:g});" +
     "window.dataLayer.push({consent_statistics:c.s,consent_marketing:c.m});" +
-    "window.__wbGtmStarted=true;" +
+    "window.__mzGtmStarted=true;" +
     "window.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});" +
     "var j=document.createElement('script');j.async=true;" +
     `j.src=${JSON.stringify(gtmScriptUrl(trackingIds.gtm))};` +

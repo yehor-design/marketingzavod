@@ -4,8 +4,8 @@ GA4 стоїть лише через GTM. Прямого `gtag.js` у коді �
 
 ## Створення
 
-- [ ] Admin → Create → Property. Часовий пояс **Europe/Sofia**, валюта **EUR**.
-- [ ] Data streams → Web → `https://www.heywowboy.com`. Скопіюй **Measurement ID** (`G-…`) у Vercel як `NEXT_PUBLIC_GA4_ID`, зроби redeploy.
+- [x] Акаунт «Marketing Zavod», ресурс `marketingzavod.com`: часовий пояс Болгарії (GMT+2, той самий, що Europe/Kyiv), валюта **EUR**. Створено 25.11.2026 в Google-акаунті Marketing Zavod, без необов'язкового передавання даних Google.
+- [x] Data streams → Web → `https://www.marketingzavod.com`, Measurement ID `G-5MKF62M6VV` у Vercel як `NEXT_PUBLIC_GA4_ID`.
 
 ## Налаштування
 

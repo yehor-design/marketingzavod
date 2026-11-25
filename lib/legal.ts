@@ -102,8 +102,8 @@ const privacy: LegalDocument = {
   heading: "Privacy Policy",
   description:
     "How Jet collects, uses and protects personal data, including the cookies and analytics services used on this website.",
-  version: "1.8",
-  date: "Nov 17, 2026",
+  version: "1.9",
+  date: "Nov 25, 2026",
   blocks: [
     p(
       "Jet respects your privacy. This Privacy Policy explains what information we collect, how we use it, and your rights.",
@@ -141,13 +141,13 @@ const privacy: LegalDocument = {
     {
       kind: "list",
       items: [
-        "Necessary: the wb_consent cookie remembers your choice. It holds only the categories you chose, the date and a random ID.",
-        "Statistics: Google Analytics 4, PostHog and Amplitude help us understand how the website is used, including session recordings in which form fields are masked, and Vercel Speed Insights measures how fast our pages load. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
+        "Necessary: the mz_consent cookie remembers your choice. It holds only the categories you chose, the date and a random ID.",
+        "Statistics: Google Analytics 4 and Amplitude help us understand how the website is used, and Amplitude records sessions in which form fields are masked. Vercel Speed Insights measures how fast our pages load. We also remember the campaign that brought you here (UTM parameters) for up to 90 days.",
         "Marketing: Google Ads, Meta and LinkedIn measure whether our advertising leads to enquiries. With your consent we may share a hashed version of the email address you submit in a form, together with advertising click identifiers, with Google and Meta for conversion measurement.",
       ],
     },
     p(
-      "To be able to show that consent was given, we keep a record of each choice: the random ID from the wb_consent cookie, the categories you chose, whether you chose in the banner or in the settings, the version of this notice and the time. The record contains no IP address, browser details or other information that identifies you, and is stored with PostHog.",
+      "To be able to show that consent was given, we keep a record of each choice: the random ID from the mz_consent cookie, the categories you chose, whether you chose in the banner or in the settings, the version of this notice and the time. The record contains no IP address, browser details or other information that identifies you, and is stored with Amplitude.",
     ),
     p(
       "If you submit a form without consenting to statistics or marketing, we still receive your message and the campaign name from the link you followed, but no advertising identifiers and no cookies are used.",
@@ -156,7 +156,7 @@ const privacy: LegalDocument = {
       "Form submissions are stored in our customer relationship management system (HubSpot) so that we can reply to you.",
     ),
     p(
-      "After you consent, Google Analytics runs through Cloudflare Zaraz: your browser sends events to our own subdomain, and Cloudflare forwards them to Google from its servers, acting as our processor. Events for Meta are sent from our own server to Meta\u2019s Conversions API rather than by a script in your browser. In both cases only the categories you consented to are used.",
+      "After you consent, Google Tag Manager loads the Google Analytics, Google Ads, Meta and LinkedIn tags in your browser, only for the categories you consented to. When you send a form with marketing consent, our server also reports it to Meta\u2019s Conversions API, so that the enquiry is counted once even if the browser blocks the Meta script.",
     ),
     h2("5. Data Security"),
     p(

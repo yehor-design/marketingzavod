@@ -7,8 +7,6 @@ import { orderedDither, randomDither } from "@/components/motion";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
 import { Input } from "@/components/forms/bound-controls";
 import { Button } from "@/components/ui/button";
-import { amplitudeTrack } from "@/lib/tracking/amplitude";
-import { posthogCapture, posthogLogInfo } from "@/lib/tracking/posthog";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/waitlist/waitlist-styles";
 
@@ -186,9 +184,6 @@ export function WaitlistPage() {
               );
               setPending(false);
               if (result.ok) {
-                amplitudeTrack("Waitlist Joined");
-                posthogCapture("waitlist_joined");
-                posthogLogInfo("waitlist_form_submitted", { form: "waitlist" });
                 setDone(true);
               } else if (result.error === "validation") {
                 setError(result.errors.email ?? "Enter a valid email.");

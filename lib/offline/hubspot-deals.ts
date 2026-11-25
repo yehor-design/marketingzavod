@@ -12,13 +12,13 @@ export type ContactRecord = { id: string; properties: Record<string, string | nu
 const CONTACT_PROPERTIES = [
   "email",
   "phone",
-  "wb_lead_id",
-  "wb_consent_marketing",
-  "wb_click_time",
-  "wb_fbp",
-  "wb_fbc",
-  "wb_page_url",
-  ...CLICK_ID_FIELDS.map((key) => `wb_${key}`),
+  "mz_lead_id",
+  "mz_consent_marketing",
+  "mz_click_time",
+  "mz_fbp",
+  "mz_fbc",
+  "mz_page_url",
+  ...CLICK_ID_FIELDS.map((key) => `mz_${key}`),
 ];
 
 export function dealProperties(): string[] {
@@ -26,8 +26,8 @@ export function dealProperties(): string[] {
   return [
     "dealstage",
     "dealname",
-    "wb_lead_id",
-    "wb_offline_sent",
+    "mz_lead_id",
+    "mz_offline_sent",
     "hs_lastmodifieddate",
     ...stages.flatMap((stage) => [`hs_v2_date_entered_${stage}`, `hs_date_entered_${stage}`]),
   ];
@@ -68,7 +68,7 @@ export async function searchConvertedDeals(token: string, sinceMs: number): Prom
               filters: [
                 { propertyName: "dealstage", operator: "IN", values: stages },
                 { propertyName: "hs_lastmodifieddate", operator: "GTE", value: String(sinceMs) },
-                { propertyName: "wb_lead_id", operator: "HAS_PROPERTY" },
+                { propertyName: "mz_lead_id", operator: "HAS_PROPERTY" },
               ],
             },
           ],
@@ -102,7 +102,7 @@ export function stageEnteredAt(deal: DealRecord, stage: string): string | null {
 
 /** Conversions already reported for this deal, kept on the deal itself. */
 export function sentKeys(deal: DealRecord): string[] {
-  return (deal.properties.wb_offline_sent ?? "")
+  return (deal.properties.mz_offline_sent ?? "")
     .split(",")
     .map((key) => key.trim())
     .filter(Boolean);
@@ -112,6 +112,6 @@ export async function markSent(token: string, deal: DealRecord, key: string): Pr
   const keys = [...new Set([...sentKeys(deal), key])];
   await hubspotFetch(token, `/crm/v3/objects/deals/${deal.id}`, {
     method: "PATCH",
-    body: { properties: { wb_offline_sent: keys.join(",") } },
+    body: { properties: { mz_offline_sent: keys.join(",") } },
   });
 }

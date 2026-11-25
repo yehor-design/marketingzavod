@@ -37,7 +37,7 @@ export type Attribution = {
 
 export const EMPTY_ATTRIBUTION: Attribution = { first: null, last: null };
 
-export const ATTRIBUTION_COOKIE = "wb_attr";
+export const ATTRIBUTION_COOKIE = "mz_attr";
 export const ATTRIBUTION_MAX_AGE_DAYS = 90;
 
 const UTM_MAX = 150;
