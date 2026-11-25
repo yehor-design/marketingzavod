@@ -26,27 +26,27 @@
 
 ## Форми
 
-- [ ] Contact, Waitlist і відгук на вакансію доходять до CRM: тестова заявка з кожної з'являється в HubSpot Marketing Zavod.
+- [ ] Contact, Waitlist і відгук на вакансію доходять до CRM: Contact і Waitlist перевірено в HubSpot Marketing Zavod 25.11.2026; відгук на вакансію перевірити, якщо розділ Careers лишається на сайті.
 - [ ] Хтось реально читає заявки: у HubSpot увімкнено сповіщення про новий контакт або угоду.
 - [ ] Перевірено повідомлення про помилку: вимкни мережу і відправ форму.
 
 ## Акаунти і змінні
 
-- [ ] Усі пункти задачі ZAV-21 закрито, змінні додано у Vercel (Production), зроблено redeploy.
-- [ ] `META_TEST_EVENT_CODE` видалено після перевірки дедуплікації.
-- [ ] `NEXT_PUBLIC_TRACKING_DEBUG` не задано в Production.
+- [x] Усі пункти задачі ZAV-21 закрито, змінні додано у Vercel (Production), зроблено redeploy (25.11.2026).
+- [x] `META_TEST_EVENT_CODE` видалено після перевірки дедуплікації (у Production не задано).
+- [x] `NEXT_PUBLIC_TRACKING_DEBUG` не задано в Production.
 - [x] Контейнер GTM імпортовано і опубліковано 25.11.2026 (версія 2, ZAV-27).
 
 ## Вимірювання
 
-- [ ] Сценарії згоди з `tracking-qa.md` пройдено на production (без вибору, «Necessary only», «Accept all», відкликання).
-- [ ] Заявка з форми доходить до HubSpot; подія Meta `Lead` з браузера і з сервера дедуплікована, `event_id` той самий, що в `mz_event_id` контакту.
+- [x] Сценарії згоди з `tracking-qa.md` пройдено на production (без вибору, «Necessary only», «Accept all», відкликання — 25.11.2026).
+- [ ] Заявка з форми доходить до HubSpot (перевірено 25.11.2026); подія Meta `Lead` з браузера і з сервера перевірена в Events Manager → Test Events як дедуплікована, Event Match Quality не нижче 6.
 - [x] Вимкнено автоматичні події пікселя Meta (Events Manager → Settings → Automatic events) і Outbound clicks у розширених вимірюваннях GA4 (25.11.2026): вони дублюють власні події сайту.
-- [ ] GA4: ключові події позначено, custom dimensions створено, внутрішній трафік відфільтровано.
+- [ ] GA4: ключові події позначено (custom dimensions створено 25.11.2026), внутрішній трафік відфільтровано.
 - [ ] Google Ads: дії-конверсії у статусі «Recording conversions», діагностика Enhanced Conversions без помилок, автотегування ввімкнено, GA4 зв'язано.
-- [ ] Meta: домен підтверджено (зроблено 25.11.2026), тестова заявка показує подію з браузера і з сервера як дедупліковану, Event Match Quality для `Lead` не нижче 6.
+- [x] Meta: домен `marketingzavod.com` підтверджено (25.11.2026), піксель і Conversions API працюють на production.
 - [x] Search Console: домен підтверджено, sitemap надіслано, GA4 зв'язано (25.11.2026).
-- [ ] Офлайн-конверсії: тестова угода дала подію в Meta і рядок у файлі Google Ads.
+- [ ] Офлайн-конверсії: тестова угода дала подію `QualifiedLead` у Meta (перевірено 25.11.2026) і рядок у файлі Google Ads (після підключення Google Ads, ZAV-53).
 
 ## Кампанії
 
@@ -57,5 +57,5 @@
 
 ## Швидкість
 
-- [ ] Таблиця «до і після» в `performance-budget.md` заповнена для всіх увімкнених сервісів.
-- [ ] Жоден скрипт не вивів сторінку за бюджет (див. `performance-budget.md`). Amplitude вже полегшено: Guides & Surveys і Experiment не вантажаться, PostHog прибрано.
+- [x] Таблиця «до і після» в `performance-budget.md` заповнена для всіх увімкнених сервісів (25.11.2026).
+- [x] Жоден скрипт не вивів сторінку за бюджет (див. `performance-budget.md`). Amplitude вже полегшено: Guides & Surveys і Experiment не вантажаться, PostHog прибрано.

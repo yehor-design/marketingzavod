@@ -67,7 +67,7 @@ describe("consent cookie format", () => {
     const cookies = `mz_attr=x; mz_consent=${serializeConsent(CHOICE)}; _ga=1`;
     expect(readConsentCookie(cookies, NOW)).toEqual(CHOICE);
     expect(readConsentCookie("mz_attr=x", NOW)).toBeNull();
-    expect(readConsentCookie("xwb_consent=1", NOW)).toBeNull();
+    expect(readConsentCookie("xmz_consent=1", NOW)).toBeNull();
   });
 
   it("sets first-party, lax, 180-day attributes, secure on https", () => {
@@ -125,7 +125,7 @@ describe("the inline reader used by the GTM bootstrap", () => {
     ["neither", `mz_consent=1.s0m0.${NOW}.${ID}`],
     ["another version", `mz_consent=2.s1m1.${NOW}.${ID}`],
     ["garbage", "mz_consent=yes"],
-    ["prefix of another name", `xwb_consent=1.s1m1.${NOW}.${ID}`],
+    ["prefix of another name", `xmz_consent=1.s1m1.${NOW}.${ID}`],
     ["from the future", `mz_consent=1.s1m1.${NOW + 3600}.${ID}`],
     ["expired", `mz_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS}.${ID}`],
     ["just inside 180 days", `mz_consent=1.s1m1.${NOW - CONSENT_MAX_AGE_SECONDS + 1}.${ID}`],

@@ -98,6 +98,6 @@ TEST-gclid,,,,Deal won (offline),2026-11-16 10:00:00,500,EUR,Granted,Granted
    У відповіді є рядок із `TEST-gclid` і `Qualified lead (offline)`.
 5. Без пароля той самий запит повертає 401.
 
-## Що не перевірено
+## Що не перевірено на живих акаунтах
 
-Обидва endpoint покриті юніт-тестами (підпис, формат файла, читання стадій), але не перевірені з реальним HubSpot, Meta і Google Ads: акаунтів і токенів ще немає.
+Щоденна синхронізація HubSpot → Meta Conversions API (`/api/cron/offline-conversions`) перевірена на production 25.11.2026. Юніт-тестами покриті, але на живих акаунтах ще не перевірялися: необов'язковий webhook `POST /api/crm/hubspot` (потребує project-based app у HubSpot) і запланований імпорт CSV у живому акаунті Google Ads (`GET /api/offline-conversions/google-ads`, відкладено до ZAV-53).
