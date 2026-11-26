@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:visual": "playwright test --config playwright.visual.config.ts",
     "gtm:build": "node gtm/build-container.mjs",
     "hubspot:setup": "node scripts/hubspot-setup.mjs",
     "lighthouse": "lhci autorun"
