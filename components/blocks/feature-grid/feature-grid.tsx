@@ -36,6 +36,8 @@ export type FeatureGridProps = {
   title: string;
   description?: string;
   items: readonly FeatureGridItem[];
+  /** "cards" = 2x2 visual cards (home); "icons" = 4-column icon row (about/principles). */
+  layout?: "cards" | "icons";
   className?: string;
 };
 
@@ -98,8 +100,38 @@ export function FeatureGrid({
   title,
   description,
   items,
+  layout = "cards",
   className,
 }: FeatureGridProps) {
+  if (layout === "icons") {
+    return (
+      <section
+        className={cx("iconSection", className)}
+        id={id}
+        aria-labelledby={titleId}
+        data-block="feature-grid"
+      >
+        <div className={cx("iconFrame")}>
+          <div className={cx("powersHead")}>
+            <h2 id={titleId}>{title}</h2>
+            {description ? <p>{description}</p> : null}
+          </div>
+          <ul className={cx("powers")}>
+            {items.map((item) => (
+              <li key={`${item.title}-${item.body}`}>
+                {item.visual?.kind === "icon" ? (
+                  <span className={cx("powerIcon")}>{item.visual.icon}</span>
+                ) : null}
+                <p className={cx("powerTitle")}>{item.title}</p>
+                <p className={cx("powerBody")}>{item.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       className={cx("section", className)}

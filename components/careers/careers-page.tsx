@@ -1,14 +1,28 @@
 "use client";
 
-import Link from "next/link";
-import { CornerMarks } from "@/components/motion/corner-marks";
+import { Benefits, BenefitsHighlight, type BenefitItem } from "@/components/blocks/benefits";
+import { OpenRoles, type OpenRoleItem } from "@/components/blocks/open-roles";
 import { GodRays } from "@/components/motion";
-import { BenefitIcon, Chevron } from "@/components/careers/icons";
+import { BenefitIcon } from "@/components/careers/icons";
 import { CtaLink } from "@/components/ui/button";
 import { benefits, careers } from "@/lib/careers";
 import styles from "@/components/careers/careers-styles";
 
 const NBSP = "\u00A0";
+
+const benefitItems: readonly BenefitItem[] = benefits.map((benefit) => ({
+  title: benefit.title,
+  body: benefit.body,
+  icon: <BenefitIcon name={benefit.icon} />,
+}));
+
+const roleItems: readonly OpenRoleItem[] = careers.map((role) => ({
+  id: role.slug,
+  title: role.title,
+  subtitle: role.department,
+  meta: role.location,
+  href: `/careers/${role.slug}`,
+}));
 
 export function CareersPage() {
   return (
@@ -66,66 +80,30 @@ export function CareersPage() {
         </div>
       </section>
 
-      <section
-        className={`${styles.frame} ${styles.benefits} scroll-mt-[80px]`}
+      <Benefits
         id="benefits"
-        aria-labelledby="benefits-title"
-      >
-        <div className={styles.benefitsHead}>
-          <h2 id="benefits-title">What drives us.</h2>
-          <p>
-            <span className={styles.bright}>
+        titleId="benefits-title"
+        title="What drives us."
+        description={
+          <>
+            <BenefitsHighlight>
               We move fast, optimize relentlessly, and always put the user first.
-            </span>
+            </BenefitsHighlight>
             {
               " If you’re excited by performance, simplicity, and making a real impact on the web, you’ll thrive at Jet."
             }
-          </p>
-        </div>
-        <ul className={styles.benefitGrid}>
-          {benefits.map((benefit) => (
-            <li key={benefit.title} className="corner-host">
-              <CornerMarks />
-              <BenefitIcon name={benefit.icon} />
-              <div>
-                <h3>{benefit.title}</h3>
-                <div className={styles.benefitReveal}>
-                  <p>{benefit.body}</p>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+          </>
+        }
+        items={benefitItems}
+      />
 
-      <section className={`${styles.frame} scroll-mt-[80px]`} id="open-roles" aria-labelledby="roles-title">
-        <div className={styles.roles}>
-          <div className={styles.rolesIntro}>
-            <h2 id="roles-title">Open roles.</h2>
-            <p>
-              We’re always looking for talented people who care about speed, quality, and
-              great user experiences.
-            </p>
-          </div>
-          <ul className={styles.roleList}>
-            {careers.map((role) => (
-              <li key={role.slug}>
-                <Link href={`/careers/${role.slug}`}>
-                  <span className={styles.roleName}>
-                    <span className={styles.roleTitle}>{role.title}</span>
-                    <span aria-hidden="true">/</span>
-                    <span className={styles.roleDept}>{role.department}</span>
-                  </span>
-                  <span className={styles.roleLocation}>{role.location}</span>
-                  <span className={styles.roleArrow} aria-hidden="true">
-                    <Chevron direction="right" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <OpenRoles
+        id="open-roles"
+        titleId="roles-title"
+        title="Open roles."
+        description="We’re always looking for talented people who care about speed, quality, and great user experiences."
+        items={roleItems}
+      />
     </div>
   );
 }
