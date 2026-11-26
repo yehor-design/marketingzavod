@@ -1,87 +1,10 @@
 import Link from "next/link";
-import { getPost, posts, type Block, type Post } from "@/lib/blog";
+import { getPost, posts, type Post } from "@/lib/blog";
+import { ArticleBody } from "@/components/blocks/article-body";
 import { CoverImage, PostCard } from "@/components/blog/post-card";
 import { SiteCta } from "@/components/site-cta";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import styles from "@/components/blog/blog-styles";
-
-function Blocks({ blocks }: { blocks: Block[] }) {
-  return (
-    <div className={styles.body}>
-      {blocks.map((block, index) => {
-        const key = `${block.kind}-${index}`;
-        if (block.kind === "h2") {
-          return <h2 key={key}>{block.text}</h2>;
-        }
-        if (block.kind === "h3") {
-          return <h3 key={key}>{block.text}</h3>;
-        }
-        if (block.kind === "p") {
-          return <p key={key}>{block.text}</p>;
-        }
-        if (block.kind === "quote") {
-          return (
-            <blockquote key={key} className={styles.quote}>
-              <p>{block.text}</p>
-            </blockquote>
-          );
-        }
-        if (block.kind === "list") {
-          return (
-            <ul key={key}>
-              {block.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          );
-        }
-        if (block.kind === "table") {
-          return (
-            <div key={key} className={styles.tableWrap}>
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-0 hover:bg-transparent">
-                    {block.headers.map((header) => (
-                      <TableHead key={header} scope="col" className="text-muted-foreground">
-                        {header}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {block.rows.map((row) => (
-                    <TableRow key={row.join("|")} className="border-0 hover:bg-transparent">
-                      {row.map((cell, cellIndex) => (
-                        <TableCell key={`${cell}-${cellIndex}`} className="whitespace-normal">
-                          {cell}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          );
-        }
-        return (
-          <div key={key} className={styles.code}>
-            <pre>
-              <code>{block.text}</code>
-            </pre>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 export function ArticlePage({ slug }: { slug: string }) {
   const post = getPost(slug) as Post;
@@ -131,7 +54,7 @@ export function ArticlePage({ slug }: { slug: string }) {
       </header>
 
       <section className={styles.content} aria-label="Article">
-        <Blocks blocks={post.body} />
+        <ArticleBody blocks={post.body} />
       </section>
 
       <section className={styles.relatedSection} aria-labelledby="read-more">
