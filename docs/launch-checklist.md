@@ -35,6 +35,7 @@
 - [x] Усі пункти задачі ZAV-21 закрито, змінні додано у Vercel (Production), зроблено redeploy (25.11.2026).
 - [x] `META_TEST_EVENT_CODE` видалено після перевірки дедуплікації (у Production не задано).
 - [x] `NEXT_PUBLIC_TRACKING_DEBUG` не задано в Production.
+- [ ] Коли реальний сайт готовий до індексації: додати `NEXT_PUBLIC_ALLOW_INDEXING=true` у Vercel (Production) і зробити redeploy (поки не задано, сайт повністю прихований від Google і роботів).
 - [x] Контейнер GTM імпортовано і опубліковано 25.11.2026 (версія 2, ZAV-27).
 
 ## Вимірювання

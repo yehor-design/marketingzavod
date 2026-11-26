@@ -7,7 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 import { GoogleTagManager } from "@/components/tracking/gtm";
 import { ConsentedSpeedInsights } from "@/components/tracking/speed-insights";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
-import { IS_PRODUCTION_DEPLOY, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { ALLOW_INDEXING, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const googleSans = Google_Sans({
@@ -28,6 +28,25 @@ const googleSansCode = Google_Sans_Code({
 const TITLE = "Jet – Lightning-Fast Website Optimization";
 const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION?.trim();
 
+const BLOCK_ROBOTS: Metadata["robots"] = {
+  index: false,
+  follow: false,
+  nocache: true,
+  noarchive: true,
+  nosnippet: true,
+  noimageindex: true,
+  googleBot: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+    "max-video-preview": -1,
+    "max-image-preview": "none",
+    "max-snippet": -1,
+  },
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: TITLE,
@@ -45,8 +64,8 @@ export const metadata: Metadata = {
     title: TITLE,
     description: SITE_DESCRIPTION,
   },
-  // Only the production deployment may be indexed. Previews answer noindex.
-  robots: IS_PRODUCTION_DEPLOY ? { index: true, follow: true } : { index: false, follow: false },
+  // Hidden from search engines until NEXT_PUBLIC_ALLOW_INDEXING=true in production.
+  robots: ALLOW_INDEXING ? { index: true, follow: true } : BLOCK_ROBOTS,
   // Fallback for Search Console when DNS verification is not available.
   verification: gscVerification ? { google: gscVerification } : undefined,
 };

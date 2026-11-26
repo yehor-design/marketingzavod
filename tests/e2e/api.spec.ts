@@ -47,32 +47,42 @@ test("the lead API validates, answers a bot quietly and limits bursts", async ({
   expect(statuses).toEqual([200, 200, 200, 200, 200, 429, 429]);
 });
 
-test("search files: sitemap, robots and noindex outside production", async ({ request }) => {
+test("search files: hidden from Google and crawlers by default", async ({ request }) => {
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.status()).toBe(200);
+  expect(sitemap.headers()["x-robots-tag"]).toContain("noindex");
   const xml = await sitemap.text();
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  expect(urls).toContain("https://www.marketingzavod.com/");
-  expect(urls).toContain("https://www.marketingzavod.com/pricing");
-  expect(urls.some((url) => url.includes("/blog/"))).toBe(true);
-  expect(urls.some((url) => url.includes("/updates/"))).toBe(true);
-  expect(urls.some((url) => url.includes("/careers/"))).toBe(true);
-  expect(urls.some((url) => /checkout|\/dev\//.test(url))).toBe(false);
+  expect(urls).toEqual([]);
 
-  // This build is not the production deployment, so it must stay out of search.
-  const robots = await (await request.get("/robots.txt")).text();
+  const robotsRes = await request.get("/robots.txt");
+  expect(robotsRes.status()).toBe(200);
+  const robots = await robotsRes.text();
+  expect(robots).toMatch(/User-Agent: \*/i);
   expect(robots).toMatch(/Disallow: \/\s*$/m);
+  expect(robots).not.toContain("Sitemap:");
+
   const home = await request.get("/");
-  expect(home.headers()["x-robots-tag"]).toContain("noindex");
+  expect(home.headers()["x-robots-tag"]).toBe(
+    "noindex, nofollow, noarchive, nosnippet, noimageindex",
+  );
 
   const missing = await request.get("/this-page-does-not-exist");
   expect(missing.status()).toBe(404);
 
   const html = await home.text();
+  expect(html).toContain('<meta name="robots" content="noindex, nofollow');
+  expect(html).toContain('<meta name="googlebot" content="noindex, nofollow');
   expect(html).toContain('<link rel="canonical" href="https://www.marketingzavod.com"');
   expect(html).toContain('"@type":"Organization"');
   expect(html).toContain('"@type":"WebSite"');
-  const post = await (await request.get(urls.find((url) => url.includes("/blog/"))!.replace("https://www.marketingzavod.com", ""))).text();
+
+  const blogHtml = await (await request.get("/blog")).text();
+  const postPath = blogHtml.match(/href="(\/blog\/[^"]+)"/)?.[1];
+  expect(postPath).toBeTruthy();
+  const postRes = await request.get(postPath!);
+  expect(postRes.headers()["x-robots-tag"]).toContain("noindex");
+  const post = await postRes.text();
   expect(post).toContain('"@type":"Article"');
   expect(post).toContain('property="og:type" content="article"');
 });

@@ -115,6 +115,7 @@ Amplitude, окрім подій плану, сам збирає перегля�
 | Змінна | Тип | Призначення |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | публічна | Канонічний origin. Типово `https://www.marketingzavod.com` |
+| `NEXT_PUBLIC_ALLOW_INDEXING` | публічна | `true` у Production відкриває сайт для Google і пошукових роботів; поки порожньо — сайт повністю закритий (`Disallow: /`, `X-Robots-Tag`, `meta robots`, порожній `sitemap.xml`) |
 | `NEXT_PUBLIC_GSC_VERIFICATION` | публічна | Запасне підтвердження Search Console мета-тегом |
 | `NEXT_PUBLIC_TRACKING_DEBUG` | публічна | `true` дозволяє трекінг поза production |
 | `NEXT_PUBLIC_GTM_ID` | публічна | ID контейнера GTM (`GTM-…`) |

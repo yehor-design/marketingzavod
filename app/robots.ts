@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { IS_PRODUCTION_DEPLOY, absoluteUrl } from "@/lib/site";
+import { ALLOW_INDEXING, absoluteUrl } from "@/lib/site";
 
-/** Production allows crawling. Preview and local builds forbid it entirely. */
+/** Blocks all crawlers until production indexing is explicitly enabled. */
 export default function robots(): MetadataRoute.Robots {
-  if (!IS_PRODUCTION_DEPLOY) {
+  if (!ALLOW_INDEXING) {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
   return {
