@@ -30,8 +30,14 @@ jobs:
         run: npm run gtm:build && git diff --exit-code gtm/container.json
 
   e2e:
-    name: End-to-end tracking tests
+    name: End-to-end tests (${{ matrix.edition }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [jet, bg]
+    env:
+      NEXT_PUBLIC_SITE_EDITION: ${{ matrix.edition }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,17 +46,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - run: npx playwright test --project=${{ matrix.edition }}
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.edition }}
           path: playwright-report
           retention-days: 7
 
   visual:
     name: Visual regression (jet)
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SITE_EDITION: jet
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -70,8 +78,14 @@ jobs:
           retention-days: 7
 
   lighthouse:
-    name: Lighthouse budget (mobile)
+    name: Lighthouse budget (${{ matrix.edition }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [jet, bg]
+    env:
+      NEXT_PUBLIC_SITE_EDITION: ${{ matrix.edition }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -81,12 +95,14 @@ jobs:
       - run: npm ci
       - run: npm run build
       # Budget breaches are warnings: the job reports them and stays green.
-      - run: npm run lighthouse
+      # Bulgarian Lighthouse URLs will be added once Bulgarian pages exist.
+      - if: matrix.edition == 'jet'
+        run: npm run lighthouse
       - name: Summary
-        if: always()
+        if: always() && matrix.edition == 'jet'
         run: node scripts/lighthouse-summary.mjs >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && matrix.edition == 'jet'
         with:
           name: lighthouse-reports
           path: .lighthouseci

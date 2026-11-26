@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
+import { isBg } from "./lib/edition";
 
 const allowIndexing =
   process.env.VERCEL_ENV === "production" &&
   process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
+
+/** Bulgarian-only redirects populated in M8 (CR-30). Always empty in the `jet` edition. */
+const bgRedirects: Awaited<ReturnType<NonNullable<NextConfig["redirects"]>>> = [];
 
 const nextConfig: NextConfig = {
   // The dev server binds 0.0.0.0. Browsers that open it at 127.0.0.1 send that
@@ -13,6 +17,10 @@ const nextConfig: NextConfig = {
   env: {
     // Client code cannot read VERCEL_ENV. Tracking is allowed only when this is "production".
     NEXT_PUBLIC_SITE_ENV: process.env.VERCEL_ENV ?? "development",
+  },
+
+  async redirects() {
+    return isBg ? bgRedirects : [];
   },
 
   async headers() {

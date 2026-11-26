@@ -44,6 +44,7 @@ export default defineConfig({
     timeout: 240_000,
     reuseExistingServer: !process.env.CI,
     env: {
+      NEXT_PUBLIC_SITE_EDITION: "jet",
       NEXT_PUBLIC_TRACKING_DEBUG: "true",
       NEXT_PUBLIC_GTM_ID: "GTM-E2ETEST",
       NEXT_PUBLIC_AMPLITUDE_API_KEY: "e2e_amplitude_key",
