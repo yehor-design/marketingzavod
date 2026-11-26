@@ -21,3 +21,10 @@ export function absoluteUrl(path = "/"): string {
 
 /** True only for the Vercel production deployment. Set at build time in next.config.ts. */
 export const IS_PRODUCTION_DEPLOY = process.env.NEXT_PUBLIC_SITE_ENV === "production";
+
+/**
+ * Search engine indexing stays disabled everywhere (including production) until
+ * explicitly turned on for launch via NEXT_PUBLIC_ALLOW_INDEXING=true.
+ */
+export const ALLOW_INDEXING =
+  IS_PRODUCTION_DEPLOY && process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";

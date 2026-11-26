@@ -2,14 +2,18 @@ import type { MetadataRoute } from "next";
 import { posts } from "@/lib/blog";
 import { careers } from "@/lib/careers";
 import { legalDocuments } from "@/lib/legal";
-import { absoluteUrl } from "@/lib/site";
+import { ALLOW_INDEXING, absoluteUrl } from "@/lib/site";
 import { updates } from "@/lib/updates";
 
 /**
- * Every public, indexable page. /checkout and /dev/* are left out on purpose:
- * they are noindex.
+ * Every public, indexable page when indexing is enabled. Stays empty while
+ * the site is hidden from search engines. /checkout and /dev/* are always
+ * omitted because they are noindex.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!ALLOW_INDEXING) {
+    return [];
+  }
   const staticPages = ["/", "/pricing", "/about", "/blog", "/updates", "/careers", "/contact", "/waitlist"];
 
   return [

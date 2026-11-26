@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
-const isProduction = process.env.VERCEL_ENV === "production";
+const allowIndexing =
+  process.env.VERCEL_ENV === "production" &&
+  process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
 
 const nextConfig: NextConfig = {
   // The dev server binds 0.0.0.0. Browsers that open it at 127.0.0.1 send that
@@ -14,11 +16,13 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
-    const noindex = [{ key: "X-Robots-Tag", value: "noindex, nofollow" }];
+    const noindex = [
+      { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+    ];
     return [
-      // Preview and development deployments stay out of search.
-      ...(isProduction ? [] : [{ source: "/:path*", headers: noindex }]),
-      // So does the production deployment when reached on a vercel.app address.
+      // Stay out of search in every environment until NEXT_PUBLIC_ALLOW_INDEXING=true in production.
+      ...(allowIndexing ? [] : [{ source: "/:path*", headers: noindex }]),
+      // Never index vercel.app addresses even once production opens up.
       {
         source: "/:path*",
         has: [{ type: "host" as const, value: ".*\\.vercel\\.app" }],

@@ -18,7 +18,7 @@
 | Події | `page_view` один на маршрут, `cta_click`, `faq_open` (лише розкриття), `outbound_click`, `contact_click`, `view_pricing`, `begin_checkout`, `form_start`, `form_error`, `generate_lead`, `join_waitlist` |
 | Персональні дані | У `dataLayer` і в URL після заявки немає email, імені, тексту повідомлення і ключа `user_data` |
 | API заявок | Валідація (400 з назвами полів), поле-пастка, чужий origin (403), ліміт 5 на хвилину (429) |
-| SEO | `sitemap.xml`, `robots.txt` і `X-Robots-Tag: noindex` поза production, 404 для неіснуючої сторінки, canonical, JSON-LD |
+| SEO | `robots.txt` (`Disallow: /`), порожній `sitemap.xml`, `X-Robots-Tag` і `<meta name="robots">` `noindex, nofollow` поки вимкнено `NEXT_PUBLIC_ALLOW_INDEXING`, 404 для неіснуючої сторінки, canonical, JSON-LD |
 | Доступність | axe без порушень рівнів A і AA для банера і панелі |
 
 Юніт-тести (`npm test`) покривають розбір URL, first і last touch, нормалізацію, валідацію заявок, мапінг у HubSpot, хешування і тіло запиту Conversions API, підпис webhook, формат файла Google Ads, Amplitude (черга до згоди, Session Replay, ідентифікація ліда, HTTP API), журнал згод, очищення сховища й IndexedDB і відповідність контейнера GTM плану подій.
