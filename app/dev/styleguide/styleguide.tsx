@@ -1,5 +1,6 @@
 "use client";
 
+import { Benefits, BenefitsHighlight } from "@/components/blocks/benefits";
 import { CardGrid, type CardGridItem } from "@/components/blocks/card-grid";
 import {
   ComparisonTable,
@@ -11,8 +12,13 @@ import { Faq, type FaqItem } from "@/components/blocks/faq";
 import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
 import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
+import { Mission, MissionHighlight } from "@/components/blocks/mission";
+import { OpenRoles } from "@/components/blocks/open-roles";
+import { PostsPreview } from "@/components/blocks/posts-preview";
 import { PricingCards, type PricingPlan } from "@/components/blocks/pricing-cards";
 import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-steps";
+import { TeamMember } from "@/components/blocks/team-member";
+import { BenefitIcon } from "@/components/careers/icons";
 import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
@@ -819,6 +825,135 @@ export function StyleGuide() {
             className="w-full!"
           />
         </div>
+      </Section>
+
+      <Section id="block-mission" title="BLOCK: MISSION">
+        <Mission
+          titleId="sg-mission"
+          title="Our mission."
+          paragraphs={[
+            <>
+              At Jet, speed isn&apos;t just a technical detail—
+              <MissionHighlight>it&apos;s a competitive advantage</MissionHighlight>.
+            </>,
+            <>
+              Our platform <MissionHighlight>handles everything behind the scenes</MissionHighlight>{" "}
+              so teams stay focused on shipping.
+            </>,
+          ]}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-team-member" title="BLOCK: TEAM MEMBER">
+        <TeamMember
+          mode="single"
+          titleId="sg-team-member"
+          person={{
+            eyebrow: "Single portrait (4:5)",
+            title: "Grace Lee — SEO Strategist",
+            photo: {
+              jpg: "/about/grace.png",
+              alt: "Portrait of Grace Lee",
+              aspect: "4/5",
+            },
+            bio: (
+              <p>
+                Single-person portrait layout supporting 4:5 and 1:1 responsive photos via{" "}
+                <code>&lt;picture&gt;</code> with WebP and JPEG fallback.
+              </p>
+            ),
+            actions: [
+              { href: "/contact", text: "Contact", location: "styleguide" },
+              { href: "/about", text: "About", variant: "secondary", location: "styleguide" },
+            ],
+          }}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-posts-preview" title="BLOCK: POSTS PREVIEW">
+        <PostsPreview
+          titleId="sg-posts-preview"
+          title="Read our posts"
+          viewAll={{ href: "/blog", label: "View all" }}
+          posts={[
+            {
+              href: "/blog/why-website-speed-matters-more-than-ever-in-2025",
+              tag: "Performance",
+              title: "Why Website Speed Matters More Than Ever in 2025",
+              date: "Jun 7, 2025",
+              visual: { kind: "dither", src: "/about/post-speed.png" },
+            },
+            {
+              href: "/blog/image-optimization-the-secret-to-lightning-fast-sites",
+              tag: "Optimization",
+              title: "Image Optimization: The Secret to Lightning-Fast Sites",
+              date: "May 26, 2025",
+              visual: { kind: "dither", src: "/about/post-images.png" },
+            },
+          ]}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-benefits" title="BLOCK: BENEFITS">
+        <Benefits
+          id="sg-benefits-section"
+          titleId="sg-benefits"
+          title="What drives us."
+          description={
+            <>
+              <BenefitsHighlight>We move fast and optimize relentlessly.</BenefitsHighlight> Shared
+              6-card benefit grid with corner marks and hover reveal.
+            </>
+          }
+          items={[
+            {
+              title: "Remote-first",
+              body: "Work from anywhere with async-friendly workflows.",
+              icon: <BenefitIcon name="remote" />,
+            },
+            {
+              title: "Flexible time off",
+              body: "Take the rest you need to do great work.",
+              icon: <BenefitIcon name="time" />,
+            },
+            {
+              title: "Learning budget",
+              body: "Annual stipend for books, courses, and conferences.",
+              icon: <BenefitIcon name="learning" />,
+            },
+          ]}
+        />
+      </Section>
+
+      <Section id="block-open-roles" title="BLOCK: OPEN ROLES">
+        <OpenRoles
+          id="sg-open-roles-section"
+          titleId="sg-open-roles"
+          title="Open roles & partner profiles."
+          description="Supports both linked role rows and static rows with category tags."
+          items={[
+            {
+              id: "fe",
+              title: "Frontend Developer",
+              subtitle: "Engineering",
+              meta: "Remote",
+              href: "/careers/frontend-developer",
+            },
+            {
+              id: "partners-studios",
+              title: "Web & software studios",
+              tags: ["White-label", "Co-selling"],
+            },
+            {
+              id: "partners-accounting",
+              title: "Accounting firms",
+              tags: ["Referrals", "Nationwide"],
+            },
+          ]}
+        />
       </Section>
     </div>
   );

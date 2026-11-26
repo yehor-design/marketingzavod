@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { DitherImage } from "@/components/home/dither-image";
-import { GodRays, RollingText, orderedDither } from "@/components/motion";
-import { CornerMarks } from "@/components/motion/corner-marks";
+import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
+import { Mission, MissionHighlight } from "@/components/blocks/mission";
+import { PostsPreview, type PostsPreviewItem } from "@/components/blocks/posts-preview";
+import { TeamHighlight, TeamMember, type TeamGridPerson } from "@/components/blocks/team-member";
+import { GodRays, orderedDither } from "@/components/motion";
 import { SiteCta } from "@/components/site-cta";
-import { Badge } from "@/components/ui/badge";
-import { CtaLink } from "@/components/ui/button";
 import styles from "@/components/about/about-styles";
 
 const NBSP = "\u00A0";
@@ -32,192 +30,16 @@ const portraitHoverDither = {
   interval: 0.08,
 };
 
-const postDither = {
-  ...orderedDither,
-  animation: false,
-  brightness: -46,
-  pixelSize: 2,
-  threshold: 116,
-  midtones: 56,
-  glow: 2,
-};
+const people: readonly TeamGridPerson[] = [
+  { name: "Grace Lee", role: "SEO Strategist", image: "/about/grace.png" },
+  { name: "Sofia Almeida", role: "Customer Success Lead", image: "/about/sofia.png" },
+  { name: "Tomasz Zielinski", role: "Frontend Architect", image: "/about/tomasz.png" },
+  { name: "Priya Mehra", role: "Product Marketing Manager", image: "/about/priya.png" },
+  { name: "Daniel Cooper", role: "Lead Solutions Engineer", image: "/about/daniel.png" },
+  { name: "Emma Novak", role: "Performance Analyst", image: "/about/emma.png" },
+];
 
-const postHoverDither = {
-  ...postDither,
-  animation: true,
-};
-
-const people = [
-  {
-    name: "Grace Lee",
-    role: "SEO Strategist",
-    image: "/about/grace.png",
-  },
-  {
-    name: "Sofia Almeida",
-    role: "Customer Success Lead",
-    image: "/about/sofia.png",
-  },
-  {
-    name: "Tomasz Zielinski",
-    role: "Frontend Architect",
-    image: "/about/tomasz.png",
-  },
-  {
-    name: "Priya Mehra",
-    role: "Product Marketing Manager",
-    image: "/about/priya.png",
-  },
-  {
-    name: "Daniel Cooper",
-    role: "Lead Solutions Engineer",
-    image: "/about/daniel.png",
-  },
-  {
-    name: "Emma Novak",
-    role: "Performance Analyst",
-    image: "/about/emma.png",
-  },
-] as const;
-
-const powers = [
-  {
-    title: `Image & code optimization${NBSP}`,
-    body: "Sharper visuals, cleaner code",
-    icon: "image",
-  },
-  {
-    title: `Global CDN integration${NBSP}`,
-    body: "Fast delivery, everywhere",
-    icon: "globe",
-  },
-  {
-    title: `Real-time speed analytics${NBSP}`,
-    body: "Instant insights, always on",
-    icon: "chart",
-  },
-  {
-    title: "Instant performance alerts",
-    body: "Stay updated, act quickly",
-    icon: "bell",
-  },
-] as const;
-
-const posts = [
-  {
-    href: "/blog/why-website-speed-matters-more-than-ever-in-2025",
-    tag: "Performance",
-    title: "Why Website Speed Matters More Than Ever in 2025",
-    date: "Jun 7, 2025",
-    image: "/about/post-speed.png",
-  },
-  {
-    href: "/blog/image-optimization-the-secret-to-lightning-fast-sites",
-    tag: "Optimization",
-    title: "Image Optimization: The Secret to Lightning-Fast Sites",
-    date: "May 26, 2025",
-    image: "/about/post-images.png",
-  },
-] as const;
-
-function Portrait({
-  person,
-}: {
-  person: (typeof people)[number];
-}) {
-  const [hot, setHot] = useState(false);
-
-  return (
-    <a
-      href="https://x.com"
-      className="corner-host"
-      target="_blank"
-      rel="noreferrer"
-      onPointerEnter={() => setHot(true)}
-      onPointerLeave={() => setHot(false)}
-      onFocus={() => setHot(true)}
-      onBlur={() => setHot(false)}
-    >
-      <CornerMarks />
-      <span className={styles.photo}>
-        <DitherImage
-          src={person.image}
-          label={`Portrait of ${person.name}`}
-          preset={hot ? portraitHoverDither : portraitDither}
-        />
-      </span>
-      <div className={styles.caption}>
-        <h3>{person.name}</h3>
-        <p className={styles.role}>
-          <span className={styles.roleLine}>
-            <span className={styles.slash} aria-hidden="true">
-              /
-            </span>
-            <span className={styles.roleText}>{person.role}</span>
-          </span>
-        </p>
-      </div>
-    </a>
-  );
-}
-
-function PostCard({ post }: { post: (typeof posts)[number] }) {
-  const [hot, setHot] = useState(false);
-
-  return (
-    <Link
-      href={post.href}
-      className="corner-host"
-      onPointerEnter={() => setHot(true)}
-      onPointerLeave={() => setHot(false)}
-      onFocus={() => setHot(true)}
-      onBlur={() => setHot(false)}
-    >
-      <CornerMarks />
-      <span className={styles.postArt} aria-hidden="true">
-        <DitherImage src={post.image} label="" preset={hot ? postHoverDither : postDither} />
-      </span>
-      <span className={styles.postCopy}>
-        <Badge variant="secondary" className={styles.tag}>
-          {post.tag}
-        </Badge>
-        <h3>{post.title}</h3>
-        <span className={styles.date}>{post.date}</span>
-      </span>
-    </Link>
-  );
-}
-
-function ViewAll() {
-  const [rolling, setRolling] = useState(false);
-
-  return (
-    <Link
-      href="/blog"
-      className={styles.viewAll}
-      onPointerEnter={() => setRolling(true)}
-      onPointerLeave={() => setRolling(false)}
-      onFocus={() => setRolling(true)}
-      onBlur={() => setRolling(false)}
-    >
-      <RollingText text="View all" rolling={rolling} fontSize={12} />
-      <span className={styles.viewIcon} aria-hidden="true">
-        <svg viewBox="0 0 12 12" width="12" height="12">
-          <path
-            d="M4.2 2.2 L7.8 6 L4.2 9.8"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-    </Link>
-  );
-}
-
-function PowerIcon({ name }: { name: string }) {
+function PowerIcon({ name }: { name: "image" | "globe" | "chart" | "bell" }) {
   const common = {
     viewBox: "0 0 256 256",
     width: 24,
@@ -256,6 +78,64 @@ function PowerIcon({ name }: { name: string }) {
     </svg>
   );
 }
+
+const powers: readonly FeatureGridItem[] = [
+  {
+    title: `Image & code optimization${NBSP}`,
+    body: "Sharper visuals, cleaner code",
+    visual: { kind: "icon", icon: <PowerIcon name="image" /> },
+  },
+  {
+    title: `Global CDN integration${NBSP}`,
+    body: "Fast delivery, everywhere",
+    visual: { kind: "icon", icon: <PowerIcon name="globe" /> },
+  },
+  {
+    title: `Real-time speed analytics${NBSP}`,
+    body: "Instant insights, always on",
+    visual: { kind: "icon", icon: <PowerIcon name="chart" /> },
+  },
+  {
+    title: "Instant performance alerts",
+    body: "Stay updated, act quickly",
+    visual: { kind: "icon", icon: <PowerIcon name="bell" /> },
+  },
+];
+
+const posts: readonly PostsPreviewItem[] = [
+  {
+    href: "/blog/why-website-speed-matters-more-than-ever-in-2025",
+    tag: "Performance",
+    title: "Why Website Speed Matters More Than Ever in 2025",
+    date: "Jun 7, 2025",
+    visual: { kind: "dither", src: "/about/post-speed.png" },
+  },
+  {
+    href: "/blog/image-optimization-the-secret-to-lightning-fast-sites",
+    tag: "Optimization",
+    title: "Image Optimization: The Secret to Lightning-Fast Sites",
+    date: "May 26, 2025",
+    visual: { kind: "dither", src: "/about/post-images.png" },
+  },
+];
+
+const missionParagraphs = [
+  <>
+    {"At Jet, we believe every millisecond matters. In a world where digital experiences shape first impressions, speed isn’t just a technical detail—"}
+    <MissionHighlight>it’s a competitive advantage</MissionHighlight>
+    {". A fast website keeps visitors engaged, builds trust, and drives real results for businesses of all sizes."}
+  </>,
+  <>
+    {"Our mission is to "}
+    <MissionHighlight>empower creators, businesses, and agencies</MissionHighlight>
+    {" to deliver lightning-fast, high-performing websites. We’re passionate about removing the barriers that slow teams down, making advanced optimization accessible to everyone, regardless of technical background."}
+  </>,
+  <>
+    {"With Jet, you don’t need to be a developer or performance expert to have a world-class site. Our platform "}
+    <MissionHighlight>handles everything behind the scenes</MissionHighlight>
+    {", from image and code optimization to global content delivery and real-time analytics, so you can focus on what matters most: building, creating, and growing."}
+  </>,
+] as const;
 
 export function AboutPage() {
   return (
@@ -304,91 +184,44 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className={styles.block} aria-labelledby="mission-title">
-        <div className={`${styles.frame} ${styles.mission}`}>
-          <h2 id="mission-title">Our mission.</h2>
-          <div className={styles.missionCopy}>
-            <p>
-              {"At Jet, we believe every millisecond matters. In a world where digital experiences shape first impressions, speed isn’t just a technical detail—"}<span className={styles.bright}>it’s a competitive advantage</span>{". A fast website keeps visitors engaged, builds trust, and drives real results for businesses of all sizes."}
-            </p>
-            <p>
-              {"Our mission is to "}<span className={styles.bright}>empower creators, businesses, and agencies</span>{" to deliver lightning-fast, high-performing websites. We’re passionate about removing the barriers that slow teams down, making advanced optimization accessible to everyone, regardless of technical background."}
-            </p>
-            <p>
-              {"With Jet, you don’t need to be a developer or performance expert to have a world-class site. Our platform "}<span className={styles.bright}>handles everything behind the scenes</span>{", from image and code optimization to global content delivery and real-time analytics, so you can focus on what matters most: building, creating, and growing."}
-            </p>
-          </div>
-        </div>
-      </section>
+      <Mission titleId="mission-title" title="Our mission." paragraphs={missionParagraphs} />
 
-      <section className={styles.block} aria-labelledby="powers-title">
-        <div className={styles.frame}>
-          <div className={styles.powersHead}>
-            <h2 id="powers-title">How Jet powers a faster web.</h2>
-            <p>
-              Jet is an all-in-one platform for automatic website optimization. We handle everything
-              behind the scenes, so you can focus on building, not troubleshooting.
-            </p>
-          </div>
-          <ul className={styles.powers}>
-            {powers.map((item) => (
-              <li key={item.body}>
-                <span className={styles.powerIcon}>
-                  <PowerIcon name={item.icon} />
-                </span>
-                <p className={styles.powerTitle}>{item.title}</p>
-                <p className={styles.powerBody}>{item.body}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <FeatureGrid
+        layout="icons"
+        titleId="powers-title"
+        title="How Jet powers a faster web."
+        description="Jet is an all-in-one platform for automatic website optimization. We handle everything behind the scenes, so you can focus on building, not troubleshooting."
+        items={powers}
+      />
 
-      <section className={styles.block} aria-labelledby="team-title">
-        <div className={styles.frame}>
-          <div className={styles.teamHead}>
-            <h2 id="team-title">
-              We&apos;re a team obsessed with speed, simplicity, and user experience.
-            </h2>
-            <p>
-              Meet At Jet, we’re performance fanatics and creative problem-solvers from SaaS,
-              e-commerce, and design backgrounds. We work together, put users first, and build
-              features that make the web faster and empower creators. Our goal: a platform as fast
-              and friendly as the sites we help you create. team.
-            </p>
-          </div>
-          <ul className={styles.team}>
-            {people.map((person) => (
-              <li key={person.name}>
-                <Portrait person={person} />
-              </li>
-            ))}
-          </ul>
-          <div className={styles.hiring}>
-            <h2>
-              We’re always <span className={styles.bright}>looking for people to join us</span>{" "}
-              making the web simpler, and faster for everyone.
-            </h2>
-            <CtaLink href="/careers#open-roles" text={`Open${NBSP}positions`} location="about" />
-          </div>
-        </div>
-      </section>
+      <TeamMember
+        titleId="team-title"
+        title="We're a team obsessed with speed, simplicity, and user experience."
+        description="Meet At Jet, we’re performance fanatics and creative problem-solvers from SaaS, e-commerce, and design backgrounds. We work together, put users first, and build features that make the web faster and empower creators. Our goal: a platform as fast and friendly as the sites we help you create. team."
+        people={people}
+        ditherPreset={portraitDither}
+        ditherHoverPreset={portraitHoverDither}
+        footerBanner={{
+          heading: (
+            <>
+              We’re always <TeamHighlight>looking for people to join us</TeamHighlight> making the
+              web simpler, and faster for everyone.
+            </>
+          ),
+          cta: {
+            href: "/careers#open-roles",
+            text: `Open${NBSP}positions`,
+            location: "about",
+          },
+        }}
+      />
 
-      <section className={styles.block} aria-labelledby="posts-title">
-        <div className={styles.frame}>
-          <div className={styles.postsHead}>
-            <h2 id="posts-title">Read our posts</h2>
-            <ViewAll />
-          </div>
-          <ul className={styles.posts}>
-            {posts.map((post) => (
-              <li key={post.href}>
-                <PostCard post={post} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <PostsPreview
+        titleId="posts-title"
+        title="Read our posts"
+        viewAll={{ href: "/blog", label: "View all" }}
+        posts={posts}
+      />
 
       <SiteCta titleId="about-cta" />
     </div>
