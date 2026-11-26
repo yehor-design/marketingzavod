@@ -15,6 +15,10 @@ export type ProcessStepsProps = {
   titleId?: string;
   title: string;
   steps: readonly ProcessStepItem[];
+  /** Renders variable-height cells for longer copy and 4–5 step grids. Jet home keeps the fixed-height 3-step default. */
+  autoHeight?: boolean;
+  /** Optional summary line rendered underneath the steps inside the dashed frame. */
+  note?: string;
   className?: string;
 };
 
@@ -35,8 +39,14 @@ export function ProcessSteps({
   titleId = "process-title",
   title,
   steps,
+  autoHeight = false,
+  note,
   className,
 }: ProcessStepsProps) {
+  const flexible = autoHeight || steps.length !== 3;
+  const colsClass =
+    steps.length >= 5 ? "stepsCols5" : steps.length === 4 ? "stepsCols4" : "stepsCols3";
+
   return (
     <section
       className={cx("section", className)}
@@ -45,20 +55,21 @@ export function ProcessSteps({
       data-block="process-steps"
     >
       <div className={cx("frame", "dash")}>
-        <div className={cx("bandHead")}>
+        <div className={cx(flexible ? "bandHeadAuto" : "bandHead")}>
           <h2 id={titleId}>{title}</h2>
         </div>
-        <ol className={cx("steps")}>
+        <ol className={cx(flexible ? "stepsAuto" : "steps", flexible && colsClass)}>
           {steps.map((step, index) => (
             <li key={step.title}>
               <span className={cx("stepIcon")}>{renderStepIcon(step.icon, index)}</span>
-              <div className={cx("stepText")}>
-                <p className={cx("stepTitle")}>{step.title}</p>
-                <p className={cx("stepBody")}>{step.body}</p>
+              <div className={cx(flexible ? "stepTextAuto" : "stepText")}>
+                <p className={cx(flexible ? "stepTitleAuto" : "stepTitle")}>{step.title}</p>
+                <p className={cx(flexible ? "stepBodyAuto" : "stepBody")}>{step.body}</p>
               </div>
             </li>
           ))}
         </ol>
+        {note ? <p className={cx("note")}>{note}</p> : null}
       </div>
     </section>
   );

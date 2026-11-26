@@ -731,21 +731,116 @@ export function StyleGuide() {
       </Section>
 
       <Section id="block-process-steps" title="BLOCK: PROCESS STEPS">
-        <ProcessSteps
-          titleId="sg-process-steps"
-          title="Get started in 3 simple steps."
-          steps={demoProcessSteps}
-          className="pt-0!"
-        />
+        <div className="flex flex-col gap-[32px]">
+          <ProcessSteps
+            titleId="sg-process-steps"
+            title="Get started in 3 simple steps."
+            steps={demoProcessSteps}
+            className="pt-0!"
+          />
+          <ProcessSteps
+            titleId="sg-process-steps-4"
+            title="Как работи."
+            autoHeight
+            steps={[
+              {
+                title: "Препоръка",
+                body: "Изпращате ни контакта или клиентът ни пише с вашия код. Записваме препоръката с дата.",
+              },
+              {
+                title: "Съгласие на клиента",
+                body: "Клиентът знае за възнаграждението ви и се съгласява писмено.",
+              },
+              {
+                title: "Плащане",
+                body: "Плащаме ви всеки месец — след като клиентът е платил своята фактура.",
+              },
+              {
+                title: "Договор",
+                body: "Всичко е по писмен партньорски договор, преди първата препоръка.",
+              },
+            ]}
+            className="pt-0!"
+          />
+          <ProcessSteps
+            titleId="sg-process-steps-5"
+            title="Как работим."
+            autoHeight
+            steps={[
+              {
+                title: "Разговор",
+                body: "30 минути за бизнеса и продажбите ви.",
+              },
+              {
+                title: "Одит и базова линия",
+                body: "Какво работи, какво не и от кои цифри започваме.",
+              },
+              {
+                title: "Пилот 30 дни",
+                body: "Одит и първи кампании — от 690 € общо. Ясен обхват и отчет „преди / след“. След него решавате.",
+              },
+              {
+                title: "Месечна работа",
+                body: "Ако продължим — минимум 3 месеца: кампании, криейтиви, CRM и отчет всеки месец.",
+              },
+              {
+                title: "Тримесечен преглед",
+                body: "На 3, 6, 9 и 12 месец — резултати и нови идеи.",
+              },
+            ]}
+            note="След пилота решавате. Ако продължим — минимум 3 месеца с плащане месечно предварително. Ако не — спираме, а акаунтите и данните остават ваши."
+            className="pt-0!"
+          />
+        </div>
       </Section>
 
       <Section id="block-card-grid" title="BLOCK: CARD GRID">
-        <CardGrid
-          titleId="sg-card-grid"
-          title="Core capabilities."
-          items={demoCardTiles}
-          className="pt-0!"
-        />
+        <div className="flex flex-col gap-[32px]">
+          <CardGrid
+            titleId="sg-card-grid"
+            title="Core capabilities."
+            items={demoCardTiles}
+            className="pt-0!"
+          />
+          <CardGrid
+            titleId="sg-card-grid-5"
+            title="За кого работим."
+            autoHeight
+            items={[
+              {
+                title: "Смяна на агенция",
+                body: "Месеци плащате, а продажбите стоят? Сменяме изпълнителя поетапно: проверка на акаунтите и базова линия от първия ден.",
+                href: "/smyana-na-agentsiya",
+                ctaLabel: "Как сменяме агенция →",
+              },
+              {
+                title: "Онлайн магазини",
+                body: "Продажбата от реклама поскъпва? Нови криейтиви всеки месец и отчет по платени, не по направени поръчки.",
+                href: "/onlayn-magazini",
+                ctaLabel: "Решения за онлайн магазини →",
+              },
+              {
+                title: "Услуги и B2B",
+                body: "Правите маркетинг, но цифрите не мърдат? Маркетинг отдел на абонамент: план, реклама, CRM и отчет за продажбите.",
+                href: "/uslugi-i-b2b",
+                ctaLabel: "Маркетинг отдел на абонамент →",
+              },
+              {
+                title: "Хотели",
+                body: "Сезон 2027 се продава сега. Повече директни резервации — с кампании на езиците на гостите ви.",
+                href: "/hoteli",
+                ctaLabel: "Решения за хотели →",
+              },
+              {
+                title: "Недвижими имоти",
+                body: "Пазарът забави? Запитвания за конкретния проект и цена на оглед във всеки отчет.",
+                href: "/nedvizhimi-imoti",
+                ctaLabel: "Решения за строители →",
+              },
+            ]}
+            className="pt-0!"
+          />
+        </div>
       </Section>
 
       <Section id="block-feature-section" title="BLOCK: FEATURE SECTION">
