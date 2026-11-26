@@ -1,5 +1,9 @@
 "use client";
 
+import { CardGrid, type CardGridItem } from "@/components/blocks/card-grid";
+import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
+import { Hero } from "@/components/blocks/hero";
+import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-steps";
 import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
@@ -44,6 +48,62 @@ const THEMES = [
   { label: "Light", value: "light" },
   { label: "Dark", value: "dark" },
   { label: "System", value: "system" },
+];
+
+const demoFeatureItems: readonly FeatureGridItem[] = [
+  {
+    title: "Better user experience",
+    body: "Load pages in milliseconds.\nKeep visitors coming back.",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-wand.png",
+      color: "#00e6c5",
+      label: "Dithered web screen with magic wand",
+    },
+  },
+  {
+    title: "Improved SEO",
+    body: "Rank higher on Google.\nStand out from competitors.",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-podium.png",
+      color: "#d85ce0",
+      label: "Dithered podium with #1 text",
+    },
+  },
+  {
+    title: "Increased conversion",
+    body: "Turn visitors into customers.\nBoost your bottom line.",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-lightning.png",
+      color: "#29c2ff",
+      label: "Dithered lightning icon",
+    },
+  },
+  {
+    title: "Cost savings",
+    body: "Reduce hosting expenses.\nEliminate performance headaches.",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-coins.png",
+      color: "#e0cd3a",
+      label: "Dithered stacked coins",
+    },
+  },
+];
+
+const demoProcessSteps: readonly ProcessStepItem[] = [
+  { title: "Enter your URL", body: "Quick setup, ready to optimize", icon: "link" },
+  { title: "Start optimization", body: "Analyze and enhance your site", icon: "wand" },
+  { title: "Speed takes off", body: "Faster loading, better results", icon: "rocket" },
+];
+
+const demoCardTiles: readonly CardGridItem[] = [
+  { title: "One-click optimize", body: "Make your site faster instantly", icon: "bolt" },
+  { title: "Code cleanup", body: "Remove bloat for better performance", icon: "broom" },
+  { title: "24/7 monitoring", body: "Always watching your site's performance", icon: "chart" },
+  { title: "Real-time alerts", body: "Know about issues right away", icon: "bell" },
 ];
 
 const colors = [
@@ -458,6 +518,59 @@ export function StyleGuide() {
             </TableBody>
           </Table>
         </div>
+      </Section>
+
+      <Section id="block-hero" title="BLOCK: HERO">
+        <div className="flex flex-col gap-[32px]">
+          <Hero
+            variant="animated"
+            headingAs="h2"
+            titleId="sg-hero-animated"
+            title="Lightning fast sites. In a single click."
+            description="No code, no hassle. Jet simply keeps your website blazing fast 24/7."
+            actions={[
+              { href: "/waitlist", text: `Join${NBSP}waitlist`, location: "styleguide" },
+              { href: "/#benefits", text: "Learn more", variant: "secondary", location: "styleguide" },
+            ]}
+            className="pt-0!"
+          />
+          <Hero
+            variant="static"
+            headingAs="h2"
+            titleId="sg-hero-static"
+            eyebrow="Static page hero"
+            title="Static heading variant."
+            description="Reusable heading block without the animated homepage backdrop, with optional eyebrow and actions."
+            actions={[{ href: "/contact", text: "Contact", location: "styleguide" }]}
+          />
+        </div>
+      </Section>
+
+      <Section id="block-feature-grid" title="BLOCK: FEATURE GRID">
+        <FeatureGrid
+          titleId="sg-feature-grid"
+          title="Accelerate your website with Jet."
+          items={demoFeatureItems}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-process-steps" title="BLOCK: PROCESS STEPS">
+        <ProcessSteps
+          titleId="sg-process-steps"
+          title="Get started in 3 simple steps."
+          steps={demoProcessSteps}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-card-grid" title="BLOCK: CARD GRID">
+        <CardGrid
+          titleId="sg-card-grid"
+          title="Core capabilities."
+          items={demoCardTiles}
+          className="pt-0!"
+        />
       </Section>
     </div>
   );

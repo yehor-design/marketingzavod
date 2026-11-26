@@ -2,14 +2,11 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import {
-  LineAnimator,
-  PulseGradient,
-  nestedDither,
-  orderedDither,
-  randomDither,
-} from "@/components/motion";
-import { CornerMarks } from "@/components/motion/corner-marks";
+import { CardGrid } from "@/components/blocks/card-grid";
+import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
+import { Hero } from "@/components/blocks/hero";
+import { ProcessSteps } from "@/components/blocks/process-steps";
+import { LineAnimator, PulseGradient, orderedDither } from "@/components/motion";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
 import {
   Accordion,
@@ -21,41 +18,57 @@ import { CtaLink } from "@/components/ui/button";
 import { Announcement } from "@/components/announcement";
 import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
-import { PhosphorIcon } from "@/components/home/phosphor-icon";
 import styles from "@/components/home/home-styles";
 
 const NBSP = "\u00A0";
 
-const benefits = [
+const heroActions = [
+  { href: "/waitlist", text: `Join${NBSP}waitlist`, location: "hero" },
+  { href: "/#benefits", text: "Learn more", variant: "secondary" as const, location: "hero" },
+] as const;
+
+const benefits: readonly FeatureGridItem[] = [
   {
     title: "Better user experience",
     body: "Load pages in milliseconds.\nKeep visitors coming back.",
-    src: "/home/benefit-wand.png",
-    color: "#00e6c5",
-    label: "Dithered version of web screen with a magic wand with random dithering applied",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-wand.png",
+      color: "#00e6c5",
+      label: "Dithered version of web screen with a magic wand with random dithering applied",
+    },
   },
   {
     title: "Improved SEO",
     body: "Rank higher on Google.\nStand out from competitors.",
-    src: "/home/benefit-podium.png",
-    color: "#d85ce0",
-    label: "Dithered version of podium with #1 text with random dithering applied",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-podium.png",
+      color: "#d85ce0",
+      label: "Dithered version of podium with #1 text with random dithering applied",
+    },
   },
   {
     title: "Increased conversion",
     body: "Turn visitors into customers.\nBoost your bottom line.",
-    src: "/home/benefit-lightning.png",
-    color: "#29c2ff",
-    label: "Dithered version of lightning with lines around with random dithering applied",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-lightning.png",
+      color: "#29c2ff",
+      label: "Dithered version of lightning with lines around with random dithering applied",
+    },
   },
   {
     title: "Cost savings",
     body: "Reduce hosting expenses.\nEliminate performance headaches.",
-    src: "/home/benefit-coins.png",
-    color: "#e0cd3a",
-    label: "Dithered version of stacked coins with random dithering applied",
+    visual: {
+      kind: "dither",
+      src: "/home/benefit-coins.png",
+      color: "#e0cd3a",
+      label: "Dithered version of stacked coins with random dithering applied",
+    },
   },
-] as const;
+];
 
 const steps = [
   {
@@ -349,47 +362,6 @@ function LogoColumn({
   );
 }
 
-function BenefitCard({ benefit }: { benefit: (typeof benefits)[number] }) {
-  const reduced = usePrefersReducedMotion();
-  const [hot, setHot] = useState(false);
-  const preset =
-    hot && reduced === false
-      ? { ...randomDither, animation: true, intensity: 5, interval: 0.2, dot: benefit.color }
-      : { ...randomDither, dot: benefit.color };
-
-  return (
-    <article
-      className={
-        hot
-          ? `${styles.benefit} ${styles.benefitHot} corner-host`
-          : `${styles.benefit} corner-host`
-      }
-      onPointerEnter={() => setHot(true)}
-      onPointerLeave={() => setHot(false)}
-      onFocus={() => setHot(true)}
-      onBlur={() => setHot(false)}
-    >
-      <CornerMarks />
-      <div className={styles.benefitField}>
-        {hot && reduced === false ? (
-          <div className={styles.benefitOrdered}>
-            <DitherImage src={benefit.src} label={benefit.label} preset={nestedDither} />
-          </div>
-        ) : null}
-        <div className={styles.benefitAccent}>
-          <DitherImage src={benefit.src} label={benefit.label} preset={preset} />
-        </div>
-      </div>
-      <div className={styles.benefitCopy}>
-        <h3>{benefit.title}</h3>
-        <div className={styles.benefitReveal}>
-          <p>{benefit.body}</p>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 function QuoteMark() {
   const bubble =
     "M0 6.988C0 6.926.006 6.866.016 6.807H0V6.698C0 2.999 2.999 0 6.698 0v2.687C4.824 2.687 3.291 4.145 3.17 5.988H6.698V13H0Z";
@@ -463,29 +435,12 @@ export function HomePage() {
 
   return (
     <div className={styles.home}>
-      <section className={styles.hero} aria-labelledby="hero-title">
-        <div className={`${styles.frame} ${styles.dash} ${styles.heroFrame}`}>
-          <div className={styles.heroVeil}>
-            <div className={styles.heroMedia}>
-              <div className={styles.heroShafts}>
-                <div className={styles.heroGlow}>
-                  <PulseGradient label="Hero background" />
-                  <div className={styles.grain} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <Announcement />
-          <div className={styles.heroCopy}>
-            <h1 id="hero-title">Lightning fast sites. In a single click.</h1>
-            <p>No code, no hassle. Jet simply keeps your website blazing fast 24/7.</p>
-          </div>
-          <div className={styles.actions}>
-            <CtaLink href="/waitlist" text={`Join${NBSP}waitlist`} location="hero" />
-            <CtaLink href="/#benefits" text="Learn more" variant="secondary" location="hero" />
-          </div>
-        </div>
-      </section>
+      <Hero
+        title="Lightning fast sites. In a single click."
+        description="No code, no hassle. Jet simply keeps your website blazing fast 24/7."
+        announcement={<Announcement />}
+        actions={heroActions}
+      />
 
       <section className={styles.social} aria-label="Trusted by some of the biggest companies">
         <div className={`${styles.frame} ${styles.dash} ${styles.socialFrame}`}>
@@ -503,39 +458,14 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className={styles.section} id="benefits" aria-labelledby="benefits-title">
-        <div className={`${styles.frame} ${styles.dash}`}>
-          <div className={styles.bandHead}>
-            <h2 id="benefits-title">Accelerate your website with Jet.</h2>
-          </div>
-          <div className={styles.benefitGrid}>
-            {benefits.map((benefit) => (
-              <BenefitCard benefit={benefit} key={benefit.title} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <FeatureGrid
+        id="benefits"
+        titleId="benefits-title"
+        title="Accelerate your website with Jet."
+        items={benefits}
+      />
 
-      <section className={styles.section} aria-labelledby="process-title">
-        <div className={`${styles.frame} ${styles.dash}`}>
-          <div className={styles.bandHead}>
-            <h2 id="process-title">Get started in 3 simple steps.</h2>
-          </div>
-          <ol className={styles.steps}>
-            {steps.map((step) => (
-              <li key={step.title}>
-                <span className={styles.stepIcon}>
-                  <PhosphorIcon name={step.icon} />
-                </span>
-                <div className={styles.stepText}>
-                  <p className={styles.stepTitle}>{step.title}</p>
-                  <p className={styles.stepBody}>{step.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      <ProcessSteps titleId="process-title" title="Get started in 3 simple steps." steps={steps} />
 
       <section className={styles.section} aria-label="Features">
         <div className={`${styles.frame} ${styles.dash}`}>
@@ -571,17 +501,7 @@ export function HomePage() {
               </div>
             </article>
           ))}
-          <ul className={styles.tiles}>
-            {tiles.map((tile) => (
-              <li key={tile.title}>
-                <span className={styles.tileIcon}>
-                  <PhosphorIcon name={tile.icon} />
-                </span>
-                <h2>{tile.title}</h2>
-                <p>{tile.body}</p>
-              </li>
-            ))}
-          </ul>
+          <CardGrid items={tiles} embedded headingAs="h2" />
         </div>
       </section>
 
