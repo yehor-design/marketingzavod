@@ -1,15 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useReducedMotion } from "motion/react";
+import {
+  ComparisonTable,
+  type ComparisonColumn,
+  type ComparisonGroup,
+} from "@/components/blocks/comparison-table";
+import { PricingCards, type PricingPeriod, type PricingPlan } from "@/components/blocks/pricing-cards";
 import { PulseGradient } from "@/components/motion";
-import { Badge } from "@/components/ui/badge";
-import { Button, CtaLink } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SiteCta } from "@/components/site-cta";
 import { TrackView } from "@/components/tracking/track-view";
 import styles from "@/components/pricing/pricing-styles";
@@ -22,47 +19,39 @@ const NBSP = "\u00A0";
  * The local route for that checkout is /checkout. The closing CTA is /waitlist.
  */
 /** Shown when the page opens. Reported with the first view_pricing. */
-const DEFAULT_PERIOD: Period = "yearly";
+const DEFAULT_PERIOD: PricingPeriod = "yearly";
 const CHECKOUT_HREF = "/checkout";
 
-type Period = "monthly" | "yearly";
-type Mark = "check" | "x";
-type Cell = { text?: string; mark?: Mark };
-
-type Plan = {
-  id: "starter" | "pro" | "agency";
-  name: string;
-  description: string;
-  popular: boolean;
-  free: boolean;
-  monthly: string;
-  yearly: string;
-  features: string[];
-  cta: string;
-  tone: "primary" | "secondary";
-};
-
-const plans: Plan[] = [
+const plans: readonly PricingPlan[] = [
   {
     id: "starter",
+    icon: "starter",
     name: "Starter",
     description: "Perfect for personal projects—speed up one site for free.",
     popular: false,
-    free: true,
+    freeLabel: "Free forever",
+    currency: "$",
     monthly: "29",
     yearly: "24",
+    monthlySuffix: "/month",
+    yearlySuffix: "/month, billed annually",
     features: ["1 website", "Basic image & code optimization", "Limited analytics"],
     cta: `Try${NBSP}for${NBSP}free`,
+    href: CHECKOUT_HREF,
     tone: "secondary",
   },
   {
     id: "pro",
+    icon: "pro",
     name: "Pro",
     description: "Boost up to 10 sites with advanced tools and analytics.",
     popular: true,
-    free: false,
+    badgeLabel: "Most popular",
+    currency: "$",
     monthly: "29",
     yearly: "24",
+    monthlySuffix: "/month",
+    yearlySuffix: "/month, billed annually",
     features: [
       "All Starter features +",
       "Up to 10 websites",
@@ -71,16 +60,20 @@ const plans: Plan[] = [
       "Priority support",
     ],
     cta: `Get${NBSP}started`,
+    href: CHECKOUT_HREF,
     tone: "primary",
   },
   {
     id: "agency",
+    icon: "agency",
     name: "Agency",
     description: "Unlimited sites, team features, and white-label options for agencies.",
     popular: false,
-    free: false,
+    currency: "$",
     monthly: "199",
     yearly: "169",
+    monthlySuffix: "/month",
+    yearlySuffix: "/month, billed annually",
     features: [
       "All Starter & Pro features +",
       "Unlimited websites",
@@ -89,18 +82,24 @@ const plans: Plan[] = [
       "Dedicated account manager",
     ],
     cta: `Get${NBSP}started`,
+    href: CHECKOUT_HREF,
     tone: "secondary",
   },
 ];
 
-type Row = {
-  feature: string;
-  tip?: string;
-  tone: "grey" | "black";
-  cells: [Cell, Cell, Cell];
-};
+const compareColumns: readonly ComparisonColumn[] = plans.map((plan) => ({
+  id: plan.id,
+  name: plan.name,
+  icon: plan.icon,
+  cta: {
+    text: plan.cta,
+    href: CHECKOUT_HREF,
+    tone: plan.tone,
+    location: `pricing_compare_${plan.id}`,
+  },
+}));
 
-const groups: { title: string; rows: Row[] }[] = [
+const groups: readonly ComparisonGroup[] = [
   {
     title: "General",
     rows: [
@@ -217,189 +216,7 @@ const groups: { title: string; rows: Row[] }[] = [
   },
 ];
 
-function CardCta({ text, tone }: { text: string; tone: "primary" | "secondary" }) {
-  return (
-    <Button variant={tone} nativeButton={false} render={<span />} className="max-[809.98px]:mt-[34px]">
-      {text}
-    </Button>
-  );
-}
-
-function PriceDigits({ value }: { value: string }) {
-  const reduced = useReducedMotion();
-  const [shown, setShown] = useState(value);
-  const [scrambled, setScrambled] = useState<boolean[]>([]);
-
-  useEffect(() => {
-    if (reduced) {
-      setShown(value);
-      setScrambled([]);
-      return;
-    }
-    const start = performance.now();
-    let timer = 0;
-    let frame = 0;
-    const tick = (now: number) => {
-      if (now - start >= 500) {
-        setShown(value);
-        setScrambled([]);
-        return;
-      }
-      let next = "";
-      const flags: boolean[] = [];
-      for (const char of value) {
-        const keep = char === " " || Math.random() * 100 > 50;
-        if (keep) {
-          next += char;
-          flags.push(false);
-        } else {
-          next += "1234567890"[Math.floor(Math.random() * 10)];
-          flags.push(true);
-        }
-      }
-      setShown(next);
-      setScrambled(flags);
-      timer = window.setTimeout(() => {
-        frame = requestAnimationFrame(tick);
-      }, 40);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.clearTimeout(timer);
-    };
-  }, [reduced, value]);
-
-  return (
-    <span className={styles.digits} aria-label={value}>
-      <span aria-hidden="true">
-        {shown.split("").map((char, index) => (
-          <span key={`${value}-${index}`} className={scrambled[index] ? styles.digitScramble : undefined}>
-            {char}
-          </span>
-        ))}
-      </span>
-    </span>
-  );
-}
-
-function Check({ tone }: { tone: "accent" | "muted" }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      width="16"
-      height="16"
-      aria-hidden="true"
-      className={tone === "accent" ? styles.markAccent : styles.markMuted}
-    >
-      <path
-        d="M3.2 8.3 6.3 11.4 12.8 4.6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function Cross() {
-  return (
-    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" className={styles.markCross}>
-      <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function PlanMark({ id, size }: { id: Plan["id"]; size: number }) {
-  const accent = id === "pro";
-  return (
-    <svg
-      viewBox="0 0 44 44"
-      width={size}
-      height={size}
-      aria-hidden="true"
-      className={accent ? styles.markAccent : styles.mark}
-    >
-      {id === "starter" ? (
-        <path
-          d="M15 0H21M15 36H21M8 4H28M8 32H28M3 8H33M3 28H33M1 12H35M0 16H36M0 20H36M1 24H35"
-          transform="translate(4 4)"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      ) : null}
-      {id === "pro" ? (
-        <>
-          <path d="M0 0H6" transform="translate(19 4)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H8" transform="translate(17 8)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H10" transform="translate(15 12)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H26" transform="translate(12 16)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H26" transform="translate(10 20)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H26" transform="translate(8 24)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H26" transform="translate(6 28)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H10" transform="translate(19 32)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H8" transform="translate(19 36)" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path d="M0 0H6" transform="translate(19 40)" fill="none" stroke="currentColor" strokeWidth="2" />
-        </>
-      ) : null}
-      {id === "agency" ? (
-        <path
-          d="M11 0H29M7 4H33M3 8H37M0 12H40M2 16H38M6 20H34M11 24H29M14 28H26M18 32H22"
-          transform="translate(2 6)"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      ) : null}
-    </svg>
-  );
-}
-
-function CellValue({ cell }: { cell: Cell }) {
-  if (cell.text) {
-    return <span>{cell.text}</span>;
-  }
-  if (cell.mark === "check") {
-    return (
-      <span className={styles.cellIcon}>
-        <Check tone="accent" />
-        <span className="sr-only">Included</span>
-      </span>
-    );
-  }
-  return (
-    <span className={styles.cellIcon}>
-      <Cross />
-      <span className="sr-only">Not included</span>
-    </span>
-  );
-}
-
-function Tip({ text }: { text: string }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        render={
-          <button type="button" className={styles.tipButton} aria-label="More information" />
-        }
-      >
-        ?
-      </TooltipTrigger>
-      <TooltipContent className="max-w-[240px] bg-secondary text-foreground">
-        {text}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
 export function PricingPage() {
-  const [period, setPeriod] = useState<Period>(DEFAULT_PERIOD);
-  const [planIndex, setPlanIndex] = useState(0);
-  const activePlan = plans[planIndex];
-
   return (
     <div className={styles.pricing}>
       <TrackView event="view_pricing" params={{ billing_period: DEFAULT_PERIOD }} />
@@ -431,189 +248,22 @@ export function PricingPage() {
 
       <div className={styles.spacer} aria-hidden="true" />
 
-      <section className={styles.plans} aria-labelledby="pricing-title">
-        <ToggleGroup
-          value={[period]}
-          onValueChange={(next) => {
-            if (next[0] === "monthly" || next[0] === "yearly") {
-              setPeriod(next[0]);
-            }
-          }}
-          spacing={1}
-          aria-label="Billing period"
-          className={styles.toggle}
-        >
-          <span
-            className={styles.togglePill}
-            aria-hidden="true"
-            style={{
-              width: period === "monthly" ? 74 : 107,
-              transform: period === "monthly" ? "translateX(0)" : "translateX(78px)",
-            }}
-          />
-          <ToggleGroupItem
-            value="monthly"
-            className={`${period === "monthly" ? styles.toggleOn : styles.toggleOff} hover:bg-transparent aria-pressed:bg-transparent`}
-            data-track="view_pricing"
-            data-track-if="unpressed"
-            data-track-billing-period="monthly"
-          >
-            Monthly
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="yearly"
-            className={`${period === "yearly" ? styles.toggleOn : styles.toggleOff} hover:bg-transparent aria-pressed:bg-transparent`}
-            data-track="view_pricing"
-            data-track-if="unpressed"
-            data-track-billing-period="yearly"
-          >
-            Yearly
-            <span className={styles.discount}>-15%</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <div className={styles.cards}>
-          {plans.map((plan) => {
-            const price = period === "yearly" ? plan.yearly : plan.monthly;
-            const suffix = period === "yearly" ? "/month, billed annually" : "/month";
-            return (
-              <Link
-                key={plan.id}
-                href={CHECKOUT_HREF}
-                className={plan.popular ? styles.cardPopular : styles.card}
-                data-track="cta_click"
-                data-track-cta-text={plan.cta.replace(/\u00a0/g, " ")}
-                data-track-cta-location={`pricing_card_${plan.id}`}
-              >
-                <span className={styles.wash} aria-hidden="true" />
-                <span className={`${styles.corner} ${styles.nw}`} aria-hidden="true" />
-                <span className={`${styles.corner} ${styles.ne}`} aria-hidden="true" />
-                <span className={`${styles.corner} ${styles.sw}`} aria-hidden="true" />
-                <span className={`${styles.corner} ${styles.se}`} aria-hidden="true" />
-                <span className={styles.cardBody}>
-                  <span className={styles.nameRow}>
-                    <span className={styles.planTitle}>
-                      <PlanMark id={plan.id} size={28} />
-                      <span className={styles.planName}>{plan.name}</span>
-                    </span>
-                    {plan.popular ? <Badge className={styles.badge}>Most popular</Badge> : null}
-                  </span>
-                  <span className={styles.description}>{plan.description}</span>
-                  {plan.free ? (
-                    <span className={styles.free}>Free forever</span>
-                  ) : (
-                    <span className={styles.price}>
-                      <span className={styles.amount}>
-                        <span className={styles.currency}>$</span>
-                        <PriceDigits value={String(price)} />
-                      </span>
-                      <span className={styles.suffix}>{suffix}</span>
-                    </span>
-                  )}
-                  <Separator className={plan.popular ? styles.dividerAccent : styles.divider} />
-                  <ul className={styles.features}>
-                    {plan.features.map((feature) => (
-                      <li key={feature}>
-                        <Check tone={plan.popular ? "accent" : "muted"} />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <span className={styles.push} />
-                  <CardCta text={plan.cta} tone={plan.tone} />
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      <PricingCards
+        titleId="pricing-title"
+        plans={plans}
+        billingToggle={{
+          enabled: true,
+          defaultPeriod: DEFAULT_PERIOD,
+          ariaLabel: "Billing period",
+          monthlyLabel: "Monthly",
+          yearlyLabel: "Yearly",
+          discountBadge: "-15%",
+        }}
+      />
 
       <div className={styles.spacer} aria-hidden="true" />
 
-      <section className={styles.compare} aria-label="Plan comparison">
-        <div className={styles.switcher}>
-          <Tabs
-            value={activePlan.id}
-            onValueChange={(next) => {
-              const index = plans.findIndex((item) => item.id === next);
-              if (index >= 0) {
-                setPlanIndex(index);
-              }
-            }}
-          >
-            <TabsList
-              aria-label="Plan"
-              className={`${styles.tabs} h-auto rounded-none bg-transparent p-0`}
-            >
-              {plans.map((plan, index) => (
-                <TabsTrigger
-                  key={plan.id}
-                  value={plan.id}
-                  className={
-                    planIndex === index
-                      ? `${styles.tabOn} flex-none dark:data-active:border-transparent dark:data-active:bg-brand dark:data-active:text-background`
-                      : `${styles.tab} flex-none`
-                  }
-                >
-                  {plan.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          <CtaLink
-            href={CHECKOUT_HREF}
-            text={activePlan.cta}
-            variant={activePlan.tone}
-            location={`pricing_compare_${activePlan.id}`}
-          />
-        </div>
-
-        <div className={styles.table}>
-          <div className={styles.head} role="row">
-            <div />
-            {plans.map((plan) => (
-              <div className={styles.headPlan} key={plan.id}>
-                <PlanMark id={plan.id} size={20} />
-                <h3>{plan.name}</h3>
-                <CtaLink
-                  href={CHECKOUT_HREF}
-                  text={plan.cta}
-                  variant={plan.tone}
-                  location={`pricing_compare_${plan.id}`}
-                  className="ml-auto"
-                />
-              </div>
-            ))}
-          </div>
-
-          {groups.map((group) => (
-            <div key={group.title}>
-              <h4 className={styles.category}>{group.title}</h4>
-              {group.rows.map((row) => (
-                <div
-                  className={row.tone === "grey" ? styles.rowGrey : styles.rowBlack}
-                  key={row.feature}
-                  role="row"
-                >
-                  <h5>
-                    {row.feature}
-                    {row.tip ? <Tip text={row.tip} /> : null}
-                  </h5>
-                  {row.cells.map((cell, index) => (
-                    <div
-                      className={planIndex === index ? styles.valueActive : styles.value}
-                      key={plans[index].id}
-                      role="cell"
-                    >
-                      <CellValue cell={cell} />
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
+      <ComparisonTable columns={compareColumns} groups={groups} ariaLabel="Plan comparison" />
 
       <SiteCta titleId="pricing-cta" />
     </div>
