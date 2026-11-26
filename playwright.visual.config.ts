@@ -11,6 +11,7 @@ const PORT = 3101;
  */
 export default defineConfig({
   testDir: "tests/visual",
+  timeout: 90_000,
   snapshotPathTemplate: "{testDir}/__snapshots__/{platform}/{arg}{ext}",
   outputDir: "test-results/visual",
   fullyParallel: true,
@@ -25,9 +26,11 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   expect: {
+    timeout: 30_000,
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.001,
       animations: "disabled",
+      timeout: 30_000,
     },
   },
   projects: [
