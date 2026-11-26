@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { ui } from "@/content/ui";
 import { getConsent, onOpenConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
 
@@ -24,27 +25,10 @@ type Category = {
   services: string;
 };
 
-/** Texts from the consent spec, section 6.3. */
 const CATEGORIES: readonly Category[] = [
-  {
-    key: "necessary",
-    name: "Necessary",
-    purpose: "Remembers your cookie choice.",
-    services: "Jet",
-  },
-  {
-    key: "statistics",
-    name: "Statistics",
-    purpose:
-      "Shows us how visitors use the site and how fast it loads, including session recordings with form fields hidden. Remembers the campaign that brought you here for 90 days.",
-    services: "Google Analytics, Amplitude, Vercel Speed Insights",
-  },
-  {
-    key: "marketing",
-    name: "Marketing",
-    purpose: "Measures whether our ads lead to sign-ups and enquiries.",
-    services: "Google Ads, Meta, LinkedIn",
-  },
+  { key: "necessary", ...ui.consent.categories.necessary },
+  { key: "statistics", ...ui.consent.categories.statistics },
+  { key: "marketing", ...ui.consent.categories.marketing },
 ];
 
 const titleType =
@@ -108,14 +92,14 @@ export function ConsentSettings() {
         <DialogHeader className="flex-row items-start justify-between gap-[12px]">
           <div className="flex min-w-0 flex-col gap-[6px]">
             <DialogTitle id={titleId} className={titleType}>
-              Cookie settings
+              {ui.consent.settingsTitle}
             </DialogTitle>
             <DialogDescription className={`${bodyType} text-muted-foreground`}>
-              Necessary cookies keep the site working and are always on. Everything else stays off until you turn it on.
+              {ui.consent.settingsDescription}
             </DialogDescription>
           </div>
           <DialogClose
-            render={<Button variant="tertiary" aria-label="Close" className="shrink-0" />}
+            render={<Button variant="tertiary" aria-label={ui.consent.closeAria} className="shrink-0" />}
           >
             <XIcon />
           </DialogClose>
@@ -158,9 +142,17 @@ export function ConsentSettings() {
           })}
         </ul>
         <DialogFooter className="mx-0 mb-0 flex-row flex-wrap items-center justify-start gap-[8px] rounded-none border-0 bg-transparent p-0 sm:justify-start">
-          <ConsentButton text="Necessary only" variant="tertiary" onClick={() => decide({ statistics: false, marketing: false })} />
-          <ConsentButton text="Accept all" variant="primary" onClick={() => decide({ statistics: true, marketing: true })} />
-          <ConsentButton text="Save choices" onClick={() => decide(choice)} />
+          <ConsentButton
+            text={ui.consent.necessaryOnly}
+            variant="tertiary"
+            onClick={() => decide({ statistics: false, marketing: false })}
+          />
+          <ConsentButton
+            text={ui.consent.acceptAll}
+            variant="primary"
+            onClick={() => decide({ statistics: true, marketing: true })}
+          />
+          <ConsentButton text={ui.consent.saveChoices} onClick={() => decide(choice)} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

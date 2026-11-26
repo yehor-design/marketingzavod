@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { TextGlitch } from "@/components/motion";
 import { Badge } from "@/components/ui/badge";
 import { CtaLink } from "@/components/ui/button";
+import { ui } from "@/content/ui";
 import { navLinks } from "@/lib/routes";
 
 function isCurrent(pathname: string, href: string) {
@@ -130,12 +131,12 @@ export function SiteHeader() {
           >
             <img
               src="/brand/logo.svg"
-              alt="WOWboy"
+              alt={ui.header.logoAlt}
               width={100.31}
               height={24}
             />
           </Link>
-          <nav className={cx("desktop-nav")} aria-label="Primary">
+          <nav className={cx("desktop-nav")} aria-label={ui.header.primaryNavAria}>
             <ul>
               {navLinks.map((link) => (
                 <li key={link.href}>
@@ -150,13 +151,22 @@ export function SiteHeader() {
             </ul>
           </nav>
           <div className={cx("desktop-actions")}>
-            <CtaLink href="/contact" text="Contact" variant="secondary" location="header" />
-            <CtaLink href="/waitlist" text={"Join\u00A0waitlist"} location="header" />
+            <CtaLink
+              href={ui.header.secondaryCtaHref}
+              text={ui.header.secondaryCtaText}
+              variant="secondary"
+              location="header"
+            />
+            <CtaLink
+              href={ui.header.primaryCtaHref}
+              text={ui.header.primaryCtaText}
+              location="header"
+            />
           </div>
           <button
             type="button"
             className={cx("menu-toggle")}
-            aria-label={open ? "Close menu" : "Menu"}
+            aria-label={open ? ui.header.closeMenuAria : ui.header.openMenuAria}
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => {
@@ -178,7 +188,7 @@ export function SiteHeader() {
       </div>
       {open ? (
         <div id="mobile-menu" className={cx("mobile-panel")}>
-          <nav aria-label="Primary">
+          <nav aria-label={ui.header.primaryNavAria}>
             <ul className={cx("mobile-links")}>
               {navLinks.map((link) => {
                 const current = isCurrent(pathname, link.href);
@@ -203,8 +213,8 @@ export function SiteHeader() {
             </ul>
           </nav>
           <CtaLink
-            href="/waitlist"
-            text={"Join\u00A0waitlist"}
+            href={ui.header.primaryCtaHref}
+            text={ui.header.primaryCtaText}
             location="mobile_menu"
             onClick={closeSoon}
           />

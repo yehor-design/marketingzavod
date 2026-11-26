@@ -1,4 +1,5 @@
 import { cx } from "@/components/chrome-styles";
+import { ui } from "@/content/ui";
 import Link from "next/link";
 
 function ArrowIcon() {
@@ -22,11 +23,11 @@ function ArrowIcon() {
 export function Announcement() {
   return (
     <div className={cx("announcement-wrap")}>
-      <Link className={cx("announcement")} href="/updates/june-jetstream-update">
+      <Link className={cx("announcement")} href={ui.announcement.href}>
         <span className={cx("shimmer-text")}>
-          NEW: 2025 JUNE UPDATE
+          {ui.announcement.text}
           <span className={cx("shimmer-text-glow")} aria-hidden="true">
-            NEW: 2025 JUNE UPDATE
+            {ui.announcement.text}
           </span>
         </span>
         <span className={cx("announcement-icon")}>

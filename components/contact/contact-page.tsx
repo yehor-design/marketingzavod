@@ -5,23 +5,24 @@ import {
   contactFormStyles,
   type ContactFieldRow,
 } from "@/components/blocks/contact-form";
+import { ui } from "@/content/ui";
 
 const REASONS = [
-  { value: "general", label: "General" },
-  { value: "support", label: "Support" },
-  { value: "sales", label: "Sales" },
-  { value: "feedback", label: "Feedback" },
-  { value: "other", label: "Other" },
+  { value: "general", label: ui.contact.reasons.general },
+  { value: "support", label: ui.contact.reasons.support },
+  { value: "sales", label: ui.contact.reasons.sales },
+  { value: "feedback", label: ui.contact.reasons.feedback },
+  { value: "other", label: ui.contact.reasons.other },
 ] as const;
 
-const JET_CONTACT_FIELDS: readonly ContactFieldRow[] = [
+const CONTACT_FIELDS: readonly ContactFieldRow[] = [
   [
     {
       kind: "text",
       key: "name",
       name: "Full name",
-      label: "Full name",
-      placeholder: "Jane Smith",
+      label: ui.contact.nameLabel,
+      placeholder: ui.contact.namePlaceholder,
       autoComplete: "name",
       required: true,
     },
@@ -29,8 +30,8 @@ const JET_CONTACT_FIELDS: readonly ContactFieldRow[] = [
       kind: "email",
       key: "email",
       name: "Email",
-      label: "Email",
-      placeholder: "orin@framer.com",
+      label: ui.contact.emailLabel,
+      placeholder: ui.contact.emailPlaceholder,
       inputMode: "email",
       autoComplete: "email",
       required: true,
@@ -40,8 +41,8 @@ const JET_CONTACT_FIELDS: readonly ContactFieldRow[] = [
     kind: "select",
     key: "reason",
     name: "Inquiry type",
-    label: "Reason for contact",
-    placeholder: "Select…",
+    label: ui.contact.reasonLabel,
+    placeholder: ui.contact.reasonPlaceholder,
     options: REASONS,
     required: true,
   },
@@ -49,8 +50,8 @@ const JET_CONTACT_FIELDS: readonly ContactFieldRow[] = [
     kind: "textarea",
     key: "message",
     name: "Message",
-    label: "How can we help?",
-    placeholder: "Tell us what you need help with…",
+    label: ui.contact.messageLabel,
+    placeholder: ui.contact.messagePlaceholder,
     required: true,
   },
 ];
@@ -61,21 +62,20 @@ export function ContactPage() {
       <section className={contactFormStyles.frame} aria-labelledby="contact-title">
         <div className={contactFormStyles.intro}>
           <div className={contactFormStyles.introCopy}>
-            <h1 id="contact-title">Get in touch with Jet</h1>
-            <p>
-              We’re here to help—whether you have a question, or need support. Reach out and our
-              team will get back to you as soon as possible.
-            </p>
+            <h1 id="contact-title">{ui.contact.title}</h1>
+            <p>{ui.contact.description}</p>
           </div>
         </div>
         <div className={contactFormStyles.panel}>
           <ContactForm
             formName="contact"
-            heading="Send us a message"
-            subheading="We’d love to hear from you."
-            fields={JET_CONTACT_FIELDS}
-            submitLabel="Get in touch"
-            successMessage="We'll get back to you soon!"
+            heading={ui.contact.formHeading}
+            subheading={ui.contact.formSubheading}
+            fields={CONTACT_FIELDS}
+            submitLabel={ui.contact.submitLabel}
+            submittingLabel={ui.contact.submittingLabel}
+            successMessage={ui.contact.successMessage}
+            honeypotLabel={ui.contact.honeypotLabel}
           />
         </div>
       </section>

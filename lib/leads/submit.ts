@@ -3,6 +3,7 @@
  * it adds attribution and consent, posts to /api/lead, then reports the
  * conversion through track().
  */
+import { ui } from "@/content/ui";
 import { getAttributionForSubmit, getAttribution } from "@/lib/attribution";
 import { consentSnapshot } from "@/lib/consent";
 import { track, type FormName } from "@/lib/tracking";
@@ -87,8 +88,5 @@ export async function submitLead(
   return { ok: true, lead_id: leadId, event_id: eventId };
 }
 
-export const SUBMIT_ERROR_TEXT: Record<"rate_limited" | "network" | "server", string> = {
-  rate_limited: "Too many attempts. Please try again in a minute.",
-  network: "We couldn't reach the server. Check your connection and try again.",
-  server: "Something went wrong on our side. Please try again.",
-};
+export const SUBMIT_ERROR_TEXT: Record<"rate_limited" | "network" | "server", string> =
+  ui.submitErrors;

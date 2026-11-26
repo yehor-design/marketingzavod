@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ConsentButton } from "@/components/consent/consent-button";
+import { ui } from "@/content/ui";
 import { openConsentSettings, saveConsent, type ConsentChoice } from "@/lib/consent";
 import { useConsent } from "@/lib/consent/use-consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
 
-export const PRIVACY_COOKIES_HREF = "/legal/privacy-policy#cookies";
+export const PRIVACY_COOKIES_HREF = ui.consent.cookiesHref;
 
 /**
  * After a choice the banner disappears. If it held the focus, the focus moves
@@ -60,30 +61,30 @@ export function ConsentBanner() {
       data-consent-banner=""
     >
       <h2 id="consent-banner-title" className="sr-only">
-        Cookie consent
+        {ui.consent.bannerTitleSr}
       </h2>
       <p className="m-0 font-display text-[12px] leading-[1.6] font-[1000] tracking-normal text-muted-foreground [font-variation-settings:'opsz'_14,'wght'_450]">
-        We use cookies for analytics and ads, some set by our partners.{" "}
+        {ui.consent.bannerText}{" "}
         <Link
           href={PRIVACY_COOKIES_HREF}
           className="text-foreground underline decoration-1 underline-offset-2"
-          aria-label="Learn more about cookies"
+          aria-label={ui.consent.learnMoreAria}
         >
-          Learn more
+          {ui.consent.learnMore}
         </Link>
       </p>
       <div className="flex flex-wrap items-center gap-[8px]">
         <ConsentButton
-          text="Necessary only"
+          text={ui.consent.necessaryOnly}
           variant="tertiary"
           onClick={() => choose({ statistics: false, marketing: false })}
         />
         <ConsentButton
-          text="Accept all"
+          text={ui.consent.acceptAll}
           variant="primary"
           onClick={() => choose({ statistics: true, marketing: true })}
         />
-        <ConsentButton text="Settings" onClick={() => openConsentSettings()} />
+        <ConsentButton text={ui.consent.settings} onClick={() => openConsentSettings()} />
       </div>
     </div>
   );
