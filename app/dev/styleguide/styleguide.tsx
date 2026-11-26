@@ -1,5 +1,6 @@
 "use client";
 
+import { ArticleBody } from "@/components/blocks/article-body";
 import { Benefits, BenefitsHighlight } from "@/components/blocks/benefits";
 import { CardGrid, type CardGridItem } from "@/components/blocks/card-grid";
 import {
@@ -7,13 +8,21 @@ import {
   type ComparisonColumn,
   type ComparisonGroup,
 } from "@/components/blocks/comparison-table";
+import {
+  ContactForm,
+  contactFormStyles,
+  type ContactFieldRow,
+} from "@/components/blocks/contact-form";
 import { CtaBand } from "@/components/blocks/cta-band";
 import { Faq, type FaqItem } from "@/components/blocks/faq";
 import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
 import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
+import { LegalBody } from "@/components/blocks/legal-body";
 import { Mission, MissionHighlight } from "@/components/blocks/mission";
 import { OpenRoles } from "@/components/blocks/open-roles";
+import { PostCard, type PostCardItem } from "@/components/blocks/post-card";
+import { PostList } from "@/components/blocks/post-list";
 import { PostsPreview } from "@/components/blocks/posts-preview";
 import { PricingCards, type PricingPlan } from "@/components/blocks/pricing-cards";
 import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-steps";
@@ -954,6 +963,245 @@ export function StyleGuide() {
             },
           ]}
         />
+      </Section>
+
+      <Section id="block-post-card" title="BLOCK: POST CARD">
+        <div className="grid grid-cols-1 gap-[16px] min-[810px]:grid-cols-2">
+          <div className="[border:1px_dashed_var(--color-rule)]">
+            <PostCard
+              variant="small"
+              item={{
+                href: "/blog/why-website-speed-matters-more-than-ever-in-2025",
+                category: "Performance",
+                title: "Why Website Speed Matters More Than Ever in 2025",
+                date: "Jun 7, 2025",
+                dateTime: "2025-06-07",
+                cover: {
+                  kind: "dither",
+                  src: "/about/post-speed.png",
+                  label: "Performance cover illustration",
+                },
+              }}
+            />
+          </div>
+          <div className="[border:1px_dashed_var(--color-rule)]">
+            <PostCard
+              variant="small"
+              item={{
+                href: "/blog/image-optimization-the-secret-to-lightning-fast-sites",
+                category: "Optimization",
+                title: "Custom SVG cover slot (illos.dev/library ready)",
+                date: "May 26, 2025",
+                dateTime: "2025-05-26",
+                cover: {
+                  kind: "custom",
+                  render: () => (
+                    <svg viewBox="0 0 320 180" role="img" aria-label="Grid signal illustration">
+                      <rect width="320" height="180" fill="var(--color-card)" />
+                      <circle
+                        cx="160"
+                        cy="90"
+                        r="48"
+                        fill="none"
+                        stroke="var(--color-brand)"
+                        strokeWidth="1.5"
+                        strokeDasharray="6 4"
+                      />
+                      <circle cx="160" cy="90" r="10" fill="var(--color-brand)" />
+                    </svg>
+                  ),
+                },
+              }}
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section id="block-post-list" title="BLOCK: POST LIST">
+        <PostList
+          heading="Recent articles"
+          headingId="sg-post-list-heading"
+          columnClassName="w-full!"
+          showFilters
+          categories={["All", "Performance", "Optimization"]}
+          allCategory="All"
+          filtersAriaLabel="Demo post categories"
+          pageSize={2}
+          items={
+            [
+              {
+                href: "/blog/why-website-speed-matters-more-than-ever-in-2025",
+                category: "Performance",
+                title: "Why Website Speed Matters More Than Ever in 2025",
+                date: "Jun 7, 2025",
+                dateTime: "2025-06-07",
+                cover: {
+                  kind: "dither",
+                  src: "/about/post-speed.png",
+                  label: "Performance cover",
+                },
+              },
+              {
+                href: "/blog/image-optimization-the-secret-to-lightning-fast-sites",
+                category: "Optimization",
+                title: "Image Optimization: The Secret to Lightning-Fast Sites",
+                date: "May 26, 2025",
+                dateTime: "2025-05-26",
+                cover: {
+                  kind: "dither",
+                  src: "/about/post-images.png",
+                  label: "Image optimization cover",
+                },
+              },
+            ] satisfies readonly PostCardItem[]
+          }
+        />
+      </Section>
+
+      <Section id="block-article-body" title="BLOCK: ARTICLE BODY">
+        <div className="max-w-[650px]">
+          <ArticleBody
+            blocks={[
+              { kind: "h2", text: "Measuring what actually slows pages down" },
+              {
+                kind: "p",
+                text: "Start with a clean baseline before changing templates, scripts, or images.",
+              },
+              {
+                kind: "quote",
+                text: "Every extra second of latency cuts conversions long before users finish reading.",
+              },
+              { kind: "h3", text: "Core checkpoints" },
+              {
+                kind: "list",
+                items: [
+                  "Measure Largest Contentful Paint on mobile connections",
+                  "Trim unused JavaScript bundles per route",
+                ],
+              },
+              {
+                kind: "table",
+                headers: ["Metric", "Target"],
+                rows: [
+                  ["LCP", "≤ 2.5s"],
+                  ["CLS", "≤ 0.1"],
+                ],
+              },
+              { kind: "code", text: "npm run test:visual" },
+            ]}
+          />
+        </div>
+      </Section>
+
+      <Section id="block-legal-body" title="BLOCK: LEGAL BODY">
+        <LegalBody
+          blocks={[
+            {
+              kind: "p",
+              content: [
+                { text: "This demo shows headings, paragraphs with " },
+                { text: "inline links", href: "/legal/privacy-policy" },
+                { text: ", and bullet lists using the shared legal renderer." },
+              ],
+            },
+            { kind: "h2", text: "1. Data handling", id: "sg-legal-data" },
+            {
+              kind: "list",
+              items: [
+                "Analytics stay off until the visitor gives consent.",
+                "Form submissions transmit only the fields entered by the visitor.",
+              ],
+            },
+          ]}
+        />
+      </Section>
+
+      <Section id="block-contact-form" title="BLOCK: CONTACT FORM">
+        {(() => {
+          const demoFields: readonly ContactFieldRow[] = [
+            [
+              {
+                kind: "text",
+                key: "name",
+                name: "Full name",
+                label: "Full name",
+                placeholder: "Jane Smith",
+                required: true,
+              },
+              {
+                kind: "email",
+                key: "email",
+                name: "Email",
+                label: "Email",
+                placeholder: "jane@example.com",
+                required: true,
+              },
+            ],
+            {
+              kind: "select",
+              key: "reason",
+              name: "Inquiry type",
+              label: "Reason for contact",
+              placeholder: "Select…",
+              options: [
+                { value: "general", label: "General" },
+                { value: "sales", label: "Sales" },
+              ],
+              required: true,
+            },
+            {
+              kind: "textarea",
+              key: "message",
+              name: "Message",
+              label: "How can we help?",
+              placeholder: "Tell us what you need help with…",
+              required: true,
+            },
+          ];
+
+          return (
+            <div className="grid grid-cols-1 gap-[24px] min-[1200px]:grid-cols-2">
+              <div className={`${contactFormStyles.panel} w-full! flex-auto! [border:1px_dashed_var(--color-rule)]!`}>
+                <ContactForm
+                  heading="Normal state"
+                  subheading="Default idle form."
+                  fields={demoFields}
+                  submitLabel="Get in touch"
+                  successMessage="We'll get back to you soon!"
+                  honeypotId="sg-contact-normal-url"
+                  previewState="normal"
+                />
+              </div>
+              <div className={`${contactFormStyles.panel} w-full! flex-auto! [border:1px_dashed_var(--color-rule)]!`}>
+                <ContactForm
+                  heading="Error state"
+                  subheading="Validation and server alerts."
+                  fields={demoFields}
+                  submitLabel="Get in touch"
+                  successMessage="We'll get back to you soon!"
+                  honeypotId="sg-contact-error-url"
+                  previewState="error"
+                  previewErrors={{
+                    email: "Enter a valid email.",
+                    reason: "Select a reason for contact.",
+                    form: "Something went wrong on our side. Please try again.",
+                  }}
+                />
+              </div>
+              <div className={`${contactFormStyles.panel} w-full! flex-auto! [border:1px_dashed_var(--color-rule)]!`}>
+                <ContactForm
+                  heading="Submitting state"
+                  subheading="Disabled inputs with spinner."
+                  fields={demoFields}
+                  submitLabel="Get in touch"
+                  successMessage="We'll get back to you soon!"
+                  honeypotId="sg-contact-submitting-url"
+                  previewState="submitting"
+                />
+              </div>
+            </div>
+          );
+        })()}
       </Section>
     </div>
   );

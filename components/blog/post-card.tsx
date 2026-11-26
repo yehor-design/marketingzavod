@@ -1,28 +1,33 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { DitherImage } from "@/components/home/dither-image";
-import { orderedDither } from "@/components/motion";
-import { Badge } from "@/components/ui/badge";
+import {
+  CoverImage as BlockCoverImage,
+  PostCard as BlockPostCard,
+  type PostCardItem,
+} from "@/components/blocks/post-card";
 import type { Post } from "@/lib/blog";
-import styles from "@/components/blog/blog-styles";
 
-const coverDither = {
-  ...orderedDither,
-  animation: false,
-  brightness: -46,
-  pixelSize: 2,
-  threshold: 116,
-  midtones: 56,
-  glow: 2,
-};
+export function postToCardItem(post: Post): PostCardItem {
+  return {
+    href: `/blog/${post.slug}`,
+    category: post.category,
+    title: post.title,
+    description: post.description,
+    date: post.date,
+    dateTime: post.dateTime,
+    cover: {
+      kind: "dither",
+      src: post.image,
+      label: post.imageAlt,
+    },
+  };
+}
 
 export function CoverImage({
   src,
   label,
   decorative = false,
-  pixelSize = coverDither.pixelSize,
+  pixelSize,
   hot = false,
 }: {
   src: string;
@@ -32,19 +37,13 @@ export function CoverImage({
   hot?: boolean;
 }) {
   return (
-    <span className={styles.art} aria-hidden={decorative || undefined}>
-      <DitherImage
-        src={src}
-        label={decorative ? "" : label}
-        preset={{
-          ...coverDither,
-          pixelSize,
-          animation: hot,
-          intensity: 10,
-          interval: 0.08,
-        }}
-      />
-    </span>
+    <BlockCoverImage
+      src={src}
+      label={label}
+      decorative={decorative}
+      pixelSize={pixelSize}
+      hot={hot}
+    />
   );
 }
 
@@ -55,36 +54,5 @@ export function PostCard({
   post: Post;
   variant: "feature" | "small";
 }) {
-  const [hot, setHot] = useState(false);
-
-  return (
-    <Link
-      href={`/blog/${post.slug}`}
-      className={variant === "feature" ? styles.feature : styles.small}
-      onPointerEnter={() => setHot(true)}
-      onPointerLeave={() => setHot(false)}
-      onFocus={() => setHot(true)}
-      onBlur={() => setHot(false)}
-    >
-      <CoverImage
-        src={post.image}
-        label={post.imageAlt}
-        decorative
-        pixelSize={variant === "feature" ? 1 : 2}
-        hot={hot}
-      />
-      <span className={styles.copy}>
-        <span className={styles.tagRow}>
-          <Badge variant="secondary">{post.category}</Badge>
-        </span>
-        <span className={styles.text}>
-          <h3>{post.title}</h3>
-          {variant === "feature" ? <p className={styles.desc}>{post.description}</p> : null}
-        </span>
-        <time className={styles.date} dateTime={post.dateTime}>
-          {post.date}
-        </time>
-      </span>
-    </Link>
-  );
+  return <BlockPostCard item={postToCardItem(post)} variant={variant} />;
 }
