@@ -1,4 +1,5 @@
 import { UpdatesIndex } from "@/components/updates/changelog";
+import { requireJetEdition } from "@/lib/edition-routes";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -9,5 +10,6 @@ export const metadata = pageMetadata({
 });
 
 export default function Page() {
+  requireJetEdition();
   return <UpdatesIndex />;
 }

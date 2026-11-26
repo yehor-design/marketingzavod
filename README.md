@@ -13,6 +13,20 @@ npm run gtm:build   # regenerate gtm/container.json
 npm run lighthouse  # Lighthouse CI against a local production build
 ```
 
+## Site editions (`jet` / `bg`)
+
+Each build produces a single site edition controlled by `NEXT_PUBLIC_SITE_EDITION` (`jet` by default, or `bg`). Only `lib/edition.ts` reads the variable, and any unknown value fails the build.
+
+- **Production:** `jet` (default when unset).
+- **Preview:** `bg` (configured by Yehor in Vercel, Linear `ZAV-63`).
+
+```bash
+npm run dev                                             # jet (default)
+NEXT_PUBLIC_SITE_EDITION=bg npm run dev                 # bg edition locally
+npm run test:e2e                                        # jet E2E suite
+NEXT_PUBLIC_SITE_EDITION=bg npm run test:e2e            # bg E2E suite
+```
+
 ## Visual regression tests
 
 Visual baselines for the English (`jet`) edition live in `tests/visual/__snapshots__/{platform}/` and are verified with `maxDiffPixelRatio: 0.001` at `390`, `1024`, and `1440` px widths (reduced motion, frozen clock, canvas/video masks):
