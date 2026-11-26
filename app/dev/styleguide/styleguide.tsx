@@ -1,7 +1,10 @@
 "use client";
 
 import { CardGrid, type CardGridItem } from "@/components/blocks/card-grid";
+import { CtaBand } from "@/components/blocks/cta-band";
+import { Faq, type FaqItem } from "@/components/blocks/faq";
 import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
+import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
 import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-steps";
 import { cx } from "@/components/chrome-styles";
@@ -104,6 +107,29 @@ const demoCardTiles: readonly CardGridItem[] = [
   { title: "Code cleanup", body: "Remove bloat for better performance", icon: "broom" },
   { title: "24/7 monitoring", body: "Always watching your site's performance", icon: "chart" },
   { title: "Real-time alerts", body: "Know about issues right away", icon: "bell" },
+];
+
+const demoFaqItems: readonly FaqItem[] = [
+  {
+    question: "Do I need coding skills?",
+    answer: "Not at all—just enter your website URL and Jet handles the rest automatically.",
+  },
+  {
+    question: "Where can I inspect the plans?",
+    answer: (
+      <>
+        Full tier breakdown is available on the <Link href="/pricing">Pricing page</Link>.
+      </>
+    ),
+  },
+  {
+    question: "Is it safe to use Jet?",
+    answer: "Yes—we never modify your original files and can instantly reverse any changes if needed.",
+  },
+  {
+    question: "How fast will I see results?",
+    answer: "Most sites see improvement in seconds, with full optimization within 5 minutes.",
+  },
 ];
 
 const colors = [
@@ -569,6 +595,61 @@ export function StyleGuide() {
           titleId="sg-card-grid"
           title="Core capabilities."
           items={demoCardTiles}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-feature-section" title="BLOCK: FEATURE SECTION">
+        <div className="flex flex-col gap-[32px]">
+          <FeatureSection
+            eyebrow="Image Optimization"
+            title="Images that load in milliseconds."
+            body="Automatic optimization for every visual asset on your site."
+            points={[
+              "Automatic image compression",
+              "Next-gen format conversion (WebP, AVIF)",
+              "Lazy loading implementation",
+              "Responsive image sizing",
+            ]}
+            visual={{
+              kind: "dither",
+              src: "/home/feature-settings.png",
+              label: "Dithered optimized settings illustration",
+            }}
+            className="pt-0!"
+          />
+          <FeatureSection
+            eyebrow="Text-only variant"
+            title="No visual, zero empty space."
+            body="When no visual prop is passed, FeatureSection collapses cleanly to a single column."
+            points={[
+              "No default Jet dither fallback",
+              "Optional anchor id with scroll offset",
+              "Supports rich links inside points",
+            ]}
+            className="pt-0!"
+          />
+        </div>
+      </Section>
+
+      <Section id="block-faq" title="BLOCK: FAQ">
+        <Faq
+          titleId="sg-faq"
+          title="Frequently asked questions."
+          items={demoFaqItems}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-cta-band" title="BLOCK: CTA BAND">
+        <CtaBand
+          titleId="sg-cta-band"
+          title="Boost your site speed today."
+          description="Try Jet now—one click, instant performance. No risk, cancel anytime."
+          actions={[
+            { href: "/waitlist", text: `Join${NBSP}waitlist`, location: "styleguide" },
+            { href: "/pricing", text: "View pricing", variant: "secondary", location: "styleguide" },
+          ]}
           className="pt-0!"
         />
       </Section>
