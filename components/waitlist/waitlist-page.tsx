@@ -7,6 +7,7 @@ import { orderedDither, randomDither } from "@/components/motion";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
 import { Input } from "@/components/forms/bound-controls";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/waitlist/waitlist-styles";
 
@@ -216,7 +217,14 @@ export function WaitlistPage() {
               </Field>
               {done ? null : (
                 <Button type="submit" disabled={pending} aria-busy={pending}>
-                  Join now
+                  {pending ? (
+                    <>
+                      <Spinner data-icon="inline-start" />
+                      Join now
+                    </>
+                  ) : (
+                    "Join now"
+                  )}
                 </Button>
               )}
             </FieldGroup>

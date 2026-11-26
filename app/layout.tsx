@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 import { GoogleTagManager } from "@/components/tracking/gtm";
 import { ConsentedSpeedInsights } from "@/components/tracking/speed-insights";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ALLOW_INDEXING, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -88,10 +89,12 @@ export default function RootLayout({
       <body>
         <GoogleTagManager />
         <MotionProvider>
-          {/* First in the tab order, though it sits at the bottom of the screen. */}
-          <ConsentBanner />
-          <SiteShell>{children}</SiteShell>
-          <ConsentSettings />
+          <TooltipProvider>
+            {/* First in the tab order, though it sits at the bottom of the screen. */}
+            <ConsentBanner />
+            <SiteShell>{children}</SiteShell>
+            <ConsentSettings />
+          </TooltipProvider>
         </MotionProvider>
         <TrackingProvider />
         <ConsentedSpeedInsights />

@@ -5,6 +5,7 @@ import { Field, FieldError, FieldGroup, FieldLabel, useFieldControl } from "@ui-
 import { Input, Textarea } from "@/components/forms/bound-controls";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -200,7 +201,14 @@ export function ContactPage() {
               </p>
             ) : (
               <Button type="submit" disabled={pending} aria-busy={pending}>
-                Get in touch
+                {pending ? (
+                  <>
+                    <Spinner data-icon="inline-start" />
+                    Get in touch
+                  </>
+                ) : (
+                  "Get in touch"
+                )}
               </Button>
             )}
           </form>

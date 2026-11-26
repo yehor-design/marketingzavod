@@ -15,7 +15,9 @@ import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
 import { PhosphorIcon } from "@/components/home/phosphor-icon";
 import home from "@/components/home/home-styles";
+import { Badge } from "@/components/ui/badge";
 import { Button, CtaLink } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -25,6 +27,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import styles from "./styleguide-styles";
 
@@ -197,7 +207,11 @@ function GlitchLink({ label, badge }: { label: string; badge?: string }) {
       onBlur={() => setHot(false)}
     >
       <TextGlitch active={hot}>{label}</TextGlitch>
-      {badge ? <span className={cx("count-badge")}>{badge}</span> : null}
+      {badge ? (
+        <Badge variant="secondary" className={cx("count-badge")}>
+          {badge}
+        </Badge>
+      ) : null}
     </Link>
   );
 }
@@ -317,24 +331,36 @@ export function StyleGuide() {
       </Section>
 
       <Section id="forms" title="FORM FIELDS">
-        <div className={styles.form}>
-          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
-            Full name
-            <Input name="name" placeholder="Jane Smith" />
-          </label>
-          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
-            Email
-            <Input name="email" defaultValue="orin@" aria-invalid="true" />
-            <span className="text-destructive">Enter a valid email address.</span>
-          </label>
-          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
-            Message
-            <Textarea name="message" placeholder="Tell us what you need help with…" />
-          </label>
-          <label className="flex w-full min-w-0 flex-col gap-1.5 text-sm text-muted-foreground">
-            Theme
+        <FieldGroup className={styles.form}>
+          <Field className="min-w-0">
+            <FieldLabel htmlFor="styleguide-name" className="text-sm text-muted-foreground">
+              Full name
+            </FieldLabel>
+            <Input id="styleguide-name" name="name" placeholder="Jane Smith" />
+          </Field>
+          <Field className="min-w-0" data-invalid="true">
+            <FieldLabel htmlFor="styleguide-email" className="text-sm text-muted-foreground">
+              Email
+            </FieldLabel>
+            <Input id="styleguide-email" name="email" defaultValue="orin@" aria-invalid="true" />
+            <FieldError>Enter a valid email address.</FieldError>
+          </Field>
+          <Field className="min-w-0">
+            <FieldLabel htmlFor="styleguide-message" className="text-sm text-muted-foreground">
+              Message
+            </FieldLabel>
+            <Textarea
+              id="styleguide-message"
+              name="message"
+              placeholder="Tell us what you need help with…"
+            />
+          </Field>
+          <Field className="min-w-0">
+            <FieldLabel htmlFor="styleguide-theme" className="text-sm text-muted-foreground">
+              Theme
+            </FieldLabel>
             <Select items={THEMES}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="styleguide-theme" className="w-full">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
@@ -347,8 +373,8 @@ export function StyleGuide() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-          </label>
-        </div>
+          </Field>
+        </FieldGroup>
         <p className={styles.caption}>
           shadcn Input: 32px, padding 4px 10px, radius 10px, 16px type, 14px from 768px, weight 400.
           Textarea uses the same type, a 64px minimum, and does not resize. shadcn Select: 32px,
@@ -410,25 +436,27 @@ export function StyleGuide() {
           with no bounce. Reduced motion turns all of it off.
         </p>
         <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Effect</th>
-                <th>Where</th>
-                <th>Trigger</th>
-                <th>Timing</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className={styles.table}>
+            <TableHeader>
+              <TableRow className="border-0 hover:bg-transparent">
+                <TableHead>Effect</TableHead>
+                <TableHead>Where</TableHead>
+                <TableHead>Trigger</TableHead>
+                <TableHead>Timing</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {motion.map((row) => (
-                <tr key={row[0]}>
+                <TableRow key={row[0]} className="border-0 hover:bg-transparent">
                   {row.map((cell) => (
-                    <td key={cell}>{cell}</td>
+                    <TableCell key={cell} className="whitespace-normal">
+                      {cell}
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </Section>
     </div>

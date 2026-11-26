@@ -2,6 +2,15 @@ import Link from "next/link";
 import { getPost, posts, type Block, type Post } from "@/lib/blog";
 import { CoverImage, PostCard } from "@/components/blog/post-card";
 import { SiteCta } from "@/components/site-cta";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import styles from "@/components/blog/blog-styles";
 
 function Blocks({ blocks }: { blocks: Block[] }) {
@@ -37,26 +46,28 @@ function Blocks({ blocks }: { blocks: Block[] }) {
         if (block.kind === "table") {
           return (
             <div key={key} className={styles.tableWrap}>
-              <table>
-                <thead>
-                  <tr>
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-0 hover:bg-transparent">
                     {block.headers.map((header) => (
-                      <th key={header} scope="col">
+                      <TableHead key={header} scope="col" className="text-muted-foreground">
                         {header}
-                      </th>
+                      </TableHead>
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {block.rows.map((row) => (
-                    <tr key={row.join("|")}>
+                    <TableRow key={row.join("|")} className="border-0 hover:bg-transparent">
                       {row.map((cell, cellIndex) => (
-                        <td key={`${cell}-${cellIndex}`}>{cell}</td>
+                        <TableCell key={`${cell}-${cellIndex}`} className="whitespace-normal">
+                          {cell}
+                        </TableCell>
                       ))}
-                    </tr>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           );
         }
@@ -95,7 +106,7 @@ export function ArticlePage({ slug }: { slug: string }) {
             </span>
             Back
           </Link>
-          <span className={styles.category}>{post.category}</span>
+          <Badge className={styles.category}>{post.category}</Badge>
           <time className={styles.metaDate} dateTime={post.dateTime}>
             {post.date}
           </time>

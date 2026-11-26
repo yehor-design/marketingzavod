@@ -1,10 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { PulseGradient } from "@/components/motion";
+import { Badge } from "@/components/ui/badge";
 import { Button, CtaLink } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SiteCta } from "@/components/site-cta";
 import { TrackView } from "@/components/tracking/track-view";
 import styles from "@/components/pricing/pricing-styles";
@@ -374,17 +379,19 @@ function CellValue({ cell }: { cell: Cell }) {
 }
 
 function Tip({ text }: { text: string }) {
-  const id = useId();
-
   return (
-    <span className={styles.tip}>
-      <button type="button" className={styles.tipButton} aria-describedby={id} aria-label="More information">
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <button type="button" className={styles.tipButton} aria-label="More information" />
+        }
+      >
         ?
-      </button>
-      <span id={id} role="tooltip" className={styles.tipBubble}>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[240px] bg-secondary text-foreground">
         {text}
-      </span>
-    </span>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -425,38 +432,45 @@ export function PricingPage() {
       <div className={styles.spacer} aria-hidden="true" />
 
       <section className={styles.plans} aria-labelledby="pricing-title">
-        <div className={styles.toggle} role="group" aria-label="Billing period">
+        <ToggleGroup
+          value={[period]}
+          onValueChange={(next) => {
+            if (next[0] === "monthly" || next[0] === "yearly") {
+              setPeriod(next[0]);
+            }
+          }}
+          spacing={1}
+          aria-label="Billing period"
+          className={styles.toggle}
+        >
           <span
             className={styles.togglePill}
+            aria-hidden="true"
             style={{
               width: period === "monthly" ? 74 : 107,
               transform: period === "monthly" ? "translateX(0)" : "translateX(78px)",
             }}
           />
-          <button
-            type="button"
-            className={period === "monthly" ? styles.toggleOn : styles.toggleOff}
-            aria-pressed={period === "monthly"}
+          <ToggleGroupItem
+            value="monthly"
+            className={`${period === "monthly" ? styles.toggleOn : styles.toggleOff} hover:bg-transparent aria-pressed:bg-transparent`}
             data-track="view_pricing"
             data-track-if="unpressed"
             data-track-billing-period="monthly"
-            onClick={() => setPeriod("monthly")}
           >
             Monthly
-          </button>
-          <button
-            type="button"
-            className={period === "yearly" ? styles.toggleOn : styles.toggleOff}
-            aria-pressed={period === "yearly"}
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="yearly"
+            className={`${period === "yearly" ? styles.toggleOn : styles.toggleOff} hover:bg-transparent aria-pressed:bg-transparent`}
             data-track="view_pricing"
             data-track-if="unpressed"
             data-track-billing-period="yearly"
-            onClick={() => setPeriod("yearly")}
           >
             Yearly
             <span className={styles.discount}>-15%</span>
-          </button>
-        </div>
+          </ToggleGroupItem>
+        </ToggleGroup>
 
         <div className={styles.cards}>
           {plans.map((plan) => {
@@ -482,7 +496,7 @@ export function PricingPage() {
                       <PlanMark id={plan.id} size={28} />
                       <span className={styles.planName}>{plan.name}</span>
                     </span>
-                    {plan.popular ? <span className={styles.badge}>Most popular</span> : null}
+                    {plan.popular ? <Badge className={styles.badge}>Most popular</Badge> : null}
                   </span>
                   <span className={styles.description}>{plan.description}</span>
                   {plan.free ? (
@@ -496,7 +510,7 @@ export function PricingPage() {
                       <span className={styles.suffix}>{suffix}</span>
                     </span>
                   )}
-                  <span className={plan.popular ? styles.dividerAccent : styles.divider} />
+                  <Separator className={plan.popular ? styles.dividerAccent : styles.divider} />
                   <ul className={styles.features}>
                     {plan.features.map((feature) => (
                       <li key={feature}>
@@ -518,20 +532,34 @@ export function PricingPage() {
 
       <section className={styles.compare} aria-label="Plan comparison">
         <div className={styles.switcher}>
-          <div className={styles.tabs} role="tablist" aria-label="Plan">
-            {plans.map((plan, index) => (
-              <button
-                key={plan.id}
-                type="button"
-                role="tab"
-                aria-selected={planIndex === index}
-                className={planIndex === index ? styles.tabOn : styles.tab}
-                onClick={() => setPlanIndex(index)}
-              >
-                {plan.name}
-              </button>
-            ))}
-          </div>
+          <Tabs
+            value={activePlan.id}
+            onValueChange={(next) => {
+              const index = plans.findIndex((item) => item.id === next);
+              if (index >= 0) {
+                setPlanIndex(index);
+              }
+            }}
+          >
+            <TabsList
+              aria-label="Plan"
+              className={`${styles.tabs} h-auto rounded-none bg-transparent p-0`}
+            >
+              {plans.map((plan, index) => (
+                <TabsTrigger
+                  key={plan.id}
+                  value={plan.id}
+                  className={
+                    planIndex === index
+                      ? `${styles.tabOn} flex-none dark:data-active:border-transparent dark:data-active:bg-brand dark:data-active:text-background`
+                      : `${styles.tab} flex-none`
+                  }
+                >
+                  {plan.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
           <CtaLink
             href={CHECKOUT_HREF}
             text={activePlan.cta}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { blogCategories, posts } from "@/lib/blog";
 import { PostCard } from "@/components/blog/post-card";
 import styles from "@/components/blog/blog-styles";
@@ -33,22 +34,29 @@ export function BlogIndex() {
       <section className={`${styles.column} ${styles.all}`} aria-labelledby="all-posts">
         <div className={styles.allHead}>
           <h2 id="all-posts">All posts</h2>
-          <div className={styles.filters} role="group" aria-label="Post categories">
+          <ToggleGroup
+            value={[category]}
+            onValueChange={(next) => {
+              const chosen = next[0] as (typeof blogCategories)[number] | undefined;
+              if (chosen && blogCategories.includes(chosen)) {
+                setCategory(chosen);
+                setVisible(PAGE_SIZE);
+              }
+            }}
+            spacing={2}
+            aria-label="Post categories"
+            className={styles.filters}
+          >
             {blogCategories.map((item) => (
-              <button
+              <ToggleGroupItem
                 key={item}
-                type="button"
-                className={styles.filter}
-                aria-pressed={item === category}
-                onClick={() => {
-                  setCategory(item);
-                  setVisible(PAGE_SIZE);
-                }}
+                value={item}
+                className={`${styles.filter} aria-pressed:bg-brand aria-pressed:text-background hover:bg-secondary/80 aria-pressed:hover:bg-brand`}
               >
                 {item}
-              </button>
+              </ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
         <ul className={styles.grid}>
           {filtered.map((post, index) => (

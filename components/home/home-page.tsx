@@ -11,6 +11,12 @@ import {
 } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { CtaLink } from "@/components/ui/button";
 import { Announcement } from "@/components/announcement";
 import { DitherImage } from "@/components/home/dither-image";
@@ -671,62 +677,76 @@ export function HomePage() {
         <h2 id="faq-title">
           <span>Frequently asked questions.</span>
         </h2>
-        <div>
+        <Accordion
+          value={openFaq === null ? [] : [String(openFaq)]}
+          onValueChange={(next) => setOpenFaq(next.length > 0 ? Number(next[0]) : null)}
+        >
           {faqs.map((item, index) => {
             const open = openFaq === index;
-            const answerId = `faq-answer-${index}`;
             return (
-              <motion.div
-                className={open ? `${styles.faqItem} ${styles.faqOpen}` : styles.faqItem}
+              <AccordionItem
                 key={item.q}
-                initial={false}
-                animate={{
-                  backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0)",
-                }}
-                whileHover={{
-                  backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0.3)",
-                }}
-                whileFocus={{
-                  backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0.3)",
-                }}
-                transition={reduced === false ? faqSpring : { duration: 0 }}
-              >
-                <h3>
-                  <motion.button
-                    type="button"
-                    aria-expanded={open}
-                    aria-controls={answerId}
-                    data-track="faq_open"
-                    data-track-if="collapsed"
-                    data-track-question={item.q}
-                    onClick={() => setOpenFaq(open ? null : index)}
+                value={String(index)}
+                className="border-b-0"
+                render={
+                  <motion.div
+                    className={open ? `${styles.faqItem} ${styles.faqOpen}` : styles.faqItem}
                     initial={false}
-                    animate={{ paddingBottom: open ? 12 : 28 }}
+                    animate={{
+                      backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0)",
+                    }}
+                    whileHover={{
+                      backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0.3)",
+                    }}
+                    whileFocus={{
+                      backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0.3)",
+                    }}
                     transition={reduced === false ? faqSpring : { duration: 0 }}
-                  >
-                    <span>{item.q}</span>
-                    <motion.span
-                      className={styles.plus}
-                      aria-hidden="true"
+                  />
+                }
+              >
+                <AccordionTrigger
+                  hideIcon
+                  className="rounded-none border-0 py-0 hover:no-underline focus-visible:ring-0"
+                  render={
+                    <motion.button
+                      type="button"
+                      data-track="faq_open"
+                      data-track-if="collapsed"
+                      data-track-question={item.q}
                       initial={false}
-                      animate={{ rotate: open ? 45 : 0 }}
+                      animate={{ paddingBottom: open ? 12 : 28 }}
                       transition={reduced === false ? faqSpring : { duration: 0 }}
                     />
-                  </motion.button>
-                </h3>
-                <motion.div
-                  id={answerId}
-                  className={styles.faqAnswer}
-                  initial={false}
-                  animate={{ height: open ? "auto" : 0 }}
-                  transition={reduced === false ? faqSpring : { duration: 0 }}
+                  }
+                >
+                  <span>{item.q}</span>
+                  <motion.span
+                    className={styles.plus}
+                    aria-hidden="true"
+                    initial={false}
+                    animate={{ rotate: open ? 45 : 0 }}
+                    transition={reduced === false ? faqSpring : { duration: 0 }}
+                  />
+                </AccordionTrigger>
+                <AccordionContent
+                  keepMounted
+                  className="p-0"
+                  render={
+                    <motion.div
+                      className={styles.faqAnswer}
+                      initial={false}
+                      animate={{ height: open ? "auto" : 0 }}
+                      transition={reduced === false ? faqSpring : { duration: 0 }}
+                    />
+                  }
                 >
                   <p>{item.a}</p>
-                </motion.div>
-              </motion.div>
+                </AccordionContent>
+              </AccordionItem>
             );
           })}
-        </div>
+        </Accordion>
         </div>
       </section>
 
