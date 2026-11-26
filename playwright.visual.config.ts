@@ -30,7 +30,6 @@ export default defineConfig({
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.001,
       animations: "disabled",
-      timeout: 30_000,
     },
   },
   projects: [
