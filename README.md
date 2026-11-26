@@ -8,8 +8,23 @@ npm run typecheck   # TypeScript
 npm run lint        # ESLint
 npm test            # unit tests (Vitest)
 npm run test:e2e    # end-to-end tests (Playwright, builds the site first)
+npm run test:visual # visual regression baselines at 390 / 1024 / 1440 px
 npm run gtm:build   # regenerate gtm/container.json
 npm run lighthouse  # Lighthouse CI against a local production build
+```
+
+## Visual regression tests
+
+Visual baselines for the English (`jet`) edition live in `tests/visual/__snapshots__/{platform}/` and are verified with `maxDiffPixelRatio: 0.001` at `390`, `1024`, and `1440` px widths (reduced motion, frozen clock, canvas/video masks):
+
+```bash
+npm run test:visual
+```
+
+Updating baselines is allowed **only after explicit approval from Yehor**. Because Linux (`ubuntu-latest` CI) and macOS render fonts differently, regenerate Linux baselines inside a matching Linux environment (for example, the official Playwright Linux image or from the CI `visual-regression-diffs` artifact):
+
+```bash
+npx playwright test --config playwright.visual.config.ts --update-snapshots
 ```
 
 ## Analytics, tracking and ads

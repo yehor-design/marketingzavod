@@ -43,6 +43,7 @@ next-env.d.ts
 
 # tests and audits
 /playwright-report/
+/playwright-visual-report/
 /test-results/
 /.lighthouseci/
 /.lighthouse-consent/

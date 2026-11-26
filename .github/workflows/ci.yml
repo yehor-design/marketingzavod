@@ -48,6 +48,27 @@ jobs:
           path: playwright-report
           retention-days: 7
 
+  visual:
+    name: Visual regression (jet)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.13.1
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:visual
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-regression-diffs
+          path: |
+            playwright-visual-report
+            test-results/visual
+          retention-days: 7
+
   lighthouse:
     name: Lighthouse budget (mobile)
     runs-on: ubuntu-latest
