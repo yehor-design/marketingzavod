@@ -17,6 +17,8 @@ import {
   type ContentBlock,
   type ContentSource,
 } from "@/content/bg/types";
+import { BG_UI_SOURCE_FILES, bgUi } from "@/content/bg/ui";
+import { jetUi } from "@/content/jet/ui";
 
 const SITE_TEXTS_DIR = path.join(process.cwd(), "docs", "site-texts");
 const PUBLIC_DIR = path.join(process.cwd(), "public");
@@ -186,5 +188,41 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     expect(LAUNCH_PUBLICATION_DATE_ISO).toBe("2026-11-20");
     expect(LAUNCH_PUBLICATION_DATE_BG).toBe("20.11.2026");
     expect(() => formatBgDate("20.11.2026")).toThrow();
+  });
+
+  it("verifies content/bg/ui.ts strings are verbatim in source files or BG_DRAFTS with zero Ukrainian letters or placeholders", () => {
+    const combinedDocs = BG_UI_SOURCE_FILES.map((file) => readNormalizedSource(file)).join(" ");
+    const entries = collectStrings(bgUi, "bgUi");
+    expect(entries.length).toBeGreaterThan(20);
+
+    for (const entry of entries) {
+      if (
+        entry.value === "" ||
+        entry.path === "bgUi.globalError.lang" ||
+        isNonContentString(entry.value, entry.path)
+      ) {
+        continue;
+      }
+      assertCleanBulgarianText(entry.value, entry.path);
+      const normalized = normalizeWhitespace(entry.value);
+      const inDocs = combinedDocs.includes(normalized);
+      const inDrafts = DRAFT_VALUES.has(normalized);
+      expect(
+        inDocs || inDrafts,
+        `${entry.path} is neither verbatim in docs/site-texts/ nor registered in content/bg/drafts.ts:\n  "${entry.value}"`,
+      ).toBe(true);
+    }
+  });
+
+  it("verifies content/jet/ui.ts and content/bg/ui.ts have identical deep key structure", () => {
+    const extractKeys = (obj: unknown, prefix = ""): string[] => {
+      if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
+        return [prefix];
+      }
+      return Object.entries(obj)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .flatMap(([key, child]) => extractKeys(child, prefix ? `${prefix}.${key}` : key));
+    };
+    expect(extractKeys(bgUi)).toEqual(extractKeys(jetUi));
   });
 });

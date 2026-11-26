@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { TextGlitch } from "@/components/motion";
 import { CookieSettingsButton } from "@/components/tracking/cookie-settings";
+import { ui } from "@/content/ui";
 import { footerColumns, socialLinks } from "@/lib/routes";
 
 function isCurrent(pathname: string, href: string) {
@@ -50,9 +51,9 @@ function CookieSettingsItem() {
 function HiringMark() {
   return (
     <span className={cx("hiring-badge")}>
-      HIRING
+      {ui.footer.hiringBadge}
       <span className={cx("shimmer-text-glow")} aria-hidden="true">
-        HIRING
+        {ui.footer.hiringBadge}
       </span>
     </span>
   );
@@ -69,7 +70,7 @@ export function SiteFooter() {
           <Link
             href="/"
             className={cx("footer-logo")}
-            aria-label="WOWboy"
+            aria-label={ui.footer.logoAria}
             aria-current={home ? "page" : undefined}
             data-framer-page-link-current={home ? "true" : undefined}
           >
@@ -90,7 +91,9 @@ export function SiteFooter() {
                       />
                     </li>
                   ))}
-                  {column.title === "Legal" ? <CookieSettingsItem /> : null}
+                  {column.title === "Legal" || column.title === ui.footer.legalColumnTitle ? (
+                    <CookieSettingsItem />
+                  ) : null}
                 </ul>
               </div>
             ))}
@@ -98,9 +101,13 @@ export function SiteFooter() {
         </div>
         <div className={cx("footer-bottom")}>
           <p className={cx("copyright")}>
-            Copyright © 2025 Jet.
-            <br />
-            All rights reserved.
+            {ui.footer.copyrightLine1}
+            {ui.footer.copyrightLine2 ? (
+              <>
+                <br />
+                {ui.footer.copyrightLine2}
+              </>
+            ) : null}
           </p>
           <ul className={cx("socials")}>
             {socialLinks.map((link) => (

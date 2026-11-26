@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { ui } from "@/content/ui";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import type { FormName } from "@/lib/tracking";
 import { cx } from "@/components/blocks/contact-form/contact-form-styles";
@@ -63,6 +64,7 @@ export type ContactFormProps = {
   subheading?: string;
   fields: readonly ContactFieldRow[];
   submitLabel: string;
+  submittingLabel?: string;
   successMessage: string;
   honeypotId?: string;
   honeypotLabel?: string;
@@ -151,9 +153,10 @@ export function ContactForm({
   subheading,
   fields,
   submitLabel,
+  submittingLabel,
   successMessage,
   honeypotId = "contact-company-url",
-  honeypotLabel = "Company URL",
+  honeypotLabel = ui.contact.honeypotLabel,
   errorMessages = SUBMIT_ERROR_TEXT,
   previewState,
   previewErrors,
@@ -325,7 +328,7 @@ export function ContactForm({
           {isPending ? (
             <>
               <Spinner data-icon="inline-start" />
-              {submitLabel}
+              {submittingLabel ?? submitLabel}
             </>
           ) : (
             submitLabel

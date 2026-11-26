@@ -1,5 +1,6 @@
 "use client";
 
+import { ui } from "@/content/ui";
 import { openConsentSettings } from "@/lib/consent";
 import { CONSENT_UI_ENABLED } from "@/lib/tracking/env";
 
@@ -13,7 +14,7 @@ export function CookieSettingsButton({ className }: { className?: string }) {
   }
   return (
     <button type="button" className={className} onClick={() => openConsentSettings()}>
-      Cookie settings
+      {ui.consent.cookieSettingsButton}
     </button>
   );
 }

@@ -1,18 +1,22 @@
 import { z } from "zod";
+import { ui } from "@/content/ui";
+import type { ValidationErrorCode } from "@/content/ui-types";
 import { sanitizeAttribution } from "@/lib/attribution/core";
 
-const text = (max: number) => z.string().trim().min(1, "Required.").max(max, "Too long.");
+const text = (max: number) =>
+  z.string().trim().min(1, "required" satisfies ValidationErrorCode).max(max, "too_long" satisfies ValidationErrorCode);
+
 const email = z
   .string()
   .trim()
   .toLowerCase()
-  .max(254, "Too long.")
-  .pipe(z.email("Enter a valid email."));
+  .max(254, "too_long" satisfies ValidationErrorCode)
+  .pipe(z.email("invalid_email" satisfies ValidationErrorCode));
 
 const httpUrl = z
   .string()
   .trim()
-  .max(500, "Too long.")
+  .max(500, "too_long" satisfies ValidationErrorCode)
   .refine((value) => {
     try {
       const url = new URL(value);
@@ -20,14 +24,14 @@ const httpUrl = z
     } catch {
       return false;
     }
-  }, "Enter a valid URL.");
+  }, "invalid_url" satisfies ValidationErrorCode);
 
 export const CONTACT_REASONS = ["general", "support", "sales", "feedback", "other"] as const;
 
 const contactFields = z.object({
   name: text(120),
   email,
-  reason: z.enum(CONTACT_REASONS, "Select a reason for contact."),
+  reason: z.enum(CONTACT_REASONS, "invalid_reason" satisfies ValidationErrorCode),
   message: text(5000),
 });
 
@@ -43,7 +47,7 @@ const applyFields = z.object({
   role: z
     .string()
     .trim()
-    .regex(/^[a-z0-9-]{1,80}$/, "Unknown role."),
+    .regex(/^[a-z0-9-]{1,80}$/, "invalid_role" satisfies ValidationErrorCode),
 });
 
 const consent = z
@@ -72,14 +76,27 @@ export const leadRequestSchema = z.discriminatedUnion("form_name", [
 
 export type LeadRequest = z.infer<typeof leadRequestSchema>;
 
-/** Flattens zod issues to { field: message } for the form. */
-export function fieldErrors(error: z.ZodError): Record<string, string> {
+/** Flattens zod issues to { field: errorCode } without language coupling (ТП-08). */
+export function fieldErrorCodes(error: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};
   for (const issue of error.issues) {
     const path = issue.path.filter((part) => part !== "fields").join(".") || "form";
     if (!(path in out)) {
       out[path] = issue.message;
     }
+  }
+  return out;
+}
+
+/** Resolves schema error codes to localized messages from the active edition UI dictionary. */
+export function fieldErrors(
+  error: z.ZodError,
+  messages: Record<ValidationErrorCode, string> = ui.validation,
+): Record<string, string> {
+  const codes = fieldErrorCodes(error);
+  const out: Record<string, string> = {};
+  for (const [field, code] of Object.entries(codes)) {
+    out[field] = code in messages ? messages[code as ValidationErrorCode] : code;
   }
   return out;
 }
