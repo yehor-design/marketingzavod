@@ -5,6 +5,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@ui-sdk/react/field";
 import { Input, Textarea } from "@/components/forms/bound-controls";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 import { SUBMIT_ERROR_TEXT, submitLead } from "@/lib/leads/submit";
 import styles from "@/components/careers/careers-styles";
 
@@ -157,8 +158,15 @@ export function ApplyForm({ title, slug }: { title: string; slug: string }) {
           Thanks for your application!
         </p>
       ) : (
-        <Button type="submit" disabled={pending}>
-          {`Apply for ${title}`}
+        <Button type="submit" disabled={pending} aria-busy={pending}>
+          {pending ? (
+            <>
+              <Spinner data-icon="inline-start" />
+              {`Apply for ${title}`}
+            </>
+          ) : (
+            `Apply for ${title}`
+          )}
         </Button>
       )}
     </form>

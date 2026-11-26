@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TextGlitch } from "@/components/motion";
+import { Badge } from "@/components/ui/badge";
 import { CtaLink } from "@/components/ui/button";
 import { navLinks } from "@/lib/routes";
 
@@ -36,7 +37,11 @@ function NavItem({
       onBlur={() => setHot(false)}
     >
       <TextGlitch active={hot}>{label}</TextGlitch>
-      {badge ? <span className={cx("count-badge")}>{badge}</span> : null}
+      {badge ? (
+        <Badge variant="secondary" className={cx("count-badge")}>
+          {badge}
+        </Badge>
+      ) : null}
     </Link>
   );
 }
@@ -187,7 +192,9 @@ export function SiteHeader() {
                     >
                       {link.label}
                       {"badge" in link ? (
-                        <span className={cx("count-badge")}>{link.badge}</span>
+                        <Badge variant="secondary" className={cx("count-badge")}>
+                          {link.badge}
+                        </Badge>
                       ) : null}
                     </Link>
                   </li>

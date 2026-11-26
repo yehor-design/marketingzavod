@@ -6,6 +6,7 @@ import { DitherImage } from "@/components/home/dither-image";
 import { GodRays, RollingText, orderedDither } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
 import { SiteCta } from "@/components/site-cta";
+import { Badge } from "@/components/ui/badge";
 import { CtaLink } from "@/components/ui/button";
 import styles from "@/components/about/about-styles";
 
@@ -177,7 +178,9 @@ function PostCard({ post }: { post: (typeof posts)[number] }) {
         <DitherImage src={post.image} label="" preset={hot ? postHoverDither : postDither} />
       </span>
       <span className={styles.postCopy}>
-        <span className={styles.tag}>{post.tag}</span>
+        <Badge variant="secondary" className={styles.tag}>
+          {post.tag}
+        </Badge>
         <h3>{post.title}</h3>
         <span className={styles.date}>{post.date}</span>
       </span>

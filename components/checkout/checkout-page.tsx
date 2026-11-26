@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TrackView } from "@/components/tracking/track-view";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import styles from "@/components/checkout/checkout-styles";
 
 /**
@@ -212,23 +213,31 @@ export function CheckoutPage() {
         <header className={styles.header}>
           <h1>Buy template</h1>
           <p>Choose plan and proceed to checkout.</p>
-          <div className={styles.plans} role="group" aria-label="Plan">
+          <ToggleGroup
+            value={[plan]}
+            onValueChange={(next) => {
+              if (next[0] === "once" || next[0] === "split") {
+                setPlan(next[0]);
+              }
+            }}
+            spacing={3}
+            aria-label="Plan"
+            className={`${styles.plans} w-full`}
+          >
             {PLANS.map((item) => {
               const selected = plan === item.id;
               return (
-                <button
+                <ToggleGroupItem
                   key={item.id}
-                  type="button"
-                  className={selected ? styles.planOn : styles.plan}
-                  aria-pressed={selected}
-                  onClick={() => setPlan(item.id)}
+                  value={item.id}
+                  className={`${selected ? styles.planOn : styles.plan} h-auto items-start justify-start gap-0 aria-pressed:bg-secondary hover:bg-secondary`}
                 >
                   <span className={styles.price}>{item.price}</span>
                   <span className={styles.detail}>{item.detail}</span>
-                </button>
+                </ToggleGroupItem>
               );
             })}
-          </div>
+          </ToggleGroup>
         </header>
         <div className={styles.scroller}>
           <div className={styles.videoWrap}>
