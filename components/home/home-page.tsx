@@ -3,20 +3,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { CardGrid } from "@/components/blocks/card-grid";
+import { CtaBand } from "@/components/blocks/cta-band";
+import { Faq, type FaqItem } from "@/components/blocks/faq";
 import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
+import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
 import { ProcessSteps } from "@/components/blocks/process-steps";
-import { LineAnimator, PulseGradient, orderedDither } from "@/components/motion";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { CtaLink } from "@/components/ui/button";
 import { Announcement } from "@/components/announcement";
-import { DitherImage } from "@/components/home/dither-image";
 import { Halftone } from "@/components/home/halftone";
 import styles from "@/components/home/home-styles";
 
@@ -255,27 +249,31 @@ const phases = [
   { ms: 2500, cols: [0, 0, 0], featured: 0 },
 ] as const;
 
-const faqs = [
+const faqs: readonly FaqItem[] = [
   {
-    q: "Do I need coding skills?",
-    a: "Not at all—just enter your website URL and Jet handles the rest automatically.",
+    question: "Do I need coding skills?",
+    answer: "Not at all—just enter your website URL and Jet handles the rest automatically.",
   },
   {
-    q: "What platforms does Jet support?",
-    a: "All major website builders (WordPress, Shopify, Wix, Squarespace) and custom sites.",
+    question: "What platforms does Jet support?",
+    answer: "All major website builders (WordPress, Shopify, Wix, Squarespace) and custom sites.",
   },
   {
-    q: "Will my site stay optimized?",
-    a: "Jet runs 24/7, constantly monitoring and optimizing as your site and traffic change.",
+    question: "Will my site stay optimized?",
+    answer: "Jet runs 24/7, constantly monitoring and optimizing as your site and traffic change.",
   },
   {
-    q: "Is it safe to use Jet?",
-    a: "Yes—we never modify your original files and can instantly reverse any changes if needed.",
+    question: "Is it safe to use Jet?",
+    answer: "Yes—we never modify your original files and can instantly reverse any changes if needed.",
   },
   {
-    q: "How fast will I see results?",
-    a: "Most sites see improvement in seconds, with full optimization within 5 minutes.",
+    question: "How fast will I see results?",
+    answer: "Most sites see improvement in seconds, with full optimization within 5 minutes.",
   },
+];
+
+const footerCtaActions = [
+  { href: "/waitlist", text: `Join${NBSP}waitlist`, location: "footer_cta" },
 ] as const;
 
 const logoColumns = [
@@ -307,25 +305,6 @@ const logoWaits = [1000, 100, 100, 2000, 100, 100, 1000];
 
 const spring = { type: "spring" as const, duration: 0.6, bounce: 0 };
 const logoSpring = { type: "spring" as const, duration: 0.6, bounce: 0 };
-const faqSpring = { type: "spring" as const, duration: 0.4, bounce: 0 };
-
-function Check({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true" className={styles.check}>
-      <g
-        transform="translate(6.5 8) rotate(180 5.75 4)"
-        fill="none"
-        stroke={color}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M0 8 L7.784 0" />
-        <path d="M1.773 0 H8 V6.4" />
-      </g>
-    </svg>
-  );
-}
 
 function LogoColumn({
   logos,
@@ -379,7 +358,6 @@ export function HomePage() {
   const reduced = usePrefersReducedMotion();
   const [logoPhase, setLogoPhase] = useState(0);
   const [phase, setPhase] = useState(0);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [logosPlaying, setLogosPlaying] = useState(false);
   const [quotesPlaying, setQuotesPlaying] = useState(false);
   const drag = useRef<{ x: number; id: number } | null>(null);
@@ -470,36 +448,17 @@ export function HomePage() {
       <section className={styles.section} aria-label="Features">
         <div className={`${styles.frame} ${styles.dash}`}>
           {features.map((feature) => (
-            <article
-              className={feature.flip ? styles.featureFlip : styles.feature}
+            <FeatureSection
               key={feature.eyebrow}
-            >
-              <div className={styles.featureCopy}>
-                <p className={styles.eyebrow} style={{ color: feature.color }}>
-                  {feature.eyebrow}
-                </p>
-                <h2>{feature.title}</h2>
-                <p className={styles.featureBody}>{feature.body}</p>
-                <ul className={styles.checks}>
-                  {feature.points.map((point) => (
-                    <li key={point}>
-                      <Check color={feature.color} />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className={styles.featureArt}>
-                <div className={styles.featureDots} aria-hidden="true" />
-                <div className={styles.featureFrame}>
-                  <DitherImage
-                    src={feature.src}
-                    label={feature.label}
-                    preset={{ ...orderedDither, animation: false }}
-                  />
-                </div>
-              </div>
-            </article>
+              eyebrow={feature.eyebrow}
+              accentColor={feature.color}
+              title={feature.title}
+              body={feature.body}
+              points={feature.points}
+              visual={{ kind: "dither", src: feature.src, label: feature.label }}
+              flip={feature.flip}
+              embedded
+            />
           ))}
           <CardGrid items={tiles} embedded headingAs="h2" />
         </div>
@@ -592,103 +551,15 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className={styles.section} aria-labelledby="faq-title">
-        <div className={`${styles.frame} ${styles.dash} ${styles.faqGrid}`}>
-        <h2 id="faq-title">
-          <span>Frequently asked questions.</span>
-        </h2>
-        <Accordion
-          value={openFaq === null ? [] : [String(openFaq)]}
-          onValueChange={(next) => setOpenFaq(next.length > 0 ? Number(next[0]) : null)}
-        >
-          {faqs.map((item, index) => {
-            const open = openFaq === index;
-            return (
-              <AccordionItem
-                key={item.q}
-                value={String(index)}
-                className="border-b-0"
-                render={
-                  <motion.div
-                    className={open ? `${styles.faqItem} ${styles.faqOpen}` : styles.faqItem}
-                    initial={false}
-                    animate={{
-                      backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0)",
-                    }}
-                    whileHover={{
-                      backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0.3)",
-                    }}
-                    whileFocus={{
-                      backgroundColor: open ? "#171717" : "rgba(12, 12, 12, 0.3)",
-                    }}
-                    transition={reduced === false ? faqSpring : { duration: 0 }}
-                  />
-                }
-              >
-                <AccordionTrigger
-                  hideIcon
-                  className="rounded-none border-0 py-0 hover:no-underline focus-visible:ring-0"
-                  render={
-                    <motion.button
-                      type="button"
-                      data-track="faq_open"
-                      data-track-if="collapsed"
-                      data-track-question={item.q}
-                      initial={false}
-                      animate={{ paddingBottom: open ? 12 : 28 }}
-                      transition={reduced === false ? faqSpring : { duration: 0 }}
-                    />
-                  }
-                >
-                  <span>{item.q}</span>
-                  <motion.span
-                    className={styles.plus}
-                    aria-hidden="true"
-                    initial={false}
-                    animate={{ rotate: open ? 45 : 0 }}
-                    transition={reduced === false ? faqSpring : { duration: 0 }}
-                  />
-                </AccordionTrigger>
-                <AccordionContent
-                  keepMounted
-                  className="p-0"
-                  render={
-                    <motion.div
-                      className={styles.faqAnswer}
-                      initial={false}
-                      animate={{ height: open ? "auto" : 0 }}
-                      transition={reduced === false ? faqSpring : { duration: 0 }}
-                    />
-                  }
-                >
-                  <p>{item.a}</p>
-                </AccordionContent>
-              </AccordionItem>
-            );
-          })}
-        </Accordion>
-        </div>
-      </section>
+      <Faq titleId="faq-title" title="Frequently asked questions." items={faqs} />
 
-      <section className={styles.cta} aria-labelledby="cta-title">
-        <div className={`${styles.frame} ${styles.dash} ${styles.ctaCard}`}>
-          <div className={styles.ctaMedia}>
-            <PulseGradient label="Footer background" />
-            <div className={styles.grain} />
-          </div>
-          <LineAnimator />
-          <div className={styles.ctaCopy}>
-            <h2 id="cta-title">Boost your site speed today.</h2>
-            <p>Try Jet now—one click, instant performance. No risk, cancel anytime.</p>
-            <CtaLink
-              href="/waitlist"
-              text={`Join${NBSP}waitlist`}
-              location="footer_cta"
-              className="mt-[28px]"
-            />
-          </div>
-        </div>
-      </section>
+      <CtaBand
+        titleId="cta-title"
+        title="Boost your site speed today."
+        description="Try Jet now—one click, instant performance. No risk, cancel anytime."
+        actions={footerCtaActions}
+        spacing="home"
+      />
     </div>
   );
 }
