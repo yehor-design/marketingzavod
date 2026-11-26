@@ -1,11 +1,17 @@
 "use client";
 
 import { CardGrid, type CardGridItem } from "@/components/blocks/card-grid";
+import {
+  ComparisonTable,
+  type ComparisonColumn,
+  type ComparisonGroup,
+} from "@/components/blocks/comparison-table";
 import { CtaBand } from "@/components/blocks/cta-band";
 import { Faq, type FaqItem } from "@/components/blocks/faq";
 import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
 import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
+import { PricingCards, type PricingPlan } from "@/components/blocks/pricing-cards";
 import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-steps";
 import { cx } from "@/components/chrome-styles";
 import Link from "next/link";
@@ -129,6 +135,134 @@ const demoFaqItems: readonly FaqItem[] = [
   {
     question: "How fast will I see results?",
     answer: "Most sites see improvement in seconds, with full optimization within 5 minutes.",
+  },
+];
+
+const demoPricingPlans: readonly PricingPlan[] = [
+  {
+    id: "starter",
+    icon: "starter",
+    name: "Starter",
+    description: "Perfect for personal projects—speed up one site for free.",
+    freeLabel: "Free forever",
+    currency: "$",
+    monthly: "29",
+    yearly: "24",
+    monthlySuffix: "/month",
+    yearlySuffix: "/month, billed annually",
+    features: ["1 website", "Basic image & code optimization", "Limited analytics"],
+    cta: `Try${NBSP}for${NBSP}free`,
+    href: "/checkout",
+    tone: "secondary",
+    ctaLocation: "styleguide",
+  },
+  {
+    id: "pro",
+    icon: "pro",
+    name: "Pro",
+    description: "Boost up to 10 sites with advanced tools and analytics.",
+    popular: true,
+    badgeLabel: "Most popular",
+    currency: "$",
+    monthly: "29",
+    yearly: "24",
+    monthlySuffix: "/month",
+    yearlySuffix: "/month, billed annually",
+    features: [
+      "All Starter features +",
+      "Up to 10 websites",
+      "Advanced optimization",
+      "Priority support",
+    ],
+    cta: `Get${NBSP}started`,
+    href: "/checkout",
+    tone: "primary",
+    ctaLocation: "styleguide",
+  },
+  {
+    id: "agency",
+    icon: "agency",
+    name: "Agency",
+    description: "Unlimited sites, team features, and white-label options for agencies.",
+    currency: "$",
+    monthly: "199",
+    yearly: "169",
+    monthlySuffix: "/month",
+    yearlySuffix: "/month, billed annually",
+    features: [
+      "All Starter & Pro features +",
+      "Unlimited websites",
+      "Team collaboration tools",
+      "Dedicated account manager",
+    ],
+    cta: `Get${NBSP}started`,
+    href: "/checkout",
+    tone: "secondary",
+    ctaLocation: "styleguide",
+  },
+];
+
+const demoCompareColumns3: readonly ComparisonColumn[] = [
+  { id: "starter", icon: "starter", name: "Starter" },
+  { id: "pro", icon: "pro", name: "Pro", highlight: true },
+  { id: "agency", icon: "agency", name: "Agency" },
+];
+
+const demoCompareGroups3: readonly ComparisonGroup[] = [
+  {
+    title: "General",
+    rows: [
+      {
+        feature: "Number of websites",
+        tip: "Manage multiple domains with a single account.",
+        tone: "grey",
+        cells: [{ text: "1" }, { text: "Up to 10" }, { text: "Unlimited" }],
+      },
+      {
+        feature: "Global CDN",
+        tone: "black",
+        cells: [{ mark: "check" }, { mark: "check" }, { mark: "check" }],
+      },
+      {
+        feature: "White-label reporting",
+        tone: "grey",
+        cells: [{ mark: "x" }, { mark: "x" }, { mark: "check" }],
+      },
+    ],
+  },
+];
+
+const demoCompareColumns4: readonly ComparisonColumn[] = [
+  { id: "in-house", name: "In-house" },
+  { id: "freelancer", name: "Freelancer" },
+  { id: "diy-ai", name: "DIY + AI" },
+  { id: "agency", name: "Agency", highlight: true },
+];
+
+const demoCompareGroups4: readonly ComparisonGroup[] = [
+  {
+    rows: [
+      {
+        feature: "Strategy",
+        tone: "grey",
+        cells: [
+          { text: "Depends on hire" },
+          { text: "Rarely" },
+          { text: "Owner" },
+          { text: "Dedicated strategist" },
+        ],
+      },
+      {
+        feature: "Continuity",
+        tone: "black",
+        cells: [
+          { text: "Single person" },
+          { text: "Find replacement" },
+          { text: "Self-maintained" },
+          { text: "Documented process" },
+        ],
+      },
+    ],
   },
 ];
 
@@ -652,6 +786,39 @@ export function StyleGuide() {
           ]}
           className="pt-0!"
         />
+      </Section>
+
+      <Section id="block-pricing-cards" title="BLOCK: PRICING CARDS">
+        <PricingCards
+          plans={demoPricingPlans}
+          billingToggle={{
+            enabled: true,
+            defaultPeriod: "yearly",
+            monthlyLabel: "Monthly",
+            yearlyLabel: "Yearly",
+            discountBadge: "-15%",
+          }}
+          ariaLabel="Pricing cards demo"
+          className="w-full! pt-0!"
+        />
+      </Section>
+
+      <Section id="block-comparison-table" title="BLOCK: COMPARISON TABLE">
+        <div className="flex flex-col gap-[32px]">
+          <ComparisonTable
+            columns={demoCompareColumns3}
+            groups={demoCompareGroups3}
+            ariaLabel="3-column comparison demo"
+            className="w-full!"
+          />
+          <ComparisonTable
+            columns={demoCompareColumns4}
+            groups={demoCompareGroups4}
+            ariaLabel="4-column comparison demo"
+            compactRows={false}
+            className="w-full!"
+          />
+        </div>
       </Section>
     </div>
   );
