@@ -100,6 +100,7 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
     .include("#block-mirror-questions")
     .include("#block-founder-card")
     .include("#block-pilot-banner")
+    .include("#block-comparison-table")
     .withTags(WCAG)
     .analyze();
   expect(richBlocksAxe.violations).toEqual([]);
@@ -165,6 +166,17 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
       destination: "/keysi",
     }),
   );
+
+  const comparison4 = page.locator('#block-comparison-table [data-block="comparison-table"][data-columns="4"]');
+  await expect(comparison4).toHaveCount(1);
+  await expect(comparison4.locator("svg")).toHaveCount(0);
+  await expect(comparison4.locator('[role="tablist"]')).toHaveAttribute(
+    "aria-label",
+    "Изберете вариант",
+  );
+  await expect(
+    comparison4.locator('[role="columnheader"][data-highlighted="true"]'),
+  ).toHaveText("Маркетинг Завод");
 });
 
 for (const viewport of VIEWPORTS) {
@@ -177,7 +189,12 @@ for (const viewport of VIEWPORTS) {
     await page.evaluate(() => document.fonts.ready);
 
     const overflow = await page.evaluate(() => {
-      const ids = ["#block-mirror-questions", "#block-founder-card", "#block-pilot-banner"];
+      const ids = [
+        "#block-mirror-questions",
+        "#block-founder-card",
+        "#block-pilot-banner",
+        "#block-comparison-table",
+      ];
       const entries = ids.map((id) => {
         const el = document.querySelector(id);
         return el ? [id, el.scrollWidth - el.clientWidth] : [id, null];
@@ -191,6 +208,16 @@ for (const viewport of VIEWPORTS) {
     for (const [id, delta] of Object.entries(overflow.sections)) {
       expect(delta, `${id} should exist`).not.toBeNull();
       expect(delta as number, `${id} overflow at ${viewport.width}px`).toBeLessThanOrEqual(0);
+    }
+
+    if (viewport.width < 1200) {
+      const comparison4 = page.locator(
+        '#block-comparison-table [data-block="comparison-table"][data-columns="4"]',
+      );
+      await comparison4.getByRole("tab", { name: "Маркетинг Завод" }).click();
+      await expect(comparison4.locator(".valueActive").first()).toHaveText(
+        "от 290 € за канал, от 690 € за 2–3 канала",
+      );
     }
   });
 }

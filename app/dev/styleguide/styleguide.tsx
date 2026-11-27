@@ -34,6 +34,7 @@ import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-
 import { TeamMember } from "@/components/blocks/team-member";
 import { BenefitIcon } from "@/components/careers/icons";
 import { cx } from "@/components/chrome-styles";
+import { BG_DRAFTS } from "@/content/bg/drafts";
 import { FOUNDER_PHOTOS } from "@/content/bg/types";
 import { isBg } from "@/lib/edition";
 import Link from "next/link";
@@ -270,33 +271,53 @@ const demoCompareGroups3: readonly ComparisonGroup[] = [
 ];
 
 const demoCompareColumns4: readonly ComparisonColumn[] = [
-  { id: "in-house", name: "In-house" },
-  { id: "freelancer", name: "Freelancer" },
-  { id: "diy-ai", name: "DIY + AI" },
-  { id: "agency", name: "Agency", highlight: true },
+  { id: "employee", name: "Служител" },
+  { id: "freelancer", name: "Фрилансер" },
+  { id: "diy-ai", name: "Сами с AI" },
+  { id: "marketing-zavod", name: "Маркетинг Завод", highlight: true },
 ];
 
 const demoCompareGroups4: readonly ComparisonGroup[] = [
   {
     rows: [
       {
-        feature: "Strategy",
+        feature: "Цена",
         tone: "grey",
         cells: [
-          { text: "Depends on hire" },
-          { text: "Rarely" },
-          { text: "Owner" },
-          { text: "Dedicated strategist" },
+          { text: "≈1 640 € бруто на месец + осигуровки (средна заплата на маркетолог във Варна)" },
+          { text: "150–400 € на месец за канал" },
+          { text: "от ≈16 € на месец за инструмент + вашето време" },
+          { text: "от 290 € за канал, от 690 € за 2–3 канала" },
         ],
       },
       {
-        feature: "Continuity",
+        feature: "Стратегия",
         tone: "black",
         cells: [
-          { text: "Single person" },
-          { text: "Find replacement" },
-          { text: "Self-maintained" },
-          { text: "Documented process" },
+          { text: "Зависи от човека" },
+          { text: "Рядко" },
+          { text: "Вие" },
+          { text: "Стратег в пакета" },
+        ],
+      },
+      {
+        feature: "Реклама, съдържание и анализи",
+        tone: "grey",
+        cells: [
+          { text: "Един човек трудно покрива всичко" },
+          { text: "Обикновено един канал" },
+          { text: "Колкото време имате" },
+          { text: "2–3 канала: стратег и проверени изпълнители" },
+        ],
+      },
+      {
+        feature: "Ако човекът си тръгне",
+        tone: "black",
+        cells: [
+          { text: "Започвате отначало" },
+          { text: "Търсите нов" },
+          { text: "—" },
+          { text: "Процесите и достъпите остават у вас" },
         ],
       },
     ],
@@ -944,9 +965,12 @@ export function StyleGuide() {
             className="w-full!"
           />
           <ComparisonTable
+            title="Маркетинг Завод или…?"
+            titleId="sg-comparison-table-4"
+            headingAs="h3"
             columns={demoCompareColumns4}
             groups={demoCompareGroups4}
-            ariaLabel="4-column comparison demo"
+            tabsAriaLabel={BG_DRAFTS.alternativesTabsAria.value}
             compactRows={false}
             className="w-full!"
           />
