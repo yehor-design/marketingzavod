@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ANNOUNCEMENT_INIT_SCRIPT } from "@/components/blocks/announcement-bar";
 import { ConsentBanner } from "@/components/consent/consent-banner";
 import { ConsentSettings } from "@/components/consent/consent-settings";
 import { JsonLd } from "@/components/json-ld";
@@ -77,9 +78,16 @@ export default function RootLayout({
     <html
       lang={isBg ? "bg" : "en"}
       data-edition={EDITION}
+      suppressHydrationWarning={isBg}
       className={`dark bg-background text-[125%] scheme-dark max-[809.98px]:text-[87.5%] min-[810px]:max-[1199.98px]:text-[112.5%] ${fontVariables}`}
     >
       <body>
+        {isBg ? (
+          <script
+            id="bg-announcement-state"
+            dangerouslySetInnerHTML={{ __html: ANNOUNCEMENT_INIT_SCRIPT }}
+          />
+        ) : null}
         {isBg ? <JsonLd data={buildBgOrganizationJsonLd()} /> : null}
         <GoogleTagManager />
         <MotionProvider>

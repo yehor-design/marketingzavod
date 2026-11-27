@@ -96,6 +96,7 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
     .include("#block-article-body")
     .include("#block-legal-body")
     .include("#block-link-list")
+    .include("#block-announcement-bar")
     .withTags(WCAG)
     .analyze();
   expect(richBlocksAxe.violations).toEqual([]);
@@ -104,4 +105,10 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
   await expect(linkList.locator('[data-block="link-list"][data-variant="list"]')).toHaveCount(2);
   await expect(linkList.locator('[data-block="link-list"][data-variant="cards"]')).toHaveCount(1);
   await expect(linkList.locator('[data-variant="cards"] li > a')).toHaveCount(2);
+
+  const announcementSection = page.locator("#block-announcement-bar");
+  await expect(announcementSection.locator('[data-block="announcement-bar"]')).toHaveCount(1);
+  await expect(
+    announcementSection.locator('a[data-track="cta_click"][data-track-cta-location="announcement"]'),
+  ).toHaveCount(1);
 });

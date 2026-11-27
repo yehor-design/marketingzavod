@@ -1,5 +1,6 @@
 "use client";
 
+import { AnnouncementBar } from "@/components/blocks/announcement-bar";
 import { ArticleBody } from "@/components/blocks/article-body";
 import { Benefits, BenefitsHighlight } from "@/components/blocks/benefits";
 import { CardGrid, type CardGridItem } from "@/components/blocks/card-grid";
@@ -1396,6 +1397,19 @@ export function StyleGuide() {
                 href: "/tseni",
               },
             ]}
+          />
+        </div>
+      </Section>
+
+      <Section id="block-announcement-bar" title="BLOCK: ANNOUNCEMENT BAR">
+        <div className="flex flex-col items-center gap-[16px] [border:1px_dashed_var(--color-rule)] [padding:24px]">
+          <AnnouncementBar
+            variant="global"
+            persistDismiss={false}
+            text="Рекламните акаунти на фирмата ви на ваше име ли са? Проверете с безплатния ни чеклист →"
+            href="/proverka-na-akaunti"
+            closeAria="Затваряне на съобщението"
+            location="announcement"
           />
         </div>
       </Section>

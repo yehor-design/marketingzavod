@@ -61,6 +61,10 @@ html[data-edition="bg"] {
   --font-mono-face: var(--font-jetbrains-mono);
 }
 
+html[data-announcement-dismissed="true"] [data-announcement-slot="global"] {
+  display: none;
+}
+
 /* Shell, header, footer, and announcement styles are Tailwind utilities. */
 
 .gray-pill {
