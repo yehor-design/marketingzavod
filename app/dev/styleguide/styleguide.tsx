@@ -29,6 +29,7 @@ import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-
 import { TeamMember } from "@/components/blocks/team-member";
 import { BenefitIcon } from "@/components/careers/icons";
 import { cx } from "@/components/chrome-styles";
+import { isBg } from "@/lib/edition";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
 import {
@@ -1298,6 +1299,32 @@ export function StyleGuide() {
           );
         })()}
       </Section>
+
+      {isBg ? (
+        <Section id="bg-typography-specimen" title="CYRILLIC TYPE SCALE (DS-06 / DS-07)">
+          <div className="flex flex-col gap-[24px] [border:1px_dashed_var(--color-rule)] [padding:24px]">
+            <p className={home.eyebrow} data-bg-eyebrow="">
+              Варна — срещи по уговорка
+            </p>
+            <p className="m-0 font-display text-h1">Агенция от Варна за цяла България.</p>
+            <p className="m-0 font-display text-title">
+              Рекламните акаунти на фирмата ви на ваше име ли са? Проверете с безплатния ни чеклист →
+            </p>
+            <p className="m-0 font-display text-h2">
+              Пилот 30 дни: одит, първи кампании и отчет „преди / след“ — от 690 € общо.
+            </p>
+            <p className="m-0 font-display text-h3-lg">
+              Използваме бисквитки за анализ и реклама — някои от тях са на наши партньори.
+            </p>
+            <p className="m-0 font-display text-h3">
+              Маркетинг Завод — търговско наименование на Егор Гончаренко · Варна, България · zavodzamarketing@gmail.com · Не сме регистрирани по ДДС.
+            </p>
+            <p className="m-0 font-display text-[14px] leading-[1.6] text-muted-foreground">
+              © 2026 Маркетинг Завод. Всички права запазени.
+            </p>
+          </div>
+        </Section>
+      ) : null}
     </div>
   );
 }
