@@ -78,7 +78,13 @@ export function bgPageMetadata(
     options?.ogTitle ?? entry.ogTitle ?? stripBgTitleSuffix(entry.title);
   const ogDescription = entry.ogDescription ?? description;
   const canonicalUrl = entry.path ? absoluteUrl(entry.path) : undefined;
-  const images = options?.image ? [{ url: options.image }] : undefined;
+  const defaultOgImage = {
+    url: absoluteUrl("/opengraph-image"),
+    width: 1200,
+    height: 630,
+    alt: BG_SITE_METADATA.ogImage.alt,
+  };
+  const images = options?.image ? [{ url: options.image }] : [defaultOgImage];
   const indexable = (options?.index ?? true) && isBgRouteIndexable(route);
 
   return {
@@ -92,7 +98,7 @@ export function bgPageMetadata(
       description: ogDescription,
       ...(canonicalUrl ? { url: canonicalUrl } : {}),
       locale: BG_SITE_METADATA.locale,
-      ...(images ? { images } : {}),
+      images,
       ...(type === "article" && options?.publishedTime
         ? { publishedTime: options.publishedTime }
         : {}),
@@ -101,7 +107,7 @@ export function bgPageMetadata(
       card: "summary_large_image",
       title: ogTitle,
       description: ogDescription,
-      ...(options?.image ? { images: [options.image] } : {}),
+      images,
     },
     ...(indexable ? {} : { robots: { index: false, follow: false } }),
   };
