@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
+import { IlloVisual, type IlloName } from "@/components/illos";
 import { nestedDither, randomDither } from "@/components/motion";
 import { CornerMarks } from "@/components/motion/corner-marks";
 import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion";
@@ -13,6 +14,12 @@ export type FeatureGridVisual =
       src: string;
       color: string;
       label: string;
+    }
+  | {
+      /** Animated SVG reproduction from https://illos.dev/library (DS-27 / PG-07). */
+      kind: "illo";
+      name: IlloName;
+      alt?: string;
     }
   | {
       /** Animated SVG/React illustration from illos.dev/library (DS-27 / ZAV-65). */
@@ -38,12 +45,52 @@ export type FeatureGridProps = {
   items: readonly FeatureGridItem[];
   /** "cards" = 2x2 visual cards (home); "icons" = 4-column icon row (about/principles). */
   layout?: "cards" | "icons";
+  /** Variable-height cards with always-visible body copy for multi-line BG text (DS-10). */
+  alwaysShowBody?: boolean;
   className?: string;
 };
 
-function FeatureCard({ item }: { item: FeatureGridItem }) {
+function FeatureCard({ item, alwaysShowBody }: { item: FeatureGridItem; alwaysShowBody: boolean }) {
   const reduced = usePrefersReducedMotion();
   const [hot, setHot] = useState(false);
+
+  if (alwaysShowBody) {
+    return (
+      <article
+        className={cx("benefitAuto", hot && "benefitHot", "corner-host")}
+        onPointerEnter={() => setHot(true)}
+        onPointerLeave={() => setHot(false)}
+        onFocus={() => setHot(true)}
+        onBlur={() => setHot(false)}
+      >
+        <CornerMarks />
+        {item.visual?.kind === "illo" ? (
+          <div className={cx("benefitCustomAuto")}>
+            <IlloVisual
+              name={item.visual.name}
+              alt={item.visual.alt}
+              decorative={!item.visual.alt}
+              className="max-h-full w-auto max-w-full object-contain"
+            />
+          </div>
+        ) : null}
+        {item.visual?.kind === "custom" ? (
+          <div className={cx("benefitCustomAuto")}>
+            {item.visual.render({ hot, reduced: reduced !== false })}
+          </div>
+        ) : null}
+        {item.visual?.kind === "icon" ? (
+          <span className={cx("benefitIconWrap", "m-0!")} aria-hidden="true">
+            {item.visual.icon}
+          </span>
+        ) : null}
+        <div className={cx("benefitCopyAuto")}>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article
@@ -74,6 +121,16 @@ function FeatureCard({ item }: { item: FeatureGridItem }) {
           </div>
         </div>
       ) : null}
+      {item.visual?.kind === "illo" ? (
+        <div className={cx("benefitCustom")}>
+          <IlloVisual
+            name={item.visual.name}
+            alt={item.visual.alt}
+            decorative={!item.visual.alt}
+            className="max-h-full w-auto max-w-full object-contain"
+          />
+        </div>
+      ) : null}
       {item.visual?.kind === "custom" ? (
         <div className={cx("benefitCustom")}>
           {item.visual.render({ hot, reduced: reduced !== false })}
@@ -101,6 +158,7 @@ export function FeatureGrid({
   description,
   items,
   layout = "cards",
+  alwaysShowBody = false,
   className,
 }: FeatureGridProps) {
   if (layout === "icons") {
@@ -140,13 +198,13 @@ export function FeatureGrid({
       data-block="feature-grid"
     >
       <div className={cx("frame", "dash")}>
-        <div className={cx("bandHead")}>
+        <div className={cx(alwaysShowBody ? "bandHeadAuto" : "bandHead")}>
           <h2 id={titleId}>{title}</h2>
           {description ? <p className={cx("bandDesc")}>{description}</p> : null}
         </div>
-        <div className={cx("benefitGrid")}>
+        <div className={cx(alwaysShowBody ? "benefitGridAuto" : "benefitGrid")}>
           {items.map((item) => (
-            <FeatureCard item={item} key={item.title} />
+            <FeatureCard item={item} alwaysShowBody={alwaysShowBody} key={item.title} />
           ))}
         </div>
       </div>

@@ -1,3 +1,5 @@
+import type { IlloName } from "@/components/illos";
+import type { RichTextContent } from "@/lib/rich-text";
 import type { GateKey } from "./gates";
 
 export type ContentSource = {
@@ -71,3 +73,136 @@ export const FOUNDER_PHOTOS = {
     source: { file: "14-za-nas.md", block: "Team → «Кой стои зад Маркетинг Завод»" },
   },
 } as const satisfies Record<string, FounderPhoto>;
+
+export type SegmentTema = "smyana" | "magazin" | "b2b" | "hotel" | "sezon" | "imoti";
+
+export type SegmentSlug =
+  | "smyana-na-agentsiya"
+  | "onlayn-magazini"
+  | "uslugi-i-b2b"
+  | "hoteli"
+  | "nedvizhimi-imoti";
+
+export type SegmentAction = {
+  readonly text: string;
+  readonly href: string;
+  readonly variant?: "primary" | "secondary";
+  readonly location?: string;
+};
+
+export type SegmentFeatureGridItem = {
+  readonly title: string;
+  readonly body: string;
+  readonly illo: IlloName;
+  readonly alt?: string;
+};
+
+export type SegmentProcessStep = {
+  readonly title: string;
+  readonly body: string;
+};
+
+export type SegmentFeatureSection = {
+  readonly id?: string;
+  readonly eyebrow?: string;
+  readonly title: string;
+  readonly body: RichTextContent;
+  readonly points: readonly RichTextContent[];
+  readonly illo: IlloName;
+  readonly alt?: string;
+  readonly gate?: GateKey;
+};
+
+export type SegmentCardItem = {
+  readonly title: string;
+  readonly body: string;
+  readonly href?: string;
+  readonly ctaLabel?: string;
+  readonly gate?: GateKey;
+};
+
+export type SegmentFaqItem = {
+  readonly question: string;
+  readonly answer: RichTextContent;
+  readonly gate?: GateKey;
+};
+
+/**
+ * Typed content contract for the 5 Bulgarian segment pages (SG-01..SG-07).
+ * Order of fields mirrors the 9 mandatory sections of every segment page.
+ */
+export type SegmentPageData = {
+  readonly slug: SegmentSlug;
+  readonly tema: SegmentTema;
+  readonly source: ContentSource;
+  readonly wave: PublishWave;
+  readonly gate?: GateKey;
+  readonly hero: {
+    readonly eyebrow?: string;
+    readonly title: string;
+    readonly description: string;
+    readonly actions: readonly SegmentAction[];
+  };
+  readonly featureGrid: {
+    readonly title: string;
+    readonly items: readonly SegmentFeatureGridItem[];
+  };
+  readonly processSteps: {
+    readonly title: string;
+    readonly steps: readonly SegmentProcessStep[];
+    readonly note?: string;
+  };
+  readonly mirrorQuestions: {
+    readonly title: string;
+    readonly questions: readonly string[];
+    readonly note?: string;
+    readonly cta?: {
+      readonly label: string;
+      readonly href: string;
+      readonly location?: string;
+    };
+  };
+  readonly featureSections: readonly SegmentFeatureSection[];
+  readonly cardGrid: {
+    readonly id?: string;
+    readonly title?: string;
+    readonly items: readonly SegmentCardItem[];
+    readonly note?: string;
+  };
+  readonly faq: {
+    readonly title?: string;
+    readonly items: readonly SegmentFaqItem[];
+  };
+  readonly ctaBand: {
+    readonly title: string;
+    readonly description?: string;
+    readonly actions: readonly SegmentAction[];
+  };
+};
+
+/**
+ * Appends `?tema=<tema>` to `/kontakt` links on segment pages without overwriting
+ * an explicit `tema` already specified in the content file (SG-06, SG-07).
+ */
+export function appendSegmentTema(href: string, tema: SegmentTema): string {
+  if (!href.startsWith("/kontakt")) {
+    return href;
+  }
+  const rest = href.slice("/kontakt".length);
+  if (rest !== "" && !rest.startsWith("?") && !rest.startsWith("#")) {
+    return href;
+  }
+
+  const hashIndex = href.indexOf("#");
+  const withoutHash = hashIndex >= 0 ? href.slice(0, hashIndex) : href;
+  const hash = hashIndex >= 0 ? href.slice(hashIndex) : "";
+  const queryIndex = withoutHash.indexOf("?");
+  const pathname = queryIndex >= 0 ? withoutHash.slice(0, queryIndex) : withoutHash;
+  const search = queryIndex >= 0 ? withoutHash.slice(queryIndex + 1) : "";
+
+  const params = new URLSearchParams(search);
+  if (!params.has("tema")) {
+    params.set("tema", tema);
+  }
+  return `${pathname}?${params.toString()}${hash}`;
+}
