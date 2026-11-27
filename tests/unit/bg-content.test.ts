@@ -193,6 +193,37 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     expect(BG_FOOTER.socials[0].href).toBe(COMPANY.linkedinHref);
   });
 
+  it("verifies BG consent strings match CN-01..CN-05 (Variant B: 3 categories, /legal/biskvitki, zero Latin leaks)", () => {
+    expect(bgUi.consent.cookiesHref).toBe("/legal/biskvitki");
+    expect(bgUi.consent.cookieSettingsButton).toBe("Настройки за бисквитки");
+    expect(bgUi.consent.necessaryOnly).toBe("Само необходимите");
+    expect(bgUi.consent.acceptAll).toBe("Приемам всички");
+    expect(bgUi.consent.settings).toBe("Настройки");
+    expect(bgUi.consent.saveChoices).toBe("Запазване на избора");
+    expect(Object.keys(bgUi.consent.categories)).toEqual(["necessary", "statistics", "marketing"]);
+    expect(bgUi.consent.categories.necessary.services).toBe("Маркетинг Завод");
+
+    const allowedServices = [
+      "Google Analytics",
+      "PostHog",
+      "Amplitude",
+      "Vercel Speed Insights",
+      "Google Ads",
+      "Meta",
+      "LinkedIn",
+    ];
+    for (const entry of collectStrings(bgUi.consent, "bgUi.consent")) {
+      if (isNonContentString(entry.value, entry.path)) {
+        continue;
+      }
+      let stripped = entry.value;
+      for (const service of allowedServices) {
+        stripped = stripped.replaceAll(service, "");
+      }
+      expect(stripped, `${entry.path} contains unexpected Latin text`).not.toMatch(/[A-Za-z]/);
+    }
+  });
+
   it("verifies all entries in BG_DRAFTS have spec, date, no Ukrainian letters, no placeholders", () => {
     for (const [key, entry] of Object.entries(BG_DRAFTS)) {
       expect(entry.value.trim().length, `draft ${key} value empty`).toBeGreaterThan(0);
