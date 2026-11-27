@@ -97,6 +97,7 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
     .include("#block-legal-body")
     .include("#block-link-list")
     .include("#block-announcement-bar")
+    .include("#block-mirror-questions")
     .withTags(WCAG)
     .analyze();
   expect(richBlocksAxe.violations).toEqual([]);
@@ -111,4 +112,37 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
   await expect(
     announcementSection.locator('a[data-track="cta_click"][data-track-cta-location="announcement"]'),
   ).toHaveCount(1);
+
+  const mirrorSection = page.locator("#block-mirror-questions");
+  await expect(mirrorSection.locator('[data-block="mirror-questions"]')).toHaveCount(2);
+  await expect(mirrorSection.locator('ul[data-question-count="3"] > li')).toHaveCount(3);
+  await expect(mirrorSection.locator('ul[data-question-count="5"] > li')).toHaveCount(5);
+  await expect(mirrorSection.locator("blockquote, cite")).toHaveCount(0);
+  await expect(
+    mirrorSection.locator('a[href="/kontakt"][data-track="cta_click"]'),
+  ).toHaveCount(1);
 });
+
+for (const viewport of VIEWPORTS) {
+  test(`DS-A7: #block-mirror-questions has zero horizontal overflow at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await prepare(page, { choice: "necessary" });
+    await page.setViewportSize(viewport);
+    await page.goto("/dev/styleguide", { waitUntil: "load" });
+    await page.evaluate(() => document.fonts.ready);
+
+    const overflow = await page.evaluate(() => {
+      const section = document.querySelector("#block-mirror-questions");
+      if (!section) return { missing: true, body: 0, section: 0 };
+      return {
+        missing: false,
+        body: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        section: section.scrollWidth - section.clientWidth,
+      };
+    });
+    expect(overflow.missing).toBe(false);
+    expect(overflow.body).toBeLessThanOrEqual(0);
+    expect(overflow.section).toBeLessThanOrEqual(0);
+  });
+}

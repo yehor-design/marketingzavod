@@ -21,6 +21,7 @@ import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
 import { LegalBody } from "@/components/blocks/legal-body";
 import { LinkList } from "@/components/blocks/link-list";
+import { MirrorQuestions } from "@/components/blocks/mirror-questions";
 import { Mission, MissionHighlight } from "@/components/blocks/mission";
 import { OpenRoles } from "@/components/blocks/open-roles";
 import { PostCard, type PostCardItem } from "@/components/blocks/post-card";
@@ -1410,6 +1411,40 @@ export function StyleGuide() {
             href="/proverka-na-akaunti"
             closeAria="Затваряне на съобщението"
             location="announcement"
+          />
+        </div>
+      </Section>
+
+      <Section id="block-mirror-questions" title="BLOCK: MIRROR QUESTIONS">
+        <div className="flex flex-col gap-[32px]">
+          <MirrorQuestions
+            titleId="sg-mirror-questions-3"
+            headingAs="h3"
+            title="Звучи ли ви познато?"
+            questions={[
+              "Знаете, че маркетингът не работи както трябва, но не знаете откъде да започнете?",
+              "Не можете да намерите човек, който да го подреди?",
+              "Плащате за реклама, а цифрите не мърдат?",
+            ]}
+            cta={{
+              label: "Започнете с безплатен разговор →",
+              href: "/kontakt",
+              location: "styleguide",
+            }}
+            className="pt-0!"
+          />
+          <MirrorQuestions
+            titleId="sg-mirror-questions-5"
+            headingAs="h3"
+            title="Разпознавате ли се?"
+            questions={[
+              "Искате маркетинг, на който да имате доверие?",
+              "Плащате от 3–6 месеца, а продажбите стоят?",
+              "Цената на клиент расте, а отчетът показва кликове?",
+              "Страх ви е да не сгрешите отново с избора?",
+              "Агенцията държи акаунтите ви?",
+            ]}
+            className="pt-0!"
           />
         </div>
       </Section>
