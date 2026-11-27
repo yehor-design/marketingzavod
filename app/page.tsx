@@ -1,5 +1,6 @@
 import { HomePage } from "@/components/home/home-page";
 import { JsonLd } from "@/components/json-ld";
+import { BgHomePage } from "@/components/pages/bg-home-page";
 import { buildBgWebSiteJsonLd } from "@/lib/bg-json-ld";
 import { isBg } from "@/lib/edition";
 import { bgPageMetadata, pageMetadata } from "@/lib/seo";
@@ -41,14 +42,17 @@ export default function Page() {
   return (
     <>
       {isBg ? (
-        <JsonLd data={buildBgWebSiteJsonLd()} />
+        <>
+          <JsonLd data={buildBgWebSiteJsonLd()} />
+          <BgHomePage />
+        </>
       ) : (
         <>
           <JsonLd data={organization} />
           <JsonLd data={website} />
+          <HomePage />
         </>
       )}
-      <HomePage />
     </>
   );
 }

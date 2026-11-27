@@ -4,7 +4,11 @@ import { describe, expect, it } from "vitest";
 import { COMPANY, COMPANY_ABOUT_DETAILS, COMPANY_LEGAL_DETAILS } from "@/content/bg/company";
 import { BG_DRAFTS } from "@/content/bg/drafts";
 import { BG_GATES, CASES_PAGE_MODE, isGateOpen } from "@/content/bg/gates";
-import { HOME_HERO } from "@/content/bg/home";
+import {
+  BG_HOME_BLOCK_ORDER,
+  BG_HOME_CONTENT_BLOCKS,
+  getPublishedHomeSegments,
+} from "@/content/bg/home";
 import {
   BG_FOOTER,
   BG_HEADER_NAV,
@@ -22,7 +26,6 @@ import {
 import {
   FOUNDER_PHOTOS,
   resolveFounderPhotoPath,
-  type ContentBlock,
   type ContentSource,
 } from "@/content/bg/types";
 import { BG_UI_SOURCE_FILES, bgUi } from "@/content/bg/ui";
@@ -58,7 +61,16 @@ const DRAFT_VALUES = new Set(Object.values(BG_DRAFTS).map((entry) => normalizeWh
 
 function isNonContentString(value: string, keyPath: string): boolean {
   const leaf = keyPath.split(".").at(-1) ?? "";
-  if (leaf === "href" || leaf.endsWith("Href") || leaf === "domain") {
+  if (
+    leaf === "href" ||
+    leaf.endsWith("Href") ||
+    leaf === "domain" ||
+    leaf === "id" ||
+    leaf === "illo" ||
+    leaf === "location" ||
+    leaf === "variant" ||
+    leaf === "tone"
+  ) {
     return true;
   }
   if (/^(https?:\/\/|mailto:|tel:|\/|#)/.test(value)) {
@@ -128,11 +140,25 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     expect(files[files.length - 1]).toBe("30-metadani-saytu.md");
   });
 
-  it("verifies HOME_HERO block verbatim against docs/site-texts/02-nachalo.md", () => {
-    const blocks: readonly ContentBlock<unknown>[] = [HOME_HERO];
-    for (const block of blocks) {
-      assertVerbatimAgainstSource(block.source, block.data, `${block.source.file}:${block.source.block}`);
+  it("verifies all 11 BG home blocks verbatim against docs/site-texts/02-nachalo.md and gates closed segments (HM-01, HM-02)", () => {
+    expect(BG_HOME_BLOCK_ORDER).toHaveLength(11);
+    expect(BG_HOME_CONTENT_BLOCKS).toHaveLength(11);
+    for (const block of BG_HOME_CONTENT_BLOCKS) {
+      assertVerbatimAgainstSource(
+        block.source,
+        block.data,
+        `${block.source.file}:${block.source.block}`,
+      );
     }
+
+    const publishedSegments = getPublishedHomeSegments();
+    expect(publishedSegments.some((item) => item.href === "/hoteli")).toBe(isGateOpen("hotels"));
+    expect(publishedSegments.map((item) => item.href)).toEqual([
+      "/smyana-na-agentsiya",
+      "/onlayn-magazini",
+      "/uslugi-i-b2b",
+      "/nedvizhimi-imoti",
+    ]);
   });
 
   it("verifies SHARED_FORMULATIONS verbatim against docs/site-texts/00-README.md", () => {
