@@ -25,6 +25,7 @@ import { LinkList } from "@/components/blocks/link-list";
 import { MirrorQuestions } from "@/components/blocks/mirror-questions";
 import { Mission, MissionHighlight } from "@/components/blocks/mission";
 import { OpenRoles } from "@/components/blocks/open-roles";
+import { PilotBanner } from "@/components/blocks/pilot-banner";
 import { PostCard, type PostCardItem } from "@/components/blocks/post-card";
 import { PostList } from "@/components/blocks/post-list";
 import { PostsPreview } from "@/components/blocks/posts-preview";
@@ -1477,6 +1478,16 @@ export function StyleGuide() {
               external: true,
             },
           ]}
+          className="pt-0!"
+        />
+      </Section>
+
+      <Section id="block-pilot-banner" title="BLOCK: PILOT BANNER">
+        <PilotBanner
+          text="Първите ни кейси се пишат сега. Пилот 30 дни: одит, първи кампании и отчет „преди / след“ — от 690 € общо. Приемаме 3 фирми до февруари 2027."
+          ctaLabel="Вижте пилота →"
+          href="/keysi"
+          location="home_pilot_banner"
           className="pt-0!"
         />
       </Section>

@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { prepare } from "./helpers";
+import { events, prepare } from "./helpers";
 
 const VIEWPORTS = [
   { width: 390, height: 844 },
@@ -99,6 +99,7 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
     .include("#block-announcement-bar")
     .include("#block-mirror-questions")
     .include("#block-founder-card")
+    .include("#block-pilot-banner")
     .withTags(WCAG)
     .analyze();
   expect(richBlocksAxe.violations).toEqual([]);
@@ -137,10 +138,37 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
   await expect(
     founderSection.locator('a[href="https://www.linkedin.com/in/yehor-honcharenko"][rel="noopener"]'),
   ).toHaveCount(1);
+
+  const pilotSection = page.locator("#block-pilot-banner");
+  await expect(pilotSection.locator('[data-block="pilot-banner"]')).toHaveCount(1);
+  await expect(pilotSection.locator("button")).toHaveCount(0);
+  const pilotLink = pilotSection.locator(
+    'a[href="/keysi"][data-track="cta_click"][data-track-cta-location="home_pilot_banner"]',
+  );
+  await expect(pilotLink).toHaveCount(1);
+  await page.evaluate(() => {
+    document.addEventListener(
+      "click",
+      (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      true,
+    );
+  });
+  await pilotLink.click();
+  const clicks = await events(page, "cta_click");
+  expect(clicks).toContainEqual(
+    expect.objectContaining({
+      event: "cta_click",
+      cta_location: "home_pilot_banner",
+      destination: "/keysi",
+    }),
+  );
 });
 
 for (const viewport of VIEWPORTS) {
-  test(`DS-A7: #block-mirror-questions and #block-founder-card have zero horizontal overflow at ${viewport.width}px`, async ({
+  test(`DS-A7: new M3 styleguide blocks have zero horizontal overflow at ${viewport.width}px`, async ({
     page,
   }) => {
     await prepare(page, { choice: "necessary" });
@@ -149,19 +177,20 @@ for (const viewport of VIEWPORTS) {
     await page.evaluate(() => document.fonts.ready);
 
     const overflow = await page.evaluate(() => {
-      const mirror = document.querySelector("#block-mirror-questions");
-      const founder = document.querySelector("#block-founder-card");
-      if (!mirror || !founder) return { missing: true, body: 0, mirror: 0, founder: 0 };
+      const ids = ["#block-mirror-questions", "#block-founder-card", "#block-pilot-banner"];
+      const entries = ids.map((id) => {
+        const el = document.querySelector(id);
+        return el ? [id, el.scrollWidth - el.clientWidth] : [id, null];
+      });
       return {
-        missing: false,
         body: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        mirror: mirror.scrollWidth - mirror.clientWidth,
-        founder: founder.scrollWidth - founder.clientWidth,
+        sections: Object.fromEntries(entries),
       };
     });
-    expect(overflow.missing).toBe(false);
     expect(overflow.body).toBeLessThanOrEqual(0);
-    expect(overflow.mirror).toBeLessThanOrEqual(0);
-    expect(overflow.founder).toBeLessThanOrEqual(0);
+    for (const [id, delta] of Object.entries(overflow.sections)) {
+      expect(delta, `${id} should exist`).not.toBeNull();
+      expect(delta as number, `${id} overflow at ${viewport.width}px`).toBeLessThanOrEqual(0);
+    }
   });
 }
