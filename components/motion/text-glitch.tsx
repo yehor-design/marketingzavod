@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { isBg } from "@/lib/edition";
 import styles from "./motion-styles";
 import { usePrefersReducedMotion } from "./use-reduced-motion";
 
@@ -13,6 +14,9 @@ export const TEXT_GLITCH_HOVER_COLOR = "rgb(255, 255, 255)";
 
 const GLITCH_CHARS =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+const BG_GLITCH_CHARS =
+  "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯабвгдежзийклмнопрстуфхцчшщъьюя0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+const ACTIVE_GLITCH_CHARS = isBg ? BG_GLITCH_CHARS : GLITCH_CHARS;
 
 /** Resting glitch was not isolated on screen, so this preset is unused. */
 export const restingTextGlitch = {
@@ -29,7 +33,7 @@ function scrambleCells(text: string): Cell[] {
       return { char, scrambled: false };
     }
     return {
-      char: GLITCH_CHARS[(Math.random() * GLITCH_CHARS.length) | 0],
+      char: ACTIVE_GLITCH_CHARS[(Math.random() * ACTIVE_GLITCH_CHARS.length) | 0],
       scrambled: true,
     };
   });
