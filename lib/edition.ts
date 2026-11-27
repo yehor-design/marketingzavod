@@ -3,12 +3,13 @@ export type SiteEdition = "jet" | "bg";
 const VALID_EDITIONS: readonly SiteEdition[] = ["jet", "bg"];
 
 /**
- * Parses NEXT_PUBLIC_SITE_EDITION. Empty or unset defaults to "jet".
+ * Parses NEXT_PUBLIC_SITE_EDITION. Empty or unset defaults to "bg" (Bulgarian).
+ * Set NEXT_PUBLIC_SITE_EDITION=jet to opt into the legacy English edition.
  * Any unknown value throws to halt the build instead of producing a mixed site.
  */
 export function parseEdition(raw: string | undefined): SiteEdition {
   if (raw === undefined || raw.trim() === "") {
-    return "jet";
+    return "bg";
   }
   const normalized = raw.trim();
   if ((VALID_EDITIONS as readonly string[]).includes(normalized)) {
