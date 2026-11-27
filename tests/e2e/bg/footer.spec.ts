@@ -8,14 +8,14 @@ import { bgUi } from "@/content/bg/ui";
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 test.describe("BG 4-column footer (GL-08..GL-12, DS-23, GL-A3)", () => {
-  test("renders 4 verbatim columns, Varna + mailto only, consent settings button, legal line, LinkedIn only, and passes axe across 390 / 1024 / 1440", async ({
-    page,
-  }) => {
-    const publishedColumns = getPublishedBgFooterColumns();
+  for (const width of [1440, 1024, 390] as const) {
+    test(`renders 4 verbatim columns, Varna + mailto only, legal line, LinkedIn only, and passes axe at ${width}px`, async ({
+      page,
+    }) => {
+      const publishedColumns = getPublishedBgFooterColumns();
 
-    for (const width of [1440, 1024, 390]) {
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/", { waitUntil: "load" });
+      await page.goto("/blog", { waitUntil: "load" });
 
       // Dismiss consent banner if visible so it does not cover footer controls during interaction
       const necessaryOnly = page.locator("[data-consent-banner]").getByRole("button", {
@@ -99,13 +99,13 @@ test.describe("BG 4-column footer (GL-08..GL-12, DS-23, GL-A3)", () => {
         .analyze();
       expect(axeResults.violations, JSON.stringify(axeResults.violations, null, 2)).toEqual([]);
 
-      // Verify «Настройки за бисквитки» opens the consent settings panel (once on desktop)
+      // Verify «Настройки за бисквитки» opens the consent settings panel
       if (width === 1440) {
         await cookieBtn.click();
         const settingsPanel = page.locator("[data-consent-settings]");
         await expect(settingsPanel).toBeVisible();
         await expect(settingsPanel).toContainText(bgUi.consent.settingsTitle);
       }
-    }
-  });
+    });
+  }
 });
