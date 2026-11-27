@@ -13,6 +13,7 @@ import { usePrefersReducedMotion } from "@/components/motion/use-reduced-motion"
 import { Announcement } from "@/components/announcement";
 import { Halftone } from "@/components/home/halftone";
 import styles from "@/components/home/home-styles";
+import { isBg } from "@/lib/edition";
 
 const NBSP = "\u00A0";
 
@@ -416,7 +417,7 @@ export function HomePage() {
       <Hero
         title="Lightning fast sites. In a single click."
         description="No code, no hassle. Jet simply keeps your website blazing fast 24/7."
-        announcement={<Announcement />}
+        announcement={isBg ? undefined : <Announcement />}
         actions={heroActions}
       />
 
