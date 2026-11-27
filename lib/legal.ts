@@ -1,13 +1,42 @@
+import type {
+  RichCtaAction,
+  RichTextContent,
+  RichTextFragment,
+} from "@/lib/rich-text";
 import { legalSlugs } from "@/lib/routes";
 
-export type RichText =
-  | { text: string }
-  | { text: string; href: string };
+export type RichText = RichTextFragment;
 
 export type LegalBlock =
-  | { kind: "p"; content: RichText[] }
   | { kind: "h2"; text: string; id?: string }
-  | { kind: "list"; items: string[] };
+  | { kind: "h3"; text: string; id?: string }
+  | { kind: "lead"; content: RichTextContent }
+  | { kind: "p"; content: RichTextContent }
+  | { kind: "list"; items: readonly RichTextContent[] }
+  | { kind: "ol"; items: readonly RichTextContent[] }
+  | {
+      kind: "table";
+      headers: readonly string[];
+      rows: readonly (readonly RichTextContent[])[];
+      caption?: string;
+    }
+  | {
+      kind: "cta";
+      text: RichTextContent;
+      actions: readonly RichCtaAction[];
+      title?: string;
+    }
+  | {
+      kind: "sources";
+      title?: string;
+      items: readonly RichTextContent[];
+    }
+  | {
+      kind: "methodology";
+      title?: string;
+      text?: RichTextContent;
+      items?: readonly RichTextContent[];
+    };
 
 export type LegalDocument = {
   slug: (typeof legalSlugs)[number];

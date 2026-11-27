@@ -57,3 +57,33 @@ test("DS-A9: /dev/styleguide has no WCAG 2.2 A/AA axe violations", async ({ page
   );
   expect(summary).toEqual([]);
 });
+
+test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks with scope=col tables and safe external links", async ({
+  page,
+}) => {
+  await prepare(page, { choice: "necessary" });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/dev/styleguide", { waitUntil: "load" });
+
+  for (const selector of ["#block-article-body", "#block-legal-body"]) {
+    const section = page.locator(selector);
+    await expect(section.locator("p.lead")).toHaveCount(1);
+    await expect(section.locator("ol > li")).toHaveCount(2);
+    await expect(section.locator('[data-block-kind="cta"] a[data-slot="button"]')).toHaveCount(2);
+    await expect(section.locator('[data-block-kind="methodology"]')).toHaveCount(1);
+    await expect(section.locator('[data-block-kind="sources"] li').first()).toBeVisible();
+    await expect(section.locator("strong").first()).toBeVisible();
+
+    const thScopes = await section
+      .locator("table th")
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("scope")));
+    expect(thScopes.length).toBeGreaterThan(0);
+    expect(thScopes.every((scope) => scope === "col")).toBe(true);
+
+    const externalRels = await section
+      .locator('a[href^="http"]')
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("rel")));
+    expect(externalRels.length).toBeGreaterThan(0);
+    expect(externalRels.every((rel) => rel === "noopener noreferrer")).toBe(true);
+  }
+});
