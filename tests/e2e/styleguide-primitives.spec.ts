@@ -95,7 +95,13 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
   const richBlocksAxe = await new AxeBuilder({ page })
     .include("#block-article-body")
     .include("#block-legal-body")
+    .include("#block-link-list")
     .withTags(WCAG)
     .analyze();
   expect(richBlocksAxe.violations).toEqual([]);
+
+  const linkList = page.locator("#block-link-list");
+  await expect(linkList.locator('[data-block="link-list"][data-variant="list"]')).toHaveCount(2);
+  await expect(linkList.locator('[data-block="link-list"][data-variant="cards"]')).toHaveCount(1);
+  await expect(linkList.locator('[data-variant="cards"] li > a')).toHaveCount(2);
 });

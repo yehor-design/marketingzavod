@@ -19,6 +19,7 @@ import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-g
 import { FeatureSection } from "@/components/blocks/feature-section";
 import { Hero } from "@/components/blocks/hero";
 import { LegalBody } from "@/components/blocks/legal-body";
+import { LinkList } from "@/components/blocks/link-list";
 import { Mission, MissionHighlight } from "@/components/blocks/mission";
 import { OpenRoles } from "@/components/blocks/open-roles";
 import { PostCard, type PostCardItem } from "@/components/blocks/post-card";
@@ -1341,6 +1342,62 @@ export function StyleGuide() {
             },
           ]}
         />
+      </Section>
+
+      <Section id="block-link-list" title="BLOCK: LINK LIST">
+        <div className="flex flex-col gap-[40px]">
+          <div className="grid grid-cols-1 gap-[32px] min-[810px]:grid-cols-2">
+            <LinkList
+              embedded
+              variant="list"
+              headingAs="h3"
+              title="Може би търсите"
+              items={[
+                {
+                  label: "Безплатен чеклист: кой притежава рекламните ви акаунти →",
+                  href: "/proverka-na-akaunti",
+                },
+                {
+                  label: "Цени на пакетите →",
+                  href: "/tseni",
+                },
+              ]}
+            />
+            <LinkList
+              embedded
+              variant="list"
+              headingAs="h3"
+              title="Решения"
+              items={[
+                { label: "Смяна на агенция", href: "/smyana-na-agentsiya" },
+                { label: "Онлайн магазини", href: "/onlayn-magazini" },
+                { label: "Услуги и B2B", href: "/uslugi-i-b2b" },
+                { label: "Недвижими имоти", href: "/nedvizhimi-imoti" },
+              ]}
+            />
+          </div>
+
+          <LinkList
+            embedded
+            variant="cards"
+            headingAs="h3"
+            title="Докато чакате"
+            items={[
+              {
+                label: "Проверете кой притежава рекламните ви акаунти →",
+                description:
+                  "Проверете дали Google Ads, Meta, пикселът, профилът в Google и анализите са на името на фирмата — преди да смените агенция.",
+                href: "/proverka-na-akaunti",
+              },
+              {
+                label: "Вижте пакетите и цените →",
+                description:
+                  "Пакети от 290 € на месец, крайни цени. Първите 30 дни — одит и пилот — от 690 € общо. После решавате; акаунтите са на ваше име.",
+                href: "/tseni",
+              },
+            ]}
+          />
+        </div>
       </Section>
 
       <Section id="block-contact-form" title="BLOCK: CONTACT FORM">
