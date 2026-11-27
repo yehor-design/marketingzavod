@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Google_Sans, Google_Sans_Code } from "next/font/google";
 import { ConsentBanner } from "@/components/consent/consent-banner";
 import { ConsentSettings } from "@/components/consent/consent-settings";
 import { MotionProvider } from "@/components/motion-provider";
@@ -8,23 +7,9 @@ import { GoogleTagManager } from "@/components/tracking/gtm";
 import { ConsentedSpeedInsights } from "@/components/tracking/speed-insights";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { EDITION, isBg } from "@/lib/edition";
 import { ALLOW_INDEXING, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
-
-const googleSans = Google_Sans({
-  subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz"],
-  display: "swap",
-  variable: "--font-google-sans",
-});
-
-const googleSansCode = Google_Sans_Code({
-  subsets: ["latin"],
-  weight: "variable",
-  display: "swap",
-  variable: "--font-google-sans-code",
-});
 
 const TITLE = "Jet – Lightning-Fast Website Optimization";
 const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION?.trim();
@@ -76,15 +61,20 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { fontVariables } = isBg
+    ? await import("@/lib/fonts/bg")
+    : await import("@/lib/fonts/jet");
+
   return (
     <html
-      lang="en"
-      className={`dark bg-background text-[125%] scheme-dark max-[809.98px]:text-[87.5%] min-[810px]:max-[1199.98px]:text-[112.5%] ${googleSans.variable} ${googleSansCode.variable}`}
+      lang={isBg ? "bg" : "en"}
+      data-edition={EDITION}
+      className={`dark bg-background text-[125%] scheme-dark max-[809.98px]:text-[87.5%] min-[810px]:max-[1199.98px]:text-[112.5%] ${fontVariables}`}
     >
       <body>
         <GoogleTagManager />
