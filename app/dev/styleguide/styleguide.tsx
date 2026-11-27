@@ -1173,32 +1173,93 @@ export function StyleGuide() {
         <div className="max-w-[650px]">
           <ArticleBody
             blocks={[
-              { kind: "h2", text: "Measuring what actually slows pages down" },
+              {
+                kind: "lead",
+                text: [
+                  { text: "Start with a clean " },
+                  { text: "measurement baseline", strong: true },
+                  { text: " before changing templates, third-party scripts, or images." },
+                ],
+              },
+              {
+                kind: "h2",
+                text: "Measuring what actually slows pages down",
+                id: "sg-article-measure",
+              },
               {
                 kind: "p",
-                text: "Start with a clean baseline before changing templates, scripts, or images.",
+                text: [
+                  { text: "Compare route budgets on the " },
+                  { text: "pricing overview", href: "/pricing" },
+                  { text: " and review the " },
+                  { text: "Core Web Vitals thresholds", href: "https://web.dev/articles/vitals" },
+                  { text: " with " },
+                  { text: "real field data", strong: true },
+                  { text: "." },
+                ],
               },
               {
                 kind: "quote",
                 text: "Every extra second of latency cuts conversions long before users finish reading.",
               },
-              { kind: "h3", text: "Core checkpoints" },
+              { kind: "h3", text: "Core checkpoints", id: "sg-article-checkpoints" },
               {
                 kind: "list",
                 items: [
-                  "Measure Largest Contentful Paint on mobile connections",
+                  [
+                    { text: "Largest Contentful Paint: ", strong: true },
+                    { text: "measure on throttled mobile connections before shipping" },
+                  ],
                   "Trim unused JavaScript bundles per route",
                 ],
               },
               {
+                kind: "ol",
+                items: [
+                  [
+                    { text: "Capture baseline", strong: true },
+                    { text: " — record LCP, INP, and CLS across the top landing pages." },
+                  ],
+                  [
+                    { text: "Ship one change at a time", strong: true },
+                    { text: " — verify the delta before moving to the next bottleneck." },
+                  ],
+                ],
+              },
+              {
                 kind: "table",
-                headers: ["Metric", "Target"],
+                caption: "Core Web Vitals targets for production templates.",
+                headers: ["Metric", "Target", "Notes"],
                 rows: [
-                  ["LCP", "≤ 2.5s"],
-                  ["CLS", "≤ 0.1"],
+                  ["LCP", "≤ 2.5s", "75th percentile mobile loads"],
+                  ["CLS", "≤ 0.1", "Zero layout shift after font swap"],
                 ],
               },
               { kind: "code", text: "npm run test:visual" },
+              {
+                kind: "cta",
+                text: "Want to verify these checkpoints on your own site? Review plans or book a short technical walkthrough.",
+                actions: [
+                  { text: "View pricing", href: "/pricing", variant: "primary" },
+                  { text: "Contact us", href: "/contact", variant: "secondary" },
+                ],
+              },
+              {
+                kind: "methodology",
+                title: "Methodology",
+                text: "Thresholds reflect 75th-percentile field measurements across mobile and desktop sessions collected over a rolling 28-day window.",
+              },
+              {
+                kind: "sources",
+                title: "Sources",
+                items: [
+                  [
+                    { text: "web.dev — " },
+                    { text: "Web Vitals documentation", href: "https://web.dev/articles/vitals" },
+                  ],
+                  "Internal route audit baselines recorded on Chromium desktop and mobile profiles.",
+                ],
+              },
             ]}
           />
         </div>
@@ -1208,19 +1269,74 @@ export function StyleGuide() {
         <LegalBody
           blocks={[
             {
+              kind: "lead",
+              content: [
+                { text: "This demo shows " },
+                { text: "structured legal prose", strong: true },
+                { text: ", tables, numbered lists, callouts, and inline references." },
+              ],
+            },
+            {
               kind: "p",
               content: [
-                { text: "This demo shows headings, paragraphs with " },
-                { text: "inline links", href: "/legal/privacy-policy" },
-                { text: ", and bullet lists using the shared legal renderer." },
+                { text: "Review how we handle personal data in the " },
+                { text: "Privacy Policy", href: "/legal/privacy-policy" },
+                { text: " or inspect the " },
+                { text: "EDPB guidelines", href: "https://www.edpb.europa.eu/" },
+                { text: "." },
               ],
             },
             { kind: "h2", text: "1. Data handling", id: "sg-legal-data" },
+            { kind: "h3", text: "1.1 Consent categories", id: "sg-legal-categories" },
             {
               kind: "list",
               items: [
-                "Analytics stay off until the visitor gives consent.",
+                [
+                  { text: "Analytics: ", strong: true },
+                  { text: "stay off until the visitor gives explicit consent." },
+                ],
                 "Form submissions transmit only the fields entered by the visitor.",
+              ],
+            },
+            {
+              kind: "ol",
+              items: [
+                "Essential cookies load immediately so core navigation and consent state work.",
+                "Optional measurement scripts activate only after opt-in.",
+              ],
+            },
+            {
+              kind: "table",
+              caption: "Cookie categories and consent requirements.",
+              headers: ["Category", "Purpose", "Consent required"],
+              rows: [
+                ["Necessary", "Site security and storing your consent choice", "No"],
+                ["Statistics", "Aggregated page performance and reading metrics", "Yes"],
+                ["Marketing", "Campaign attribution and remarketing measurement", "Yes"],
+              ],
+            },
+            {
+              kind: "cta",
+              text: "Questions about how we process personal data or cookie preferences?",
+              actions: [
+                { text: "Contact support", href: "/contact", variant: "primary" },
+                { text: "Privacy Policy", href: "/legal/privacy-policy", variant: "secondary" },
+              ],
+            },
+            {
+              kind: "methodology",
+              title: "Review scope",
+              text: "Applies to public marketing pages and lead capture forms hosted on this domain.",
+            },
+            {
+              kind: "sources",
+              title: "References",
+              items: [
+                "Regulation (EU) 2016/679 (General Data Protection Regulation).",
+                [
+                  { text: "Internal policy: " },
+                  { text: "Terms of Service", href: "/legal/terms-of-service" },
+                ],
               ],
             },
           ]}
@@ -1442,32 +1558,69 @@ export function StyleGuide() {
       <Section id="primitive-checkbox" title="PRIMITIVE: CHECKBOX">
         <div className="flex flex-col gap-[16px] [border:1px_dashed_var(--color-rule)] [padding:24px]">
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-normal" data-ds-a6="checkbox" defaultChecked />
-            <label htmlFor="sg-cb-normal" className="text-[14px] leading-[20px] text-foreground">
+            <Checkbox
+              id="sg-cb-normal"
+              aria-labelledby="sg-cb-normal-label"
+              data-ds-a6="checkbox"
+              defaultChecked
+            />
+            <label
+              id="sg-cb-normal-label"
+              htmlFor="sg-cb-normal"
+              className="text-[14px] leading-[20px] text-foreground"
+            >
               Normal (checked)
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-hover" className="border-foreground/50" />
-            <label htmlFor="sg-cb-hover" className="text-[14px] leading-[20px] text-foreground">
+            <Checkbox
+              id="sg-cb-hover"
+              aria-labelledby="sg-cb-hover-label"
+              className="border-foreground/50"
+            />
+            <label
+              id="sg-cb-hover-label"
+              htmlFor="sg-cb-hover"
+              className="text-[14px] leading-[20px] text-foreground"
+            >
               Hover (unchecked)
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-focus" className="border-ring ring-3 ring-ring/50" />
-            <label htmlFor="sg-cb-focus" className="text-[14px] leading-[20px] text-foreground">
+            <Checkbox
+              id="sg-cb-focus"
+              aria-labelledby="sg-cb-focus-label"
+              className="border-ring ring-3 ring-ring/50"
+            />
+            <label
+              id="sg-cb-focus-label"
+              htmlFor="sg-cb-focus"
+              className="text-[14px] leading-[20px] text-foreground"
+            >
               Focus state
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-disabled" disabled />
-            <label htmlFor="sg-cb-disabled" className="text-[14px] leading-[20px] text-muted-foreground">
+            <Checkbox id="sg-cb-disabled" aria-labelledby="sg-cb-disabled-label" disabled />
+            <label
+              id="sg-cb-disabled-label"
+              htmlFor="sg-cb-disabled"
+              className="text-[14px] leading-[20px] text-muted-foreground"
+            >
               Disabled state
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-error" aria-invalid="true" />
-            <label htmlFor="sg-cb-error" className="text-[14px] leading-[20px] text-destructive">
+            <Checkbox
+              id="sg-cb-error"
+              aria-labelledby="sg-cb-error-label"
+              aria-invalid="true"
+            />
+            <label
+              id="sg-cb-error-label"
+              htmlFor="sg-cb-error"
+              className="text-[14px] leading-[20px] text-destructive"
+            >
               Error state — consent is required to continue.
             </label>
           </div>

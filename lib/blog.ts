@@ -1,3 +1,5 @@
+import type { RichCtaAction, RichTextContent } from "@/lib/rich-text";
+
 export type Author = {
   name: string;
   role: string;
@@ -5,13 +7,37 @@ export type Author = {
 };
 
 export type Block =
-  | { kind: "h2"; text: string }
-  | { kind: "h3"; text: string }
-  | { kind: "p"; text: string }
-  | { kind: "quote"; text: string }
-  | { kind: "list"; items: string[] }
-  | { kind: "table"; headers: string[]; rows: string[][] }
-  | { kind: "code"; text: string };
+  | { kind: "h2"; text: string; id?: string }
+  | { kind: "h3"; text: string; id?: string }
+  | { kind: "lead"; text: RichTextContent }
+  | { kind: "p"; text: RichTextContent }
+  | { kind: "quote"; text: RichTextContent }
+  | { kind: "list"; items: readonly RichTextContent[] }
+  | { kind: "ol"; items: readonly RichTextContent[] }
+  | {
+      kind: "table";
+      headers: readonly string[];
+      rows: readonly (readonly RichTextContent[])[];
+      caption?: string;
+    }
+  | { kind: "code"; text: string }
+  | {
+      kind: "cta";
+      text: RichTextContent;
+      actions: readonly RichCtaAction[];
+      title?: string;
+    }
+  | {
+      kind: "sources";
+      title?: string;
+      items: readonly RichTextContent[];
+    }
+  | {
+      kind: "methodology";
+      title?: string;
+      text?: RichTextContent;
+      items?: readonly RichTextContent[];
+    };
 
 export type Post = {
   slug: string;
