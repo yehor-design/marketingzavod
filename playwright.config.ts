@@ -20,7 +20,7 @@ const bgProject = {
  * and placeholder IDs. Every third-party request is intercepted in the tests,
  * so nothing reaches a real analytics account.
  *
- * The active edition (`jet` by default, or `bg` via NEXT_PUBLIC_SITE_EDITION=bg)
+ * The active edition (`bg` by default, or `jet` via NEXT_PUBLIC_SITE_EDITION=jet)
  * selects both the Next.js build edition and the matching Playwright project.
  */
 export default defineConfig({

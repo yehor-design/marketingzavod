@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   BG_CASE_TEMPLATE_METADATA,
   BG_ROUTE_METADATA,
@@ -11,7 +11,7 @@ import {
   type BgMetadataRouteKey,
   type BgRouteMetadataEntry,
 } from "@/content/bg/metadata";
-import { bgPageMetadata, pageMetadata } from "@/lib/seo";
+import { bgPageMetadata } from "@/lib/seo";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const FILE_30_PATH = path.join(process.cwd(), "docs", "site-texts", "30-metadani-saytu.md");
@@ -190,18 +190,30 @@ describe("content/bg/metadata.ts verbatim & CR-51 / CR-A10 validation", () => {
     expect(findBgMetadataRouteByPath("/unknown")).toBeUndefined();
   });
 
-  it("preserves English Jet site constants and pageMetadata defaults untouched (CR-A1)", () => {
-    expect(SITE_NAME).toBe("Jet");
-    expect(SITE_DESCRIPTION).toContain("Supercharge your website with Jet");
-    const jetHome = pageMetadata({
-      title: "Jet – Lightning-Fast Website Optimization",
-      description: SITE_DESCRIPTION,
-      path: "/",
-    });
-    expect(jetHome.openGraph).toMatchObject({
-      siteName: "Jet",
-      locale: "en_US",
-      url: "/",
-    });
+  it("uses Bulgarian site constants by default and preserves English Jet constants under NEXT_PUBLIC_SITE_EDITION=jet", async () => {
+    expect(SITE_NAME).toBe(BG_SITE_METADATA.siteName);
+    expect(SITE_DESCRIPTION).toBe(BG_SITE_METADATA.defaultDescription);
+
+    vi.stubEnv("NEXT_PUBLIC_SITE_EDITION", "jet");
+    vi.resetModules();
+    try {
+      const [{ pageMetadata: jetPageMetadata }, { SITE_NAME: jetName, SITE_DESCRIPTION: jetDesc }] =
+        await Promise.all([import("@/lib/seo"), import("@/lib/site")]);
+      expect(jetName).toBe("Jet");
+      expect(jetDesc).toContain("Supercharge your website with Jet");
+      const jetHome = jetPageMetadata({
+        title: "Jet – Lightning-Fast Website Optimization",
+        description: jetDesc,
+        path: "/",
+      });
+      expect(jetHome.openGraph).toMatchObject({
+        siteName: "Jet",
+        locale: "en_US",
+        url: "/",
+      });
+    } finally {
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
   });
 });

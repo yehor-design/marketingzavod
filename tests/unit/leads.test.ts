@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { bgUi } from "@/content/bg/ui";
+import { jetUi } from "@/content/jet/ui";
 import { toContactProperties, toDealProperties } from "@/lib/leads/hubspot";
 import { createRateLimiter } from "@/lib/leads/rate-limit";
 import { cleanPageUrl, fieldErrorCodes, fieldErrors, leadRequestSchema } from "@/lib/leads/schema";
@@ -29,9 +30,9 @@ describe("leadRequestSchema", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(fieldErrorCodes(result.error)).toEqual({ email: "invalid_email" });
-      expect(fieldErrors(result.error)).toEqual({ email: "Enter a valid email." });
-      expect(fieldErrors(result.error, bgUi.validation)).toEqual({
-        email: "Въведете валиден имейл.",
+      expect(fieldErrors(result.error)).toEqual({ email: bgUi.validation.invalid_email });
+      expect(fieldErrors(result.error, jetUi.validation)).toEqual({
+        email: "Enter a valid email.",
       });
     }
   });

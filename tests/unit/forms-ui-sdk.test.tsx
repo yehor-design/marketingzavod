@@ -5,6 +5,7 @@ import { afterEach, expect, test } from "vitest";
 import { ApplyForm } from "@/components/careers/apply-form";
 import { ContactPage } from "@/components/contact/contact-page";
 import { WaitlistPage } from "@/components/waitlist/waitlist-page";
+import { ui } from "@/content/ui";
 
 declare global {
   var __UI_SDK_STRICT__: boolean | undefined;
@@ -44,21 +45,27 @@ afterEach(cleanup);
 test("contact text fields stay labeled and the reason select stays named", () => {
   render(<ContactPage />);
 
-  const reason = screen.getByRole("combobox", { name: "Reason for contact" });
+  const reason = screen.getByRole("combobox", { name: ui.contact.reasonLabel });
   expect(reason).toBeTruthy();
-  expect(screen.getByRole("button", { name: "Get in touch" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: ui.contact.submitLabel })).toBeTruthy();
 
-  fireEvent.change(screen.getByLabelText("Full name"), { target: { value: "Ada Lovelace" } });
-  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "ada@example.com" } });
-  fireEvent.change(screen.getByLabelText("How can we help?"), {
+  fireEvent.change(screen.getByLabelText(ui.contact.nameLabel), {
+    target: { value: "Ada Lovelace" },
+  });
+  fireEvent.change(screen.getByLabelText(ui.contact.emailLabel), {
+    target: { value: "ada@example.com" },
+  });
+  fireEvent.change(screen.getByLabelText(ui.contact.messageLabel), {
     target: { value: "Need a faster site." },
   });
   fireEvent.click(reason);
-  fireEvent.click(screen.getByRole("option", { name: "General" }));
+  fireEvent.click(screen.getByRole("option", { name: ui.contact.reasons.general }));
 
-  expect(screen.getByLabelText<HTMLInputElement>("Full name").value).toBe("Ada Lovelace");
-  expect(screen.getByLabelText<HTMLInputElement>("Email").value).toBe("ada@example.com");
-  expect(screen.getByLabelText<HTMLTextAreaElement>("How can we help?").value).toBe(
+  expect(screen.getByLabelText<HTMLInputElement>(ui.contact.nameLabel).value).toBe("Ada Lovelace");
+  expect(screen.getByLabelText<HTMLInputElement>(ui.contact.emailLabel).value).toBe(
+    "ada@example.com",
+  );
+  expect(screen.getByLabelText<HTMLTextAreaElement>(ui.contact.messageLabel).value).toBe(
     "Need a faster site.",
   );
   expect(document.querySelector<HTMLInputElement>('input[name="Inquiry type"]')?.value).toBe(

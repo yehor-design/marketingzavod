@@ -10,10 +10,10 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("parseEdition (LN-A1)", () => {
-  it("defaults to jet when unset or blank", () => {
-    expect(parseEdition(undefined)).toBe("jet");
-    expect(parseEdition("")).toBe("jet");
-    expect(parseEdition("   ")).toBe("jet");
+  it("defaults to bg when unset or blank", () => {
+    expect(parseEdition(undefined)).toBe("bg");
+    expect(parseEdition("")).toBe("bg");
+    expect(parseEdition("   ")).toBe("bg");
   });
 
   it("accepts jet and bg", () => {
@@ -35,21 +35,8 @@ describe("edition module and route guards", () => {
     mockNotFound.mockClear();
   });
 
-  it("exports jet by default and blocks app/(bg) routes", async () => {
+  it("exports bg by default and blocks jet-only routes", async () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_EDITION", "");
-    vi.resetModules();
-    const { EDITION, isBg } = await import("@/lib/edition");
-    const { requireBgEdition, requireJetEdition } = await import("@/lib/edition-routes");
-
-    expect(EDITION).toBe("jet");
-    expect(isBg).toBe(false);
-    expect(() => requireJetEdition()).not.toThrow();
-    expect(() => requireBgEdition()).toThrow("NEXT_NOT_FOUND");
-    expect(mockNotFound).toHaveBeenCalledTimes(1);
-  });
-
-  it("exports bg when NEXT_PUBLIC_SITE_EDITION=bg and blocks jet-only routes", async () => {
-    vi.stubEnv("NEXT_PUBLIC_SITE_EDITION", "bg");
     vi.resetModules();
     const { EDITION, isBg } = await import("@/lib/edition");
     const { requireBgEdition, requireJetEdition } = await import("@/lib/edition-routes");
@@ -58,6 +45,19 @@ describe("edition module and route guards", () => {
     expect(isBg).toBe(true);
     expect(() => requireBgEdition()).not.toThrow();
     expect(() => requireJetEdition()).toThrow("NEXT_NOT_FOUND");
+    expect(mockNotFound).toHaveBeenCalledTimes(1);
+  });
+
+  it("exports jet when NEXT_PUBLIC_SITE_EDITION=jet and blocks app/(bg) routes", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_EDITION", "jet");
+    vi.resetModules();
+    const { EDITION, isBg } = await import("@/lib/edition");
+    const { requireBgEdition, requireJetEdition } = await import("@/lib/edition-routes");
+
+    expect(EDITION).toBe("jet");
+    expect(isBg).toBe(false);
+    expect(() => requireJetEdition()).not.toThrow();
+    expect(() => requireBgEdition()).toThrow("NEXT_NOT_FOUND");
     expect(mockNotFound).toHaveBeenCalledTimes(1);
   });
 

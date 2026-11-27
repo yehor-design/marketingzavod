@@ -13,18 +13,15 @@ npm run gtm:build   # regenerate gtm/container.json
 npm run lighthouse  # Lighthouse CI against a local production build
 ```
 
-## Site editions (`jet` / `bg`)
+## Site editions (`bg` / `jet`)
 
-Each build produces a single site edition controlled by `NEXT_PUBLIC_SITE_EDITION` (`jet` by default, or `bg`). Only `lib/edition.ts` reads the variable, and any unknown value fails the build.
-
-- **Production:** `jet` (default when unset).
-- **Preview:** `bg` (configured by Yehor in Vercel, Linear `ZAV-63`).
+Each build produces a single site edition controlled by `NEXT_PUBLIC_SITE_EDITION` (`bg` by default, or `jet`). Only `lib/edition.ts` reads the variable, and any unknown value fails the build.
 
 ```bash
-npm run dev                                             # jet (default)
-NEXT_PUBLIC_SITE_EDITION=bg npm run dev                 # bg edition locally
-npm run test:e2e                                        # jet E2E suite
-NEXT_PUBLIC_SITE_EDITION=bg npm run test:e2e            # bg E2E suite
+npm run dev                                              # bg (default)
+NEXT_PUBLIC_SITE_EDITION=jet npm run dev                 # legacy jet edition locally
+npm run test:e2e                                         # bg E2E suite (default)
+NEXT_PUBLIC_SITE_EDITION=jet npm run test:e2e            # jet E2E suite
 ```
 
 ## Visual regression tests
