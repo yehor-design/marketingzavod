@@ -46,8 +46,23 @@ import { PhosphorIcon } from "@/components/home/phosphor-icon";
 import home from "@/components/home/home-styles";
 import { Badge } from "@/components/ui/badge";
 import { Button, CtaLink } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 import {
   Select,
   SelectContent,
@@ -1298,6 +1313,206 @@ export function StyleGuide() {
             </div>
           );
         })()}
+      </Section>
+
+      <Section id="primitive-navigation-menu" title="PRIMITIVE: NAVIGATION MENU">
+        <div className="flex flex-col gap-[24px] [border:1px_dashed_var(--color-rule)] [padding:24px]">
+          <NavigationMenu aria-label="Primitive navigation menu demo">
+            <NavigationMenuList className="flex-wrap justify-start gap-[8px]">
+              <NavigationMenuItem>
+                <NavigationMenuTrigger data-ds-a6="nav-item">Solutions</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="m-0 flex w-[240px] list-none flex-col gap-[4px] p-[4px]">
+                    <li>
+                      <NavigationMenuLink render={<Link href="/pricing" />}>
+                        Pricing
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink render={<Link href="/about" />}>
+                        About
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink render={<Link href="/contact" />}>
+                        Contact
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={navigationMenuTriggerStyle()}
+                  render={<Link href="/pricing" />}
+                >
+                  Normal
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={`${navigationMenuTriggerStyle()} bg-muted`}
+                  render={<Link href="/about" />}
+                >
+                  Hover
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={`${navigationMenuTriggerStyle()} ring-3 ring-ring/50 outline-1`}
+                  render={<Link href="/blog" />}
+                >
+                  Focus
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger disabled>Disabled</NavigationMenuTrigger>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  aria-invalid="true"
+                  className={`${navigationMenuTriggerStyle()} border border-destructive text-destructive`}
+                  render={<Link href="/contact" />}
+                >
+                  Error
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+      </Section>
+
+      <Section id="primitive-collapsible" title="PRIMITIVE: COLLAPSIBLE">
+        <div className="grid grid-cols-1 gap-[16px] [border:1px_dashed_var(--color-rule)] [padding:24px] min-[810px]:grid-cols-2">
+          <Collapsible defaultOpen className="flex flex-col gap-[8px] rounded-field border border-border p-[12px]">
+            <CollapsibleTrigger className="flex w-full items-center justify-between text-left text-sm text-foreground">
+              <span>Normal (open)</span>
+              <span className="font-mono text-[12px] text-muted-foreground">toggle</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="text-sm text-muted-foreground">
+              Expandable content panel used for mobile dropdown groups and checklist guides.
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible className="flex flex-col gap-[8px] rounded-field border border-border bg-muted/50 p-[12px]">
+            <CollapsibleTrigger className="flex w-full items-center justify-between text-left text-sm text-foreground">
+              <span>Hover state</span>
+              <span className="font-mono text-[12px] text-muted-foreground">toggle</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="text-sm text-muted-foreground">
+              Hidden until expanded.
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible className="flex flex-col gap-[8px] rounded-field border border-ring p-[12px] ring-3 ring-ring/50">
+            <CollapsibleTrigger className="flex w-full items-center justify-between text-left text-sm text-foreground">
+              <span>Focus state</span>
+              <span className="font-mono text-[12px] text-muted-foreground">toggle</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="text-sm text-muted-foreground">
+              Focused trigger appearance.
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible disabled className="flex flex-col gap-[8px] rounded-field border border-border p-[12px] opacity-50">
+            <CollapsibleTrigger className="flex w-full items-center justify-between text-left text-sm text-foreground">
+              <span>Disabled state</span>
+              <span className="font-mono text-[12px] text-muted-foreground">locked</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="text-sm text-muted-foreground">
+              Cannot be toggled.
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible defaultOpen className="flex flex-col gap-[8px] rounded-field border border-destructive p-[12px] min-[810px]:col-span-2">
+            <CollapsibleTrigger
+              aria-invalid="true"
+              className="flex w-full items-center justify-between text-left text-sm text-foreground"
+            >
+              <span>Error state</span>
+              <span className="font-mono text-[12px] text-destructive">invalid</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="text-sm text-destructive">
+              Complete the required item inside this group.
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+      </Section>
+
+      <Section id="primitive-checkbox" title="PRIMITIVE: CHECKBOX">
+        <div className="flex flex-col gap-[16px] [border:1px_dashed_var(--color-rule)] [padding:24px]">
+          <div className="flex items-center gap-[12px]">
+            <Checkbox id="sg-cb-normal" data-ds-a6="checkbox" defaultChecked />
+            <label htmlFor="sg-cb-normal" className="text-[14px] leading-[20px] text-foreground">
+              Normal (checked)
+            </label>
+          </div>
+          <div className="flex items-center gap-[12px]">
+            <Checkbox id="sg-cb-hover" className="border-foreground/50" />
+            <label htmlFor="sg-cb-hover" className="text-[14px] leading-[20px] text-foreground">
+              Hover (unchecked)
+            </label>
+          </div>
+          <div className="flex items-center gap-[12px]">
+            <Checkbox id="sg-cb-focus" className="border-ring ring-3 ring-ring/50" />
+            <label htmlFor="sg-cb-focus" className="text-[14px] leading-[20px] text-foreground">
+              Focus state
+            </label>
+          </div>
+          <div className="flex items-center gap-[12px]">
+            <Checkbox id="sg-cb-disabled" disabled />
+            <label htmlFor="sg-cb-disabled" className="text-[14px] leading-[20px] text-muted-foreground">
+              Disabled state
+            </label>
+          </div>
+          <div className="flex items-center gap-[12px]">
+            <Checkbox id="sg-cb-error" aria-invalid="true" />
+            <label htmlFor="sg-cb-error" className="text-[14px] leading-[20px] text-destructive">
+              Error state — consent is required to continue.
+            </label>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="primitive-table" title="PRIMITIVE: TABLE">
+        <div className="[border:1px_dashed_var(--color-rule)] [padding:24px]">
+          <Table data-ds-a6="table">
+            <TableHeader>
+              <TableRow>
+                <TableHead scope="col">State</TableHead>
+                <TableHead scope="col">Component</TableHead>
+                <TableHead scope="col">Token behavior</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow data-ds-a6="table-row">
+                <TableCell>Normal</TableCell>
+                <TableCell>TableRow</TableCell>
+                <TableCell>Fixed px spacing across 390 / 1024 / 1440</TableCell>
+              </TableRow>
+              <TableRow className="bg-muted/50">
+                <TableCell>Hover</TableCell>
+                <TableCell>TableRow</TableCell>
+                <TableCell>Muted surface highlight</TableCell>
+              </TableRow>
+              <TableRow tabIndex={0} className="ring-1 ring-ring/50 outline-none">
+                <TableCell>Focus</TableCell>
+                <TableCell>TableRow</TableCell>
+                <TableCell>Visible keyboard focus ring</TableCell>
+              </TableRow>
+              <TableRow aria-disabled="true" className="opacity-50">
+                <TableCell>Disabled</TableCell>
+                <TableCell>TableRow</TableCell>
+                <TableCell>Reduced opacity inactive row</TableCell>
+              </TableRow>
+              <TableRow aria-invalid="true" className="border-destructive text-destructive">
+                <TableCell>Error</TableCell>
+                <TableCell>TableRow</TableCell>
+                <TableCell>Destructive semantic token</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       </Section>
 
       {isBg ? (

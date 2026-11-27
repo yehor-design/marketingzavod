@@ -573,6 +573,69 @@ html [data-slot="select-content"] {
   outline-offset: 0;
 }
 
+/*
+  Stock shadcn NavigationMenu, Collapsible, Checkbox, and Table read rem tokens
+  (--spacing, --text-sm, --radius). Pinning them to fixed px keeps control and
+  row heights identical across the 87.5% / 112.5% / 125% root scale (DS-A6).
+*/
+html [data-slot="navigation-menu"],
+html [data-slot="navigation-menu-list"],
+html [data-slot="navigation-menu-item"],
+html [data-slot="navigation-menu-trigger"],
+html [data-slot="navigation-menu-content"],
+html [data-slot="navigation-menu-link"],
+html [data-slot="navigation-menu-indicator"],
+html [data-slot="collapsible"],
+html [data-slot="collapsible-trigger"],
+html [data-slot="collapsible-content"] {
+  --spacing: 4px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --radius: 10px;
+  --radius-lg: 10px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+  font-weight: 400;
+  font-variation-settings: normal;
+}
+
+[data-slot="navigation-menu-trigger"]:focus-visible,
+[data-slot="navigation-menu-link"]:focus-visible,
+[data-slot="collapsible-trigger"]:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
+html [data-slot="checkbox"],
+html [data-slot="checkbox-indicator"] {
+  --spacing: 4px;
+  --radius: 10px;
+  --input: var(--color-border);
+  --color-input: var(--color-border);
+  --ring: var(--color-ring);
+  --color-ring: var(--color-ring);
+}
+
+[data-slot="checkbox"]:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
+html [data-slot="table-container"],
+html [data-slot="table"],
+html [data-slot="table-header"],
+html [data-slot="table-body"],
+html [data-slot="table-footer"],
+html [data-slot="table-row"],
+html [data-slot="table-head"],
+html [data-slot="table-cell"],
+html [data-slot="table-caption"] {
+  --spacing: 4px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --radius: 10px;
+}
+
 @keyframes dash-frame {
 from {
     background-position:
