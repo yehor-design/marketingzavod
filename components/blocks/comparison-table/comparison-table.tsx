@@ -38,12 +38,15 @@ export type ComparisonGroup = {
 };
 
 export type ComparisonTableProps = {
+  id?: string;
   columns: readonly ComparisonColumn[];
   groups: readonly ComparisonGroup[];
   title?: string;
   titleId?: string;
+  headingAs?: "h2" | "h3";
   ariaLabel?: string;
   tabsAriaLabel?: string;
+  featureColumnLabel?: string;
   includedLabel?: string;
   notIncludedLabel?: string;
   moreInfoLabel?: string;
@@ -125,12 +128,15 @@ function Tip({ text, moreInfoLabel }: { text: string; moreInfoLabel: string }) {
 }
 
 export function ComparisonTable({
+  id,
   columns,
   groups,
   title,
   titleId = "comparison-table-title",
+  headingAs = "h2",
   ariaLabel = "Plan comparison",
   tabsAriaLabel = "Plan",
+  featureColumnLabel = "Feature",
   includedLabel = "Included",
   notIncludedLabel = "Not included",
   moreInfoLabel = "More information",
@@ -140,21 +146,25 @@ export function ComparisonTable({
   const [columnIndex, setColumnIndex] = useState(0);
   const activeColumn = columns[columnIndex] ?? columns[0];
   const gridColsClass = columns.length >= 4 ? "cols4" : "cols3";
+  const prose = !compactRows;
+  const Heading = headingAs;
 
   return (
     <section
+      id={id}
       className={cx("compare", className)}
       aria-labelledby={title ? titleId : undefined}
       aria-label={!title ? ariaLabel : undefined}
       data-block="comparison-table"
+      data-columns={columns.length}
     >
       {title ? (
-        <h2 id={titleId} className={cx("sectionTitle")}>
+        <Heading id={titleId} className={cx("sectionTitle")}>
           {title}
-        </h2>
+        </Heading>
       ) : null}
 
-      <div className={cx("switcher")}>
+      <div className={cx("switcher", (prose || columns.length >= 4) && "switcherAuto")}>
         <Tabs
           value={activeColumn.id}
           onValueChange={(next) => {
@@ -166,7 +176,7 @@ export function ComparisonTable({
         >
           <TabsList
             aria-label={tabsAriaLabel}
-            className={`${cx("tabs")} h-auto rounded-none bg-transparent p-0`}
+            className={`${cx("tabs", (prose || columns.length >= 4) && "tabsAuto")} h-auto rounded-none bg-transparent p-0`}
           >
             {columns.map((column, index) => (
               <TabsTrigger
@@ -174,8 +184,8 @@ export function ComparisonTable({
                 value={column.id}
                 className={
                   columnIndex === index
-                    ? `${cx("tabOn")} flex-none dark:data-active:border-transparent dark:data-active:bg-brand dark:data-active:text-background`
-                    : `${cx("tab")} flex-none`
+                    ? `${cx("tabOn", (prose || columns.length >= 4) && "tabOnProse")} flex-none dark:data-active:border-transparent dark:data-active:bg-brand dark:data-active:text-background`
+                    : `${cx("tab", (prose || columns.length >= 4) && "tabProse")} flex-none`
                 }
               >
                 {column.name}
@@ -195,13 +205,19 @@ export function ComparisonTable({
 
       <div className={cx("table")} role="table" aria-label={title ?? ariaLabel}>
         <div role="rowgroup">
-          <div className={cx("head", gridColsClass)} role="row">
-            <div role="columnheader" aria-label="Feature" />
+          <div className={cx("head", prose && "headProse", gridColsClass)} role="row">
+            <div role="columnheader" aria-label={featureColumnLabel} />
             {columns.map((column) => (
               <div
-                className={cx("headPlan", column.highlight && "headPlanHighlight")}
+                className={cx(
+                  "headPlan",
+                  prose && "headPlanProse",
+                  column.highlight && "headPlanHighlight",
+                  prose && column.highlight && "headPlanHighlightProse",
+                )}
                 key={column.id}
                 role="columnheader"
+                data-highlighted={column.highlight ? "true" : undefined}
               >
                 <PlanMark icon={column.icon} size={20} accent={column.highlight} />
                 <h3>{column.name}</h3>
@@ -232,7 +248,7 @@ export function ComparisonTable({
               <div
                 className={cx(
                   row.tone === "grey" ? "rowGrey" : "rowBlack",
-                  compactRows && "rowCompact",
+                  compactRows ? "rowCompact" : "rowProse",
                   gridColsClass,
                 )}
                 key={row.feature}
@@ -248,10 +264,13 @@ export function ComparisonTable({
                     <div
                       className={cx(
                         columnIndex === index ? "valueActive" : "value",
+                        prose && "valueProse",
                         col?.highlight && !cell.mark && "valueHighlight",
+                        prose && col?.highlight && !cell.mark && "valueHighlightProse",
                       )}
                       key={col?.id ?? index}
                       role="cell"
+                      data-highlighted={col?.highlight ? "true" : undefined}
                     >
                       <CellValue
                         cell={cell}
