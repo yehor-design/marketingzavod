@@ -7,12 +7,16 @@ import { GoogleTagManager } from "@/components/tracking/gtm";
 import { ConsentedSpeedInsights } from "@/components/tracking/speed-insights";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { BG_SITE_METADATA } from "@/content/bg/metadata";
 import { EDITION, isBg } from "@/lib/edition";
 import { fontVariables } from "@/lib/fonts/active";
 import { ALLOW_INDEXING, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const TITLE = "Jet – Lightning-Fast Website Optimization";
+const TITLE = isBg
+  ? BG_SITE_METADATA.defaultTitle
+  : "Jet – Lightning-Fast Website Optimization";
+const LOCALE = isBg ? BG_SITE_METADATA.locale : "en_US";
 const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION?.trim();
 
 const BLOCK_ROBOTS: Metadata["robots"] = {
@@ -44,7 +48,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: TITLE,
     description: SITE_DESCRIPTION,
-    locale: "en_US",
+    locale: LOCALE,
   },
   twitter: {
     card: "summary_large_image",
