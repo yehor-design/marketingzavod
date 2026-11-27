@@ -12,6 +12,14 @@ import { isBg } from "@/lib/edition";
 
 const ANNOUNCEMENT_HIDDEN_PREFIX = "/proverka-na-akaunti";
 
+const BG_FLUSH_PATHS = new Set([
+  "/smyana-na-agentsiya",
+  "/onlayn-magazini",
+  "/uslugi-i-b2b",
+  "/hoteli",
+  "/nedvizhimi-imoti",
+]);
+
 function isAnnouncementHiddenRoute(pathname: string) {
   return (
     pathname === ANNOUNCEMENT_HIDDEN_PREFIX ||
@@ -30,6 +38,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const flush =
     home ||
     about ||
+    (isBg && BG_FLUSH_PATHS.has(pathname)) ||
     pathname === "/pricing" ||
     pathname === "/contact" ||
     pathname === "/waitlist" ||

@@ -17,6 +17,7 @@ import {
   getPublishedBgSolutionsLinks,
 } from "@/content/bg/navigation";
 import { BG_NOT_FOUND, getPublishedBgNotFoundSolutions } from "@/content/bg/not-found";
+import { SMYANA_CONTENT_BLOCKS, SMYANA_SEGMENT } from "@/content/bg/segments/smyana";
 import {
   formatBgDate,
   LAUNCH_PUBLICATION_DATE_BG,
@@ -27,9 +28,11 @@ import {
   FOUNDER_PHOTOS,
   resolveFounderPhotoPath,
   type ContentSource,
+  type SegmentPageData,
 } from "@/content/bg/types";
 import { BG_UI_SOURCE_FILES, bgUi } from "@/content/bg/ui";
 import { jetUi } from "@/content/jet/ui";
+import { inlineToPlainText } from "@/lib/rich-text";
 
 const SITE_TEXTS_DIR = path.join(process.cwd(), "docs", "site-texts");
 const PUBLIC_DIR = path.join(process.cwd(), "public");
@@ -69,7 +72,9 @@ function isNonContentString(value: string, keyPath: string): boolean {
     leaf === "illo" ||
     leaf === "location" ||
     leaf === "variant" ||
-    leaf === "tone"
+    leaf === "tone" ||
+    leaf === "slug" ||
+    leaf === "tema"
   ) {
     return true;
   }
@@ -129,6 +134,63 @@ function assertVerbatimAgainstSource(
   }
 }
 
+function assertSegmentVerbatim(segment: SegmentPageData, extraFiles: readonly string[] = []) {
+  const combinedSource = [segment.source.file, ...extraFiles]
+    .map((file) => readNormalizedSource(file))
+    .join(" ");
+
+  const verifyString = (value: string, label: string) => {
+    assertCleanBulgarianText(value, label);
+    const normalized = normalizeWhitespace(value);
+    const ok = combinedSource.includes(normalized) || DRAFT_VALUES.has(normalized);
+    expect(
+      ok,
+      `${label} is neither verbatim in ${segment.source.file} nor in content/bg/drafts.ts:\n  "${value}"`,
+    ).toBe(true);
+  };
+
+  assertVerbatimAgainstSource(segment.source, segment.hero, `${segment.slug}.hero`);
+  assertVerbatimAgainstSource(segment.source, segment.featureGrid, `${segment.slug}.featureGrid`);
+  assertVerbatimAgainstSource(segment.source, segment.processSteps, `${segment.slug}.processSteps`);
+  assertVerbatimAgainstSource(
+    segment.source,
+    segment.mirrorQuestions,
+    `${segment.slug}.mirrorQuestions`,
+  );
+
+  for (const [index, section] of segment.featureSections.entries()) {
+    if (section.eyebrow) {
+      verifyString(section.eyebrow, `${segment.slug}.featureSections[${index}].eyebrow`);
+    }
+    verifyString(section.title, `${segment.slug}.featureSections[${index}].title`);
+    verifyString(inlineToPlainText(section.body), `${segment.slug}.featureSections[${index}].body`);
+    for (const [pIndex, point] of section.points.entries()) {
+      verifyString(
+        inlineToPlainText(point),
+        `${segment.slug}.featureSections[${index}].points[${pIndex}]`,
+      );
+    }
+  }
+
+  for (const [index, card] of segment.cardGrid.items.entries()) {
+    verifyString(card.title, `${segment.slug}.cardGrid.items[${index}].title`);
+    verifyString(card.body, `${segment.slug}.cardGrid.items[${index}].body`);
+    if (card.ctaLabel) {
+      verifyString(card.ctaLabel, `${segment.slug}.cardGrid.items[${index}].ctaLabel`);
+    }
+  }
+
+  if (segment.faq.title) {
+    verifyString(segment.faq.title, `${segment.slug}.faq.title`);
+  }
+  for (const [index, item] of segment.faq.items.entries()) {
+    verifyString(item.question, `${segment.slug}.faq.items[${index}].question`);
+    verifyString(inlineToPlainText(item.answer), `${segment.slug}.faq.items[${index}].answer`);
+  }
+
+  assertVerbatimAgainstSource(segment.source, segment.ctaBand, `${segment.slug}.ctaBand`);
+}
+
 describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () => {
   it("contains all 31 expected docs/site-texts markdown files", () => {
     const files = fs
@@ -159,6 +221,15 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
       "/uslugi-i-b2b",
       "/nedvizhimi-imoti",
     ]);
+  });
+
+  it("verifies /smyana-na-agentsiya segment blocks verbatim against docs/site-texts/03-smyana-na-agentsiya.md (ZAV-118)", () => {
+    expect(SMYANA_CONTENT_BLOCKS).toHaveLength(11);
+    for (const block of SMYANA_CONTENT_BLOCKS) {
+      expect(block.source.file).toBe("03-smyana-na-agentsiya.md");
+      expect(block.source.block.length).toBeGreaterThan(0);
+    }
+    assertSegmentVerbatim(SMYANA_SEGMENT);
   });
 
   it("verifies SHARED_FORMULATIONS verbatim against docs/site-texts/00-README.md", () => {

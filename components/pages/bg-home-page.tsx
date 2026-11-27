@@ -140,6 +140,7 @@ export function BgHomePage() {
         titleId="bg-home-faq-title"
         title={HOME_FAQ.data.title}
         defaultOpenIndex={0}
+        className="[&_.faqGrid]:max-[1199.98px]:before:content-none!"
         items={HOME_FAQ.data.items}
       />
 
@@ -148,6 +149,7 @@ export function BgHomePage() {
         title={HOME_CTA_BAND.data.title}
         description={HOME_CTA_BAND.data.description}
         spacing="home"
+        autoHeight
         actions={[
           {
             href: HOME_CTA_BAND.data.cta.href,
