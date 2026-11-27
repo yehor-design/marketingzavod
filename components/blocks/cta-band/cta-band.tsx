@@ -19,6 +19,8 @@ export type CtaBandProps = {
   backgroundLabel?: string;
   /** Matches existing Jet mobile padding split between HomePage ("home") and SiteCta ("page"). */
   spacing?: "page" | "home";
+  /** Allows multi-line Bulgarian headings + descriptions to grow cleanly without clipping CTA actions. */
+  autoHeight?: boolean;
   className?: string;
 };
 
@@ -29,15 +31,21 @@ export function CtaBand({
   actions,
   backgroundLabel = "Footer background",
   spacing = "page",
+  autoHeight = false,
   className,
 }: CtaBandProps) {
   return (
     <section
-      className={cx("cta", spacing === "home" ? "ctaHomeSpacing" : "ctaPageSpacing", className)}
+      className={cx(
+        "cta",
+        autoHeight && "ctaAuto",
+        spacing === "home" ? "ctaHomeSpacing" : "ctaPageSpacing",
+        className,
+      )}
       aria-labelledby={titleId}
       data-block="cta-band"
     >
-      <div className={cx("card", spacing === "page" && "cardPageSpacing")}>
+      <div className={cx("card", !autoHeight && spacing === "page" && "cardPageSpacing", autoHeight && "cardAuto")}>
         <div className={cx("media")}>
           <PulseGradient label={backgroundLabel} />
           <div className={cx("grain")} />

@@ -141,6 +141,7 @@ export function SegmentPage({ data, extraSlot }: SegmentPageProps) {
         titleId={`${data.slug}-faq-title`}
         title={data.faq.title ?? DEFAULT_FAQ_TITLE}
         defaultOpenIndex={0}
+        className="[&_.faqGrid]:max-[1199.98px]:before:content-none!"
         items={visibleFaq.map((item) => ({
           question: item.question,
           answer: <RichTextRuns content={item.answer} />,
@@ -153,6 +154,7 @@ export function SegmentPage({ data, extraSlot }: SegmentPageProps) {
         title={data.ctaBand.title}
         description={data.ctaBand.description}
         spacing="page"
+        autoHeight
         actions={data.ctaBand.actions.map((action, index) => ({
           href: appendSegmentTema(action.href, tema),
           text: action.text,
