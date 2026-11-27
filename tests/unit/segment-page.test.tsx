@@ -5,6 +5,10 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ILLOS_CATALOG } from "@/components/illos";
 import { SegmentPage } from "@/components/pages/segment-page";
+import {
+  getMagaziniSegment,
+  MAGAZINI_CREATIVE_SLA_VARIANTS,
+} from "@/content/bg/segments/magazini";
 import { appendSegmentTema, type SegmentPageData } from "@/content/bg/types";
 
 vi.mock("@/components/motion", async () => {
@@ -258,5 +262,22 @@ describe("SegmentPage template and illos.dev/library assets (ZAV-117 / SG-A1 / D
         );
       }
     }
+  });
+
+  it("renders /onlayn-magazini consistently in both closed and open creativeSla04 gate states (ZAV-119 / PG-A4)", () => {
+    const { container: closedContainer } = render(<SegmentPage data={getMagaziniSegment(false)} />);
+    const closedText = closedContainer.textContent ?? "";
+    expect(closedText).not.toContain("Поне 4 нови концепции на месец");
+    expect(closedText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureGridCard);
+    expect(closedText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureSectionPoint);
+    expect(closedText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.cardGridBarrier);
+    cleanup();
+
+    const { container: openContainer } = render(<SegmentPage data={getMagaziniSegment(true)} />);
+    const openText = openContainer.textContent ?? "";
+    expect(openText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.open.featureGridCard);
+    expect(openText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.open.featureSectionPoint);
+    expect(openText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.open.cardGridBarrier);
+    expect(openText).not.toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureGridCard);
   });
 });

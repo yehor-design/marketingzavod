@@ -1,5 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import {
+  getMagaziniSegment,
+  MAGAZINI_CREATIVE_SLA_VARIANTS,
+} from "@/content/bg/segments/magazini";
 import { SMYANA_SEGMENT } from "@/content/bg/segments/smyana";
 import { events } from "../helpers";
 
@@ -142,6 +146,120 @@ test.describe("BG Segment /smyana-na-agentsiya (ZAV-118 / SG-A2 / PG-A1..PG-A4)"
       expect(overflow).toBeLessThanOrEqual(0);
 
       // Verify CtaBand primary button is never clipped inside the closing card.
+      const ctaCardBox = await page.locator('[data-block="cta-band"] .card').boundingBox();
+      const ctaBtnBox = await page.locator('[data-block="cta-band"] a').first().boundingBox();
+      expect(ctaCardBox).not.toBeNull();
+      expect(ctaBtnBox).not.toBeNull();
+      if (ctaCardBox && ctaBtnBox) {
+        expect(ctaBtnBox.y + ctaBtnBox.height).toBeLessThanOrEqual(
+          ctaCardBox.y + ctaCardBox.height,
+        );
+      }
+
+      const axe = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+      expect(axe.violations, JSON.stringify(axe.violations, null, 2)).toEqual([]);
+    });
+  }
+});
+
+test.describe("BG Segment /onlayn-magazini (ZAV-119 / SG-A2 / PG-A1..PG-A4)", () => {
+  test("renders exact 9-section order, tema=magazin on /kontakt CTAs, /tseni secondary CTA, closed creativeSla04 fallback in all 3 slots, and 8 illos.dev SVGs", async ({
+    page,
+  }) => {
+    await storeBgConsent(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const response = await page.goto("/onlayn-magazini", { waitUntil: "load" });
+    expect(response?.status()).toBe(200);
+
+    const blocks = await page
+      .locator("main > [data-block]")
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-block")));
+    expect(blocks).toEqual(EXPECTED_SEGMENT_BLOCK_ORDER);
+
+    const expected = getMagaziniSegment(false);
+    await expect(page.locator("main h1")).toHaveText(expected.hero.title);
+    await expect(page).toHaveTitle("Реклама за онлайн магазини, която печели | Маркетинг Завод");
+
+    await expect(page.locator('[data-block="hero"] a[href="/kontakt?tema=magazin"]')).toHaveCount(
+      1,
+    );
+    await expect(page.locator('[data-block="hero"] a[href="/tseni"]')).toHaveCount(1);
+    await expect(
+      page.locator('[data-block="cta-band"] a[href="/kontakt?tema=magazin"]'),
+    ).toHaveCount(1);
+
+    const kontaktHrefs = await page
+      .locator('main a[href^="/kontakt"]')
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+    expect(kontaktHrefs.length).toBeGreaterThanOrEqual(2);
+    for (const href of kontaktHrefs) {
+      expect(href).toBe("/kontakt?tema=magazin");
+    }
+
+    // PG-A4: while creativeSla04 (ZAV-69) is closed, all 3 slots use README fallback consistently.
+    const mainText = await page.locator("main").innerText();
+    expect(mainText).not.toContain("Поне 4 нови концепции на месец");
+    expect(mainText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureGridCard);
+    expect(mainText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureSectionPoint);
+    expect(mainText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.cardGridBarrier);
+
+    await expect(page.locator("main img[data-illo]")).toHaveCount(8);
+    await expect(page.locator('[data-block="mirror-questions"] ul > li')).toHaveCount(5);
+    await expect(
+      page.locator('[data-block="mirror-questions"] blockquote, [data-block="mirror-questions"] cite'),
+    ).toHaveCount(0);
+    await expect(page.locator('[data-block="faq"] button[aria-expanded]')).toHaveCount(5);
+
+    expect(mainText).not.toMatch(/\b(Jet|Основа|Примітка|Публікувати)\b/);
+    expect(mainText).not.toMatch(/[іїєґІЇЄҐ]/);
+  });
+
+  test("tracks hero and footer_cta clicks with tema=magazin (PG-A3)", async ({ page }) => {
+    await storeBgConsent(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/onlayn-magazini", { waitUntil: "load" });
+
+    await page.evaluate(() => {
+      document.addEventListener(
+        "click",
+        (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        },
+        true,
+      );
+    });
+
+    await page.locator('[data-block="hero"] a[href="/kontakt?tema=magazin"]').click();
+    await page.locator('[data-block="hero"] a[href="/tseni"]').click();
+    await page.locator('[data-block="cta-band"] a[href="/kontakt?tema=magazin"]').click();
+
+    const ctaClicks = await events(page, "cta_click");
+    expect(ctaClicks).toContainEqual(
+      expect.objectContaining({ cta_location: "hero", destination: "/kontakt?tema=magazin" }),
+    );
+    expect(ctaClicks).toContainEqual(
+      expect.objectContaining({ cta_location: "hero", destination: "/tseni" }),
+    );
+    expect(ctaClicks).toContainEqual(
+      expect.objectContaining({ cta_location: "footer_cta", destination: "/kontakt?tema=magazin" }),
+    );
+  });
+
+  for (const viewport of VIEWPORTS) {
+    test(`renders without horizontal overflow, unclipped CtaBand, and passes WCAG 2.2 A/AA axe at ${viewport.width}px`, async ({
+      page,
+    }) => {
+      await storeBgConsent(page);
+      await page.setViewportSize(viewport);
+      await page.goto("/onlayn-magazini", { waitUntil: "load" });
+      await page.evaluate(() => document.fonts.ready);
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+
       const ctaCardBox = await page.locator('[data-block="cta-band"] .card').boundingBox();
       const ctaBtnBox = await page.locator('[data-block="cta-band"] a').first().boundingBox();
       expect(ctaCardBox).not.toBeNull();

@@ -17,6 +17,11 @@ import {
   getPublishedBgSolutionsLinks,
 } from "@/content/bg/navigation";
 import { BG_NOT_FOUND, getPublishedBgNotFoundSolutions } from "@/content/bg/not-found";
+import {
+  getMagaziniContentBlocks,
+  getMagaziniSegment,
+  MAGAZINI_CREATIVE_SLA_VARIANTS,
+} from "@/content/bg/segments/magazini";
 import { SMYANA_CONTENT_BLOCKS, SMYANA_SEGMENT } from "@/content/bg/segments/smyana";
 import {
   formatBgDate,
@@ -230,6 +235,52 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
       expect(block.source.block.length).toBeGreaterThan(0);
     }
     assertSegmentVerbatim(SMYANA_SEGMENT);
+  });
+
+  it("verifies /onlayn-magazini open & closed creativeSla04 variants verbatim against file 04 and README decision #3 (ZAV-119)", () => {
+    expect(isGateOpen("creativeSla04")).toBe(false);
+    expect(getMagaziniContentBlocks(false)).toHaveLength(11);
+    expect(getMagaziniContentBlocks(true)).toHaveLength(11);
+    for (const block of getMagaziniContentBlocks(false)) {
+      expect(block.source.file).toBe("04-onlayn-magazini.md");
+      expect(block.source.block.length).toBeGreaterThan(0);
+    }
+
+    // Open gate: 100% verbatim against 04-onlayn-magazini.md.
+    const openSegment = getMagaziniSegment(true);
+    assertSegmentVerbatim(openSegment);
+
+    // Closed gate: swaps all 3 places atomically to the 00-README.md decision #3 fallback phrase.
+    const readmeText = readNormalizedSource("00-README.md");
+    const file04Text = readNormalizedSource("04-onlayn-magazini.md");
+    expect(readmeText).toContain("нови концепции всеки месец");
+    expect(file04Text).toContain("нови концепции всеки месец");
+
+    const closedSegment = getMagaziniSegment(false);
+    const closedSerialized = JSON.stringify(closedSegment);
+    expect(closedSerialized).not.toContain("Поне 4 нови концепции на месец");
+    expect(closedSegment.featureGrid.items[1].body).toBe(
+      MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureGridCard,
+    );
+    expect(closedSegment.featureSections[1].points[0]).toBe(
+      MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureSectionPoint,
+    );
+    expect(closedSegment.cardGrid.items[2].body).toBe(
+      MAGAZINI_CREATIVE_SLA_VARIANTS.closed.cardGridBarrier,
+    );
+
+    // Verify closed fallback preserves exact file-04 tails when replacing only the SLA prefix.
+    const normalizeSla = (value: string) =>
+      value.replace(/^Нови концепции всеки месец/, "Поне 4 нови концепции на месец");
+    expect(normalizeSla(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureGridCard)).toBe(
+      MAGAZINI_CREATIVE_SLA_VARIANTS.open.featureGridCard,
+    );
+    expect(normalizeSla(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureSectionPoint)).toBe(
+      MAGAZINI_CREATIVE_SLA_VARIANTS.open.featureSectionPoint,
+    );
+    expect(normalizeSla(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.cardGridBarrier)).toBe(
+      MAGAZINI_CREATIVE_SLA_VARIANTS.open.cardGridBarrier,
+    );
   });
 
   it("verifies SHARED_FORMULATIONS verbatim against docs/site-texts/00-README.md", () => {
