@@ -12,6 +12,7 @@ import {
   getPublishedBgFooterColumns,
   getPublishedBgSolutionsLinks,
 } from "@/content/bg/navigation";
+import { BG_NOT_FOUND, getPublishedBgNotFoundSolutions } from "@/content/bg/not-found";
 import {
   formatBgDate,
   LAUNCH_PUBLICATION_DATE_BG,
@@ -222,6 +223,35 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
       }
       expect(stripped, `${entry.path} contains unexpected Latin text`).not.toMatch(/[A-Za-z]/);
     }
+  });
+
+  it("verifies BG_NOT_FOUND verbatim against docs/site-texts/26-404.md and gates closed segments (NF-01)", () => {
+    const verifiable = {
+      hero: {
+        title: BG_NOT_FOUND.hero.title,
+        description: BG_NOT_FOUND.hero.description,
+        actions: BG_NOT_FOUND.hero.actions.map((action) => action.text),
+      },
+      suggestedGroup: {
+        title: BG_NOT_FOUND.suggestedGroup.title,
+        items: BG_NOT_FOUND.suggestedGroup.items.map((item) => item.label),
+      },
+      solutionsGroup: {
+        title: BG_NOT_FOUND.solutionsGroup.title,
+        items: BG_NOT_FOUND.solutionsGroup.allItems.map((item) => item.label),
+      },
+    };
+    assertVerbatimAgainstSource(BG_NOT_FOUND.source, verifiable, "bgNotFound");
+    expect(BG_NOT_FOUND.hero.actions.map((a) => a.location)).toEqual(["not_found", "not_found"]);
+
+    const published = getPublishedBgNotFoundSolutions();
+    expect(published.some((item) => item.href === "/hoteli")).toBe(isGateOpen("hotels"));
+    expect(published.map((item) => item.href)).toEqual([
+      "/smyana-na-agentsiya",
+      "/onlayn-magazini",
+      "/uslugi-i-b2b",
+      "/nedvizhimi-imoti",
+    ]);
   });
 
   it("verifies all entries in BG_DRAFTS have spec, date, no Ukrainian letters, no placeholders", () => {

@@ -171,21 +171,27 @@ test.describe("BG consent banner and settings panel (CN-01..CN-06, CN-A1..CN-A3 
     const panel = page.locator("[data-consent-settings]");
     await expect(panel).toBeVisible();
 
+    // Revoking marketing consent reloads the page so withdrawn third-party tags stop running
     await panel.getByRole("switch", { name: bgUi.consent.categories.marketing.name }).click();
-    await panel.getByRole("button", { name: bgUi.consent.saveChoices }).click();
-    await expect(panel).toBeHidden();
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "load" }),
+      panel.getByRole("button", { name: bgUi.consent.saveChoices }).click(),
+    ]);
 
     await expect
       .poll(async () => (await page.context().cookies()).find((c) => c.name === "mz_consent")?.value ?? "")
       .toMatch(new RegExp(`^${CONSENT_VERSION}\\.s1m0\\.`));
 
-    // Reopen and withdraw to necessary only
+    // Reopen and withdraw statistics too (triggers reload back to necessary only)
     await page
       .locator("footer.site-footer")
       .getByRole("button", { name: bgUi.consent.cookieSettingsButton })
       .click();
     await expect(panel).toBeVisible();
-    await panel.getByRole("button", { name: bgUi.consent.necessaryOnly }).click();
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "load" }),
+      panel.getByRole("button", { name: bgUi.consent.necessaryOnly }).click(),
+    ]);
 
     await expect
       .poll(async () => (await page.context().cookies()).find((c) => c.name === "mz_consent")?.value ?? "")

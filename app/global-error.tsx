@@ -3,7 +3,7 @@
 import NextError from "next/error";
 import { useEffect } from "react";
 import { ui } from "@/content/ui";
-import { isBg } from "@/lib/edition";
+import { EDITION, isBg } from "@/lib/edition";
 
 export default function GlobalError({
   error,
@@ -17,24 +17,36 @@ export default function GlobalError({
     console.error(error);
   }, [error]);
 
-  return (
-    <html lang={ui.globalError.lang}>
-      <body>
-        {isBg ? (
-          <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center text-foreground">
-            <h1>{ui.globalError.title}</h1>
-            <p className="text-muted-foreground">{ui.globalError.body}</p>
+  if (isBg) {
+    return (
+      <html
+        lang={ui.globalError.lang}
+        data-edition={EDITION}
+        className="dark bg-background text-[125%] scheme-dark max-[809.98px]:text-[87.5%] min-[810px]:max-[1199.98px]:text-[112.5%]"
+      >
+        <body className="m-0 min-h-screen bg-background font-sans text-foreground">
+          <main className="mx-auto flex min-h-screen w-[min(1200px,_calc(100%_-_32px))] flex-col items-center justify-center gap-[20px] py-[64px] text-center">
+            <h1 className="m-0 font-display text-h1 text-foreground">{ui.globalError.title}</h1>
+            <p className="m-0 max-w-[460px] text-[16px] leading-[1.5] text-muted-foreground">
+              {ui.globalError.body}
+            </p>
             <button
               type="button"
               onClick={() => reset()}
-              className="rounded-button bg-primary px-5 py-2.5 text-sm text-primary-foreground"
+              className="mt-[8px] inline-flex h-[36px] cursor-pointer items-center justify-center rounded-nav border-0 bg-foreground px-[18px] font-display text-[12px] font-medium text-background"
             >
               {ui.globalError.reload}
             </button>
           </main>
-        ) : (
-          <NextError statusCode={0} />
-        )}
+        </body>
+      </html>
+    );
+  }
+
+  return (
+    <html lang={ui.globalError.lang}>
+      <body>
+        <NextError statusCode={0} />
       </body>
     </html>
   );
