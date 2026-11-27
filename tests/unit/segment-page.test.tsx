@@ -5,6 +5,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ILLOS_CATALOG } from "@/components/illos";
 import { SegmentPage } from "@/components/pages/segment-page";
+import { HOTELI_SEGMENT } from "@/content/bg/segments/hoteli";
 import {
   getMagaziniSegment,
   MAGAZINI_CREATIVE_SLA_VARIANTS,
@@ -279,5 +280,33 @@ describe("SegmentPage template and illos.dev/library assets (ZAV-117 / SG-A1 / D
     expect(openText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.open.featureSectionPoint);
     expect(openText).toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.open.cardGridBarrier);
     expect(openText).not.toContain(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.featureGridCard);
+  });
+
+  it("renders /hoteli SegmentPage data cleanly when hotels gate opens (ZAV-121 / SG-A2)", () => {
+    const { container } = render(<SegmentPage data={HOTELI_SEGMENT} />);
+
+    const blocks = Array.from(container.querySelectorAll(":scope > [data-block]")).map((el) =>
+      el.getAttribute("data-block"),
+    );
+    expect(blocks).toEqual([
+      "hero",
+      "feature-grid",
+      "process-steps",
+      "mirror-questions",
+      "feature-section",
+      "feature-section",
+      "feature-section",
+      "feature-section",
+      "card-grid",
+      "faq",
+      "cta-band",
+    ]);
+
+    const kontaktLinks = Array.from(
+      container.querySelectorAll<HTMLAnchorElement>('a[href^="/kontakt"]'),
+    ).map((a) => a.getAttribute("href"));
+    expect(kontaktLinks).toEqual(["/kontakt?tema=hotel", "/kontakt?tema=hotel"]);
+    expect(container.querySelectorAll("img[data-illo]")).toHaveLength(8);
+    expect(container.querySelectorAll('[data-block="faq"] button[aria-expanded]')).toHaveLength(6);
   });
 });

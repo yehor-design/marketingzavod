@@ -500,3 +500,20 @@ test.describe("BG Segment /nedvizhimi-imoti (ZAV-122 / SG-A2 / PG-A1..PG-A4)", (
     });
   }
 });
+
+test.describe("BG Segment /hoteli closed gate isolation (ZAV-121 / CR-A5 / SG-14)", () => {
+  test("returns HTTP 404 while BG_GATES.hotels is closed and does not leak hotel copy or title", async ({
+    page,
+  }) => {
+    await storeBgConsent(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const response = await page.goto("/hoteli", { waitUntil: "load" });
+    expect(response?.status()).toBe(404);
+
+    await expect(page).toHaveTitle("Страницата не е намерена | Маркетинг Завод");
+    const mainText = await page.locator("main").innerText();
+    expect(mainText).not.toContain("Повече директни резервации за сезон 2027.");
+    expect(mainText).not.toContain("Сезон 2027");
+    await expect(page.locator('a[href="/hoteli"]')).toHaveCount(0);
+  });
+});
