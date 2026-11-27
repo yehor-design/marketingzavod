@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { DitherImage } from "@/components/home/dither-image";
+import { IlloVisual, type IlloName } from "@/components/illos";
 import { orderedDither } from "@/components/motion";
 import { cx } from "@/components/blocks/feature-section/feature-section-styles";
 
@@ -11,6 +12,12 @@ export type FeatureSectionVisual =
       kind: "dither";
       src: string;
       label: string;
+    }
+  | {
+      /** Animated SVG reproduction from https://illos.dev/library (DS-27 / PG-07). */
+      kind: "illo";
+      name: IlloName;
+      alt?: string;
     }
   | {
       /** Animated SVG/React illustration from illos.dev/library (DS-27 / ZAV-65). */
@@ -28,6 +35,8 @@ export type FeatureSectionProps = {
   link?: { href: string; label: string };
   visual?: FeatureSectionVisual;
   flip?: boolean;
+  /** Variable-height row layout for multi-line BG points (DS-10). */
+  autoHeight?: boolean;
   /** When true, renders the row article directly inside a parent framed section. */
   embedded?: boolean;
   className?: string;
@@ -61,12 +70,13 @@ export function FeatureSection({
   link,
   visual,
   flip = false,
+  autoHeight = false,
   embedded = false,
   className,
 }: FeatureSectionProps) {
   const hasVisual = visual !== undefined;
   const articleClass = hasVisual
-    ? cx(flip ? "featureFlip" : "feature", id && "anchored", embedded && className)
+    ? cx(flip ? "featureFlip" : "feature", autoHeight && "featureAuto", id && "anchored", embedded && className)
     : cx("featureNoArt", id && "anchored", embedded && className);
 
   const article = (
@@ -83,10 +93,18 @@ export function FeatureSection({
         ) : null}
         <h2>{title}</h2>
         {body ? (
-          <p className={cx("featureBody", !hasVisual && "featureBodyWide")}>{body}</p>
+          <p
+            className={cx(
+              "featureBody",
+              autoHeight && "featureBodyAuto",
+              !hasVisual && "featureBodyWide",
+            )}
+          >
+            {body}
+          </p>
         ) : null}
         {points && points.length > 0 ? (
-          <ul className={cx("checks")}>
+          <ul className={cx("checks", autoHeight && "checksAuto")}>
             {points.map((point, index) => (
               <li key={typeof point === "string" ? point : index}>
                 <CheckIcon color={accentColor} />
@@ -102,7 +120,7 @@ export function FeatureSection({
         ) : null}
       </div>
       {hasVisual ? (
-        <div className={cx("featureArt")}>
+        <div className={cx("featureArt", autoHeight && "featureArtAuto")}>
           <div className={cx("featureDots")} aria-hidden="true" />
           {visual.kind === "dither" ? (
             <div className={cx("featureFrame")}>
@@ -112,8 +130,19 @@ export function FeatureSection({
                 preset={{ ...orderedDither, animation: false }}
               />
             </div>
+          ) : visual.kind === "illo" ? (
+            <div className={cx(autoHeight ? "featureCustomFrameAuto" : "featureCustomFrame")}>
+              <IlloVisual
+                name={visual.name}
+                alt={visual.alt}
+                decorative={!visual.alt}
+                className="max-h-full w-full object-contain"
+              />
+            </div>
           ) : (
-            <div className={cx("featureCustomFrame")}>{visual.render()}</div>
+            <div className={cx(autoHeight ? "featureCustomFrameAuto" : "featureCustomFrame")}>
+              {visual.render()}
+            </div>
           )}
         </div>
       ) : null}
