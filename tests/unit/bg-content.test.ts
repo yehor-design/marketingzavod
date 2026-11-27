@@ -5,7 +5,13 @@ import { COMPANY, COMPANY_ABOUT_DETAILS, COMPANY_LEGAL_DETAILS } from "@/content
 import { BG_DRAFTS } from "@/content/bg/drafts";
 import { BG_GATES, CASES_PAGE_MODE, isGateOpen } from "@/content/bg/gates";
 import { HOME_HERO } from "@/content/bg/home";
-import { BG_HEADER_NAV, BG_SOLUTIONS_LINKS, getPublishedBgSolutionsLinks } from "@/content/bg/navigation";
+import {
+  BG_FOOTER,
+  BG_HEADER_NAV,
+  BG_SOLUTIONS_LINKS,
+  getPublishedBgFooterColumns,
+  getPublishedBgSolutionsLinks,
+} from "@/content/bg/navigation";
 import {
   formatBgDate,
   LAUNCH_PUBLICATION_DATE_BG,
@@ -155,6 +161,36 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
       "/uslugi-i-b2b",
       "/nedvizhimi-imoti",
     ]);
+  });
+
+  it("verifies BG_FOOTER verbatim against file 01 and gates closed segment links (GL-08..GL-12)", () => {
+    const verifiableColumns = BG_FOOTER.columns.map((column) => ({
+      title: column.title,
+      items: column.items.map((item) => (item.kind === "text" ? item.text : item.label)),
+    }));
+    const verifiableSocials = BG_FOOTER.socials.map((item) => ({
+      href: item.href,
+      label: item.label,
+    }));
+    assertVerbatimAgainstSource(
+      BG_FOOTER.source,
+      { columns: verifiableColumns, socials: verifiableSocials },
+      "bgFooter",
+    );
+
+    const publishedColumns = getPublishedBgFooterColumns();
+    expect(publishedColumns.map((column) => column.title)).toEqual([
+      "Решения",
+      "Компания",
+      "Контакт",
+      "Правни",
+    ]);
+    const solutionsCol = publishedColumns[0];
+    expect(
+      solutionsCol.items.some((item) => item.kind === "link" && item.href === "/hoteli"),
+    ).toBe(isGateOpen("hotels"));
+    expect(BG_FOOTER.socials).toHaveLength(1);
+    expect(BG_FOOTER.socials[0].href).toBe(COMPANY.linkedinHref);
   });
 
   it("verifies all entries in BG_DRAFTS have spec, date, no Ukrainian letters, no placeholders", () => {
