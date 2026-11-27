@@ -8,6 +8,7 @@ import { ConsentedSpeedInsights } from "@/components/tracking/speed-insights";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { EDITION, isBg } from "@/lib/edition";
+import { fontVariables } from "@/lib/fonts/active";
 import { ALLOW_INDEXING, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -61,15 +62,11 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { fontVariables } = isBg
-    ? await import("@/lib/fonts/bg")
-    : await import("@/lib/fonts/jet");
-
   return (
     <html
       lang={isBg ? "bg" : "en"}

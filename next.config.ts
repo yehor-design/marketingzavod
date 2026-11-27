@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
   // Without the socket, the dev debug channel never closes and the page never hydrates.
   allowedDevOrigins: ["127.0.0.1"],
 
+  turbopack: {
+    resolveAlias: {
+      "@/lib/fonts/active": isBg ? "./lib/fonts/bg.ts" : "./lib/fonts/jet.ts",
+    },
+  },
+
   env: {
     // Client code cannot read VERCEL_ENV. Tracking is allowed only when this is "production".
     NEXT_PUBLIC_SITE_ENV: process.env.VERCEL_ENV ?? "development",

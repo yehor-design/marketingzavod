@@ -17,17 +17,23 @@ test.describe("bg edition Cyrillic fonts (DS-A2, DS-A3)", () => {
     await expect(page.locator("html")).toHaveAttribute("data-edition", "bg");
 
     const specimen = page.locator("#bg-typography-specimen");
+    await specimen.scrollIntoViewIfNeeded();
     await expect(specimen).toBeVisible();
 
     const fontCheck = await page.evaluate(async () => {
-      await document.fonts.ready;
       const bodyFamily = getComputedStyle(document.body).fontFamily;
-      const primarySans = bodyFamily.split(",")[0]?.trim() ?? "";
+      const primarySans = bodyFamily.split(",")[0]?.trim() ?? '"Google Sans"';
       const eyebrow = document.querySelector<HTMLElement>(
         "#bg-typography-specimen [data-bg-eyebrow]",
       );
       const eyebrowFamily = eyebrow ? getComputedStyle(eyebrow).fontFamily : "";
-      const primaryMono = eyebrowFamily.split(",")[0]?.trim() ?? "";
+      const primaryMono = eyebrowFamily.split(",")[0]?.trim() ?? '"JetBrains Mono"';
+
+      await Promise.all([
+        document.fonts.load(`16px ${primarySans}`, "Жщъ"),
+        document.fonts.load(`12px ${primaryMono}`, "Жщъ"),
+        document.fonts.ready,
+      ]);
 
       const loadedFaces = Array.from(document.fonts)
         .filter((face) => face.status === "loaded")
@@ -37,9 +43,7 @@ test.describe("bg edition Cyrillic fonts (DS-A2, DS-A3)", () => {
         bodyFamily,
         eyebrowFamily,
         sansCheck: document.fonts.check(`16px ${primarySans}`, "Жщъ"),
-        googleSansCheck:
-          document.fonts.check('16px "Google Sans"', "Жщъ") ||
-          document.fonts.check(`16px ${primarySans}`, "Жщъ"),
+        googleSansCheck: document.fonts.check('16px "Google Sans"', "Жщъ"),
         monoCheck: document.fonts.check(`12px ${primaryMono}`, "Жщъ"),
         loadedFaces,
       };
