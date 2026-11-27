@@ -47,8 +47,13 @@ test("DS-A6: checkbox, navigation menu item, and table row keep equal px heights
 test("DS-A9: /dev/styleguide has no WCAG 2.2 A/AA axe violations", async ({ page }) => {
   await prepare(page, { choice: "necessary" });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/dev/styleguide", { waitUntil: "load" });
+  await page.goto("/dev/styleguide", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator("#primitive-checkbox [data-slot='checkbox']").first()).toHaveAttribute(
+    "aria-labelledby",
+    /.+/,
+  );
+  await page.locator(".jet-dash-layer").first().waitFor({ state: "attached" });
 
   const result = await new AxeBuilder({ page }).withTags(WCAG).analyze();
   const summary = result.violations.map(
@@ -63,7 +68,7 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
 }) => {
   await prepare(page, { choice: "necessary" });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/dev/styleguide", { waitUntil: "load" });
+  await page.goto("/dev/styleguide", { waitUntil: "networkidle" });
 
   for (const selector of ["#block-article-body", "#block-legal-body"]) {
     const section = page.locator(selector);
@@ -86,4 +91,11 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
     expect(externalRels.length).toBeGreaterThan(0);
     expect(externalRels.every((rel) => rel === "noopener noreferrer")).toBe(true);
   }
+
+  const richBlocksAxe = await new AxeBuilder({ page })
+    .include("#block-article-body")
+    .include("#block-legal-body")
+    .withTags(WCAG)
+    .analyze();
+  expect(richBlocksAxe.violations).toEqual([]);
 });

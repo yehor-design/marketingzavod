@@ -1558,32 +1558,69 @@ export function StyleGuide() {
       <Section id="primitive-checkbox" title="PRIMITIVE: CHECKBOX">
         <div className="flex flex-col gap-[16px] [border:1px_dashed_var(--color-rule)] [padding:24px]">
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-normal" data-ds-a6="checkbox" defaultChecked />
-            <label htmlFor="sg-cb-normal" className="text-[14px] leading-[20px] text-foreground">
+            <Checkbox
+              id="sg-cb-normal"
+              aria-labelledby="sg-cb-normal-label"
+              data-ds-a6="checkbox"
+              defaultChecked
+            />
+            <label
+              id="sg-cb-normal-label"
+              htmlFor="sg-cb-normal"
+              className="text-[14px] leading-[20px] text-foreground"
+            >
               Normal (checked)
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-hover" className="border-foreground/50" />
-            <label htmlFor="sg-cb-hover" className="text-[14px] leading-[20px] text-foreground">
+            <Checkbox
+              id="sg-cb-hover"
+              aria-labelledby="sg-cb-hover-label"
+              className="border-foreground/50"
+            />
+            <label
+              id="sg-cb-hover-label"
+              htmlFor="sg-cb-hover"
+              className="text-[14px] leading-[20px] text-foreground"
+            >
               Hover (unchecked)
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-focus" className="border-ring ring-3 ring-ring/50" />
-            <label htmlFor="sg-cb-focus" className="text-[14px] leading-[20px] text-foreground">
+            <Checkbox
+              id="sg-cb-focus"
+              aria-labelledby="sg-cb-focus-label"
+              className="border-ring ring-3 ring-ring/50"
+            />
+            <label
+              id="sg-cb-focus-label"
+              htmlFor="sg-cb-focus"
+              className="text-[14px] leading-[20px] text-foreground"
+            >
               Focus state
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-disabled" disabled />
-            <label htmlFor="sg-cb-disabled" className="text-[14px] leading-[20px] text-muted-foreground">
+            <Checkbox id="sg-cb-disabled" aria-labelledby="sg-cb-disabled-label" disabled />
+            <label
+              id="sg-cb-disabled-label"
+              htmlFor="sg-cb-disabled"
+              className="text-[14px] leading-[20px] text-muted-foreground"
+            >
               Disabled state
             </label>
           </div>
           <div className="flex items-center gap-[12px]">
-            <Checkbox id="sg-cb-error" aria-invalid="true" />
-            <label htmlFor="sg-cb-error" className="text-[14px] leading-[20px] text-destructive">
+            <Checkbox
+              id="sg-cb-error"
+              aria-labelledby="sg-cb-error-label"
+              aria-invalid="true"
+            />
+            <label
+              id="sg-cb-error-label"
+              htmlFor="sg-cb-error"
+              className="text-[14px] leading-[20px] text-destructive"
+            >
               Error state — consent is required to continue.
             </label>
           </div>
