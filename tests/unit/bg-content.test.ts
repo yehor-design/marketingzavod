@@ -5,6 +5,7 @@ import { COMPANY, COMPANY_ABOUT_DETAILS, COMPANY_LEGAL_DETAILS } from "@/content
 import { BG_DRAFTS } from "@/content/bg/drafts";
 import { BG_GATES, CASES_PAGE_MODE, isGateOpen } from "@/content/bg/gates";
 import { HOME_HERO } from "@/content/bg/home";
+import { BG_HEADER_NAV, BG_SOLUTIONS_LINKS, getPublishedBgSolutionsLinks } from "@/content/bg/navigation";
 import {
   formatBgDate,
   LAUNCH_PUBLICATION_DATE_BG,
@@ -135,6 +136,25 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     assertVerbatimAgainstSource(COMPANY.source, COMPANY, "company");
     assertVerbatimAgainstSource(COMPANY_ABOUT_DETAILS.source, COMPANY_ABOUT_DETAILS, "company.about");
     assertVerbatimAgainstSource(COMPANY_LEGAL_DETAILS.source, COMPANY_LEGAL_DETAILS, "company.legal");
+  });
+
+  it("verifies BG_HEADER_NAV and BG_SOLUTIONS_LINKS verbatim against file 01 and gate filtering (GL-05, CR-06)", () => {
+    assertVerbatimAgainstSource(BG_HEADER_NAV.source, BG_HEADER_NAV, "bgHeaderNav");
+    expect(BG_SOLUTIONS_LINKS.map((item) => item.href)).toEqual([
+      "/smyana-na-agentsiya",
+      "/onlayn-magazini",
+      "/uslugi-i-b2b",
+      "/hoteli",
+      "/nedvizhimi-imoti",
+    ]);
+    const published = getPublishedBgSolutionsLinks();
+    expect(published.some((item) => item.href === "/hoteli")).toBe(isGateOpen("hotels"));
+    expect(published.map((item) => item.href)).toEqual([
+      "/smyana-na-agentsiya",
+      "/onlayn-magazini",
+      "/uslugi-i-b2b",
+      "/nedvizhimi-imoti",
+    ]);
   });
 
   it("verifies all entries in BG_DRAFTS have spec, date, no Ukrainian letters, no placeholders", () => {
