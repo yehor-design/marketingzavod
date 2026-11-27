@@ -18,6 +18,7 @@ import {
 } from "@/content/bg/navigation";
 import { BG_NOT_FOUND, getPublishedBgNotFoundSolutions } from "@/content/bg/not-found";
 import { B2B_CONTENT_BLOCKS, B2B_SEGMENT } from "@/content/bg/segments/b2b";
+import { HOTELI_CONTENT_BLOCKS, HOTELI_SEGMENT } from "@/content/bg/segments/hoteli";
 import { IMOTI_CONTENT_BLOCKS, IMOTI_SEGMENT } from "@/content/bg/segments/imoti";
 import {
   getMagaziniContentBlocks,
@@ -315,6 +316,22 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     expect(serialized).not.toContain("lead_submitted");
     expect(serialized).not.toContain("ICP-2");
     expect(serialized).not.toContain("Трекінг");
+  });
+
+  it("verifies /hoteli segment blocks verbatim against docs/site-texts/06-hoteli.md behind closed hotels gate (ZAV-121)", () => {
+    expect(isGateOpen("hotels")).toBe(false);
+    expect(HOTELI_SEGMENT.gate).toBe("hotels");
+    expect(HOTELI_CONTENT_BLOCKS).toHaveLength(11);
+    for (const block of HOTELI_CONTENT_BLOCKS) {
+      expect(block.source.file).toBe("06-hoteli.md");
+      expect(block.source.block.length).toBeGreaterThan(0);
+      expect(block.gate).toBe("hotels");
+    }
+    assertSegmentVerbatim(HOTELI_SEGMENT);
+
+    const serialized = JSON.stringify(HOTELI_SEGMENT);
+    expect(serialized).not.toContain("Публікація");
+    expect(serialized).not.toContain("one-pager");
   });
 
   it("verifies SHARED_FORMULATIONS verbatim against docs/site-texts/00-README.md", () => {
