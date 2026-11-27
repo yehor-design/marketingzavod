@@ -18,6 +18,7 @@ import {
 } from "@/content/bg/navigation";
 import { BG_NOT_FOUND, getPublishedBgNotFoundSolutions } from "@/content/bg/not-found";
 import { B2B_CONTENT_BLOCKS, B2B_SEGMENT } from "@/content/bg/segments/b2b";
+import { IMOTI_CONTENT_BLOCKS, IMOTI_SEGMENT } from "@/content/bg/segments/imoti";
 import {
   getMagaziniContentBlocks,
   getMagaziniSegment,
@@ -300,6 +301,20 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     for (const item of B2B_SEGMENT.faq.items.slice(1)) {
       expect(item.gate).toBeUndefined();
     }
+  });
+
+  it("verifies /nedvizhimi-imoti segment blocks verbatim against docs/site-texts/07-nedvizhimi-imoti.md without rendering tracking notes (ZAV-122)", () => {
+    expect(IMOTI_CONTENT_BLOCKS).toHaveLength(11);
+    for (const block of IMOTI_CONTENT_BLOCKS) {
+      expect(block.source.file).toBe("07-nedvizhimi-imoti.md");
+      expect(block.source.block.length).toBeGreaterThan(0);
+    }
+    assertSegmentVerbatim(IMOTI_SEGMENT);
+
+    const serialized = JSON.stringify(IMOTI_SEGMENT);
+    expect(serialized).not.toContain("lead_submitted");
+    expect(serialized).not.toContain("ICP-2");
+    expect(serialized).not.toContain("Трекінг");
   });
 
   it("verifies SHARED_FORMULATIONS verbatim against docs/site-texts/00-README.md", () => {

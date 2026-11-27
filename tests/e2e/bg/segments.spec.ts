@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { B2B_SEGMENT } from "@/content/bg/segments/b2b";
+import { IMOTI_SEGMENT } from "@/content/bg/segments/imoti";
 import {
   getMagaziniSegment,
   MAGAZINI_CREATIVE_SLA_VARIANTS,
@@ -367,6 +368,116 @@ test.describe("BG Segment /uslugi-i-b2b (ZAV-120 / SG-A2 / PG-A1..PG-A4)", () =>
       await storeBgConsent(page);
       await page.setViewportSize(viewport);
       await page.goto("/uslugi-i-b2b", { waitUntil: "load" });
+      await page.evaluate(() => document.fonts.ready);
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+
+      const ctaCardBox = await page.locator('[data-block="cta-band"] .card').boundingBox();
+      const ctaBtnBox = await page.locator('[data-block="cta-band"] a').first().boundingBox();
+      expect(ctaCardBox).not.toBeNull();
+      expect(ctaBtnBox).not.toBeNull();
+      if (ctaCardBox && ctaBtnBox) {
+        expect(ctaBtnBox.y + ctaBtnBox.height).toBeLessThanOrEqual(
+          ctaCardBox.y + ctaCardBox.height,
+        );
+      }
+
+      const axe = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+      expect(axe.violations, JSON.stringify(axe.violations, null, 2)).toEqual([]);
+    });
+  }
+});
+
+test.describe("BG Segment /nedvizhimi-imoti (ZAV-122 / SG-A2 / PG-A1..PG-A4)", () => {
+  test("renders exact 9-section order, tema=imoti on /kontakt CTAs, excludes Трекінг service notes, and renders 8 illos.dev SVGs", async ({
+    page,
+  }) => {
+    await storeBgConsent(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const response = await page.goto("/nedvizhimi-imoti", { waitUntil: "load" });
+    expect(response?.status()).toBe(200);
+
+    const blocks = await page
+      .locator("main > [data-block]")
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-block")));
+    expect(blocks).toEqual(EXPECTED_SEGMENT_BLOCK_ORDER);
+
+    await expect(page.locator("main h1")).toHaveText(IMOTI_SEGMENT.hero.title);
+    await expect(page).toHaveTitle(
+      "Маркетинг за строители и агенции за имоти | Маркетинг Завод",
+    );
+
+    await expect(page.locator('[data-block="hero"] a[href="/kontakt?tema=imoti"]')).toHaveCount(1);
+    await expect(page.locator('[data-block="hero"] a[href="/tseni"]')).toHaveCount(1);
+    await expect(
+      page.locator('[data-block="cta-band"] a[href="/kontakt?tema=imoti"]'),
+    ).toHaveCount(1);
+
+    const kontaktHrefs = await page
+      .locator('main a[href^="/kontakt"]')
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+    expect(kontaktHrefs.length).toBeGreaterThanOrEqual(2);
+    for (const href of kontaktHrefs) {
+      expect(href).toBe("/kontakt?tema=imoti");
+    }
+
+    await expect(page.locator("main img[data-illo]")).toHaveCount(8);
+    await expect(page.locator('[data-block="mirror-questions"] ul > li')).toHaveCount(5);
+    await expect(
+      page.locator('[data-block="mirror-questions"] blockquote, [data-block="mirror-questions"] cite'),
+    ).toHaveCount(0);
+    await expect(page.locator('[data-block="faq"] button[aria-expanded]')).toHaveCount(5);
+    await expect(
+      page.locator('[data-block="faq"] button[aria-expanded]').first(),
+    ).toHaveAttribute("aria-expanded", "true");
+
+    const mainText = await page.locator("main").innerText();
+    expect(mainText).not.toMatch(/\b(Jet|Основа|Примітка|Публікувати|Трекінг|lead_submitted|ICP-2)\b/);
+    expect(mainText).not.toMatch(/[іїєґІЇЄҐ]/);
+  });
+
+  test("tracks hero and footer_cta clicks with tema=imoti (PG-A3)", async ({ page }) => {
+    await storeBgConsent(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/nedvizhimi-imoti", { waitUntil: "load" });
+
+    await page.evaluate(() => {
+      document.addEventListener(
+        "click",
+        (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        },
+        true,
+      );
+    });
+
+    await page.locator('[data-block="hero"] a[href="/kontakt?tema=imoti"]').click();
+    await page.locator('[data-block="hero"] a[href="/tseni"]').click();
+    await page.locator('[data-block="cta-band"] a[href="/kontakt?tema=imoti"]').click();
+
+    const ctaClicks = await events(page, "cta_click");
+    expect(ctaClicks).toContainEqual(
+      expect.objectContaining({ cta_location: "hero", destination: "/kontakt?tema=imoti" }),
+    );
+    expect(ctaClicks).toContainEqual(
+      expect.objectContaining({ cta_location: "hero", destination: "/tseni" }),
+    );
+    expect(ctaClicks).toContainEqual(
+      expect.objectContaining({ cta_location: "footer_cta", destination: "/kontakt?tema=imoti" }),
+    );
+  });
+
+  for (const viewport of VIEWPORTS) {
+    test(`renders without horizontal overflow, unclipped CtaBand, and passes WCAG 2.2 A/AA axe at ${viewport.width}px`, async ({
+      page,
+    }) => {
+      await storeBgConsent(page);
+      await page.setViewportSize(viewport);
+      await page.goto("/nedvizhimi-imoti", { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
 
       const overflow = await page.evaluate(
