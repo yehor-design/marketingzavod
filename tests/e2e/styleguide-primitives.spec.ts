@@ -98,6 +98,7 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
     .include("#block-link-list")
     .include("#block-announcement-bar")
     .include("#block-mirror-questions")
+    .include("#block-founder-card")
     .withTags(WCAG)
     .analyze();
   expect(richBlocksAxe.violations).toEqual([]);
@@ -121,10 +122,25 @@ test("DS-21 / AR-02 / LG-02: ArticleBody and LegalBody render all rich blocks wi
   await expect(
     mirrorSection.locator('a[href="/kontakt"][data-track="cta_click"]'),
   ).toHaveCount(1);
+
+  const founderSection = page.locator("#block-founder-card");
+  await expect(founderSection.locator('[data-block="founder-card"]')).toHaveCount(1);
+  const founderImg = founderSection.locator("img").first();
+  await expect(founderImg).toHaveAttribute(
+    "alt",
+    "Егор Гончаренко, основател на Маркетинг Завод",
+  );
+  expect(await founderImg.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await expect(
+    founderSection.locator('a[href="mailto:zavodzamarketing@gmail.com"]'),
+  ).toHaveCount(1);
+  await expect(
+    founderSection.locator('a[href="https://www.linkedin.com/in/yehor-honcharenko"][rel="noopener"]'),
+  ).toHaveCount(1);
 });
 
 for (const viewport of VIEWPORTS) {
-  test(`DS-A7: #block-mirror-questions has zero horizontal overflow at ${viewport.width}px`, async ({
+  test(`DS-A7: #block-mirror-questions and #block-founder-card have zero horizontal overflow at ${viewport.width}px`, async ({
     page,
   }) => {
     await prepare(page, { choice: "necessary" });
@@ -133,16 +149,19 @@ for (const viewport of VIEWPORTS) {
     await page.evaluate(() => document.fonts.ready);
 
     const overflow = await page.evaluate(() => {
-      const section = document.querySelector("#block-mirror-questions");
-      if (!section) return { missing: true, body: 0, section: 0 };
+      const mirror = document.querySelector("#block-mirror-questions");
+      const founder = document.querySelector("#block-founder-card");
+      if (!mirror || !founder) return { missing: true, body: 0, mirror: 0, founder: 0 };
       return {
         missing: false,
         body: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        section: section.scrollWidth - section.clientWidth,
+        mirror: mirror.scrollWidth - mirror.clientWidth,
+        founder: founder.scrollWidth - founder.clientWidth,
       };
     });
     expect(overflow.missing).toBe(false);
     expect(overflow.body).toBeLessThanOrEqual(0);
-    expect(overflow.section).toBeLessThanOrEqual(0);
+    expect(overflow.mirror).toBeLessThanOrEqual(0);
+    expect(overflow.founder).toBeLessThanOrEqual(0);
   });
 }

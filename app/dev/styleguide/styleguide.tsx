@@ -18,6 +18,7 @@ import { CtaBand } from "@/components/blocks/cta-band";
 import { Faq, type FaqItem } from "@/components/blocks/faq";
 import { FeatureGrid, type FeatureGridItem } from "@/components/blocks/feature-grid";
 import { FeatureSection } from "@/components/blocks/feature-section";
+import { FounderCard } from "@/components/blocks/founder-card";
 import { Hero } from "@/components/blocks/hero";
 import { LegalBody } from "@/components/blocks/legal-body";
 import { LinkList } from "@/components/blocks/link-list";
@@ -32,6 +33,7 @@ import { ProcessSteps, type ProcessStepItem } from "@/components/blocks/process-
 import { TeamMember } from "@/components/blocks/team-member";
 import { BenefitIcon } from "@/components/careers/icons";
 import { cx } from "@/components/chrome-styles";
+import { FOUNDER_PHOTOS } from "@/content/bg/types";
 import { isBg } from "@/lib/edition";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
@@ -1447,6 +1449,36 @@ export function StyleGuide() {
             className="pt-0!"
           />
         </div>
+      </Section>
+
+      <Section id="block-founder-card" title="BLOCK: FOUNDER CARD">
+        <FounderCard
+          titleId="sg-founder-card"
+          headingAs="h3"
+          title="Кой отговаря за резултата."
+          bio="Егор Гончаренко, основател на Маркетинг Завод. Над 8 години в продуктов дизайн и проучвания: започвам от данните, записвам базовата линия и меря всяка промяна. Отговарям лично за всеки пилот."
+          photo={{
+            webp: FOUNDER_PHOTOS.square.webp,
+            jpg: FOUNDER_PHOTOS.square.jpg,
+            alt: FOUNDER_PHOTOS.square.alt,
+            aspect: "1/1",
+            loading: "eager",
+          }}
+          actions={[
+            {
+              label: "Пишете ми на имейл",
+              href: "mailto:zavodzamarketing@gmail.com",
+              variant: "primary",
+            },
+            {
+              label: "LinkedIn",
+              href: "https://www.linkedin.com/in/yehor-honcharenko",
+              variant: "secondary",
+              external: true,
+            },
+          ]}
+          className="pt-0!"
+        />
       </Section>
 
       <Section id="block-contact-form" title="BLOCK: CONTACT FORM">
