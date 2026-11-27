@@ -33,7 +33,7 @@ Amplitude, окрім подій плану, сам збирає перегля�
 
 ### Значення `cta_location`
 
-`header`, `mobile_menu`, `hero`, `footer_cta`, `updates`, `about`, `careers`, `checkout`, `pricing_card_starter`, `pricing_card_pro`, `pricing_card_agency`, `pricing_compare_starter`, `pricing_compare_pro`, `pricing_compare_agency`.
+`header`, `mobile_menu`, `hero`, `footer_cta`, `updates`, `about`, `careers`, `checkout`, `pricing_card_starter`, `pricing_card_pro`, `pricing_card_agency`, `pricing_compare_starter`, `pricing_compare_pro`, `pricing_compare_agency`, `announcement`, `not_found`, `home_pilot_banner`.
 
 ### Покриття точок конверсії з аудиту
 
