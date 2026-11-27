@@ -193,32 +193,41 @@ export function ComparisonTable({
         ) : null}
       </div>
 
-      <div className={cx("table")}>
-        <div className={cx("head", gridColsClass)} role="row">
-          <div />
-          {columns.map((column) => (
-            <div
-              className={cx("headPlan", column.highlight && "headPlanHighlight")}
-              key={column.id}
-            >
-              <PlanMark icon={column.icon} size={20} accent={column.highlight} />
-              <h3>{column.name}</h3>
-              {column.cta ? (
-                <CtaLink
-                  href={column.cta.href}
-                  text={column.cta.text}
-                  variant={column.cta.tone}
-                  location={column.cta.location}
-                  className="ml-auto"
-                />
-              ) : null}
-            </div>
-          ))}
+      <div className={cx("table")} role="table" aria-label={title ?? ariaLabel}>
+        <div role="rowgroup">
+          <div className={cx("head", gridColsClass)} role="row">
+            <div role="columnheader" aria-label="Feature" />
+            {columns.map((column) => (
+              <div
+                className={cx("headPlan", column.highlight && "headPlanHighlight")}
+                key={column.id}
+                role="columnheader"
+              >
+                <PlanMark icon={column.icon} size={20} accent={column.highlight} />
+                <h3>{column.name}</h3>
+                {column.cta ? (
+                  <CtaLink
+                    href={column.cta.href}
+                    text={column.cta.text}
+                    variant={column.cta.tone}
+                    location={column.cta.location}
+                    className="ml-auto"
+                  />
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
 
         {groups.map((group, groupIndex) => (
-          <div key={group.title ?? `group-${groupIndex}`}>
-            {group.title ? <h4 className={cx("category")}>{group.title}</h4> : null}
+          <div key={group.title ?? `group-${groupIndex}`} role="rowgroup">
+            {group.title ? (
+              <div role="row">
+                <h4 className={cx("category")} role="rowheader">
+                  {group.title}
+                </h4>
+              </div>
+            ) : null}
             {group.rows.map((row) => (
               <div
                 className={cx(
@@ -229,7 +238,7 @@ export function ComparisonTable({
                 key={row.feature}
                 role="row"
               >
-                <h5>
+                <h5 role="rowheader">
                   {row.feature}
                   {row.tip ? <Tip text={row.tip} moreInfoLabel={moreInfoLabel} /> : null}
                 </h5>
