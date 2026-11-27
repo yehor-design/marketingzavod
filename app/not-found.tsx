@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ui } from "@/content/ui";
+import { isBg } from "@/lib/edition";
+import { bgPageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: ui.notFound.metaTitle,
-};
+export const metadata = isBg
+  ? bgPageMetadata("notFound")
+  : {
+      title: ui.notFound.metaTitle,
+    };
 
 export default function NotFound() {
   return (

@@ -1,3 +1,6 @@
+import { BG_SITE_METADATA } from "@/content/bg/metadata";
+import { isBg } from "@/lib/edition";
+
 /**
  * Canonical origin. The apex domain redirects to www on Vercel, so canonical
  * URLs point at www. Change this one value if the primary domain changes.
@@ -7,10 +10,11 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.market
   "",
 );
 
-export const SITE_NAME = "Jet";
+export const SITE_NAME = isBg ? BG_SITE_METADATA.siteName : "Jet";
 
-export const SITE_DESCRIPTION =
-  "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required.";
+export const SITE_DESCRIPTION = isBg
+  ? BG_SITE_METADATA.defaultDescription
+  : "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required.";
 
 export function absoluteUrl(path = "/"): string {
   if (/^https?:\/\//.test(path)) {

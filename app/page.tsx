@@ -1,15 +1,18 @@
 import { HomePage } from "@/components/home/home-page";
 import { JsonLd } from "@/components/json-ld";
-import { pageMetadata } from "@/lib/seo";
+import { isBg } from "@/lib/edition";
+import { bgPageMetadata, pageMetadata } from "@/lib/seo";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 import { socialLinks } from "@/lib/routes";
 
-export const metadata = pageMetadata({
-  title: "Jet – Lightning-Fast Website Optimization",
-  description:
-    "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
-  path: "/",
-});
+export const metadata = isBg
+  ? bgPageMetadata("home")
+  : pageMetadata({
+      title: "Jet – Lightning-Fast Website Optimization",
+      description:
+        "Supercharge your website with Jet. Instantly optimize images, code, and speed with no code required. Boost SEO, improve user experience, and increase conversions—effortlessly.",
+      path: "/",
+    });
 
 const organization = {
   "@context": "https://schema.org",
