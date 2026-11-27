@@ -17,6 +17,7 @@ import {
   getPublishedBgSolutionsLinks,
 } from "@/content/bg/navigation";
 import { BG_NOT_FOUND, getPublishedBgNotFoundSolutions } from "@/content/bg/not-found";
+import { B2B_CONTENT_BLOCKS, B2B_SEGMENT } from "@/content/bg/segments/b2b";
 import {
   getMagaziniContentBlocks,
   getMagaziniSegment,
@@ -281,6 +282,24 @@ describe("content/bg verbatim and integrity checks (CR-A3, CR-A5, CR-A9)", () =>
     expect(normalizeSla(MAGAZINI_CREATIVE_SLA_VARIANTS.closed.cardGridBarrier)).toBe(
       MAGAZINI_CREATIVE_SLA_VARIANTS.open.cardGridBarrier,
     );
+  });
+
+  it("verifies /uslugi-i-b2b segment blocks verbatim against docs/site-texts/05-uslugi-i-b2b.md and gates Forbes FAQ (ZAV-120)", () => {
+    expect(B2B_CONTENT_BLOCKS).toHaveLength(11);
+    for (const block of B2B_CONTENT_BLOCKS) {
+      expect(block.source.file).toBe("05-uslugi-i-b2b.md");
+      expect(block.source.block.length).toBeGreaterThan(0);
+    }
+    assertSegmentVerbatim(B2B_SEGMENT);
+
+    // FAQ #1 (Forbes България) is gated by BG_GATES.forbes (ZAV-73) and remains closed by default.
+    expect(isGateOpen("forbes")).toBe(false);
+    expect(B2B_SEGMENT.faq.items).toHaveLength(5);
+    expect(B2B_SEGMENT.faq.items[0].question).toBe("Защо да не наемем маркетолог?");
+    expect(B2B_SEGMENT.faq.items[0].gate).toBe("forbes");
+    for (const item of B2B_SEGMENT.faq.items.slice(1)) {
+      expect(item.gate).toBeUndefined();
+    }
   });
 
   it("verifies SHARED_FORMULATIONS verbatim against docs/site-texts/00-README.md", () => {
